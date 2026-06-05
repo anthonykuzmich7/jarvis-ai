@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jarvis AI
 
-## Getting Started
+> Working title — the name is not final.
 
-First, run the development server:
+Jarvis is an AI teammate that IT companies can "hire" — a digital coworker that
+lives inside your company's tools and helps people get onboarded, get their
+accesses, and get context, without waiting on an IT specialist.
+
+He shows up where people already work: as a Slack user, as a real user account in
+your systems, or connected through MCP so tools like Claude Code can talk to him.
+
+## Why
+
+Joining a company can take ~2 weeks just to get all your accesses, and you often
+don't even know who to ask. Jarvis grants the access, knows the company's
+processes, and carries the context of your work — so new hires are productive on
+day one or two, and IT stops being the bottleneck.
+
+## Status
+
+Earliest stage. We're documenting the vision and building a **landing page to
+validate the problem** before building the product.
+
+## Documentation
+
+The thinking behind the project lives in [`docs/`](./docs):
+
+- [vision.md](./docs/vision.md) — what Jarvis is and the big picture
+- [problem.md](./docs/problem.md) — the pain we're solving
+- [features.md](./docs/features.md) — what Jarvis does
+- [customers.md](./docs/customers.md) — who we sell to and why
+- [landing-page.md](./docs/landing-page.md) — the validation plan
+- [open-questions.md](./docs/open-questions.md) — what we still need to decide
+
+## Tech
+
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · deployed on
+Vercel. Pushing to `main` triggers a production deploy.
+
+## Local development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open [http://localhost:3000](http://localhost:3000).
