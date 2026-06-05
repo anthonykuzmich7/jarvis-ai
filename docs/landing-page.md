@@ -13,6 +13,14 @@ We are testing two things:
 2. **Is there pull?** Will they take an action that costs them something small —
    leaving an email, booking a call, joining a waitlist?
 
+## Decisions so far
+
+- **Primary CTA: join the waitlist (email capture).** Lowest friction; we want a
+  clean read on interest first.
+- **Primary audience: People / HR leadership** (CPO, HR partners), then
+  engineering managers, IT managers, and senior management. Copy leads with the
+  People/HR angle. See [customers.md](./customers.md).
+
 ## Success signal
 
 A meaningful share of relevant visitors (IT/eng leads) sign up to learn more.

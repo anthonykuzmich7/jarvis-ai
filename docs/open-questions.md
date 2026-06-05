@@ -7,8 +7,9 @@ vision, but they shape the product and the landing page.
 
 - **Name.** "Jarvis AI" is a working title. Is it final? (Trademark / the
   Marvel association may be a problem.)
-- **Who is the buyer?** IT/DevOps lead, eng manager, or People/HR Ops? They have
-  different pains and different budgets.
+- ~~**Who is the buyer?**~~ Current call: People/HR leadership first (CPO, HR
+  partners), then eng managers, IT managers, senior management. To confirm via
+  the landing page.
 - **Company size sweet spot.** Fast-growing startups (lots of hires, weak
   process) vs. mid-size vs. enterprise (more security/compliance friction).
 

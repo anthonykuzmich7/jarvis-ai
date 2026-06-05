@@ -6,14 +6,20 @@
 ## Who we sell to
 
 IT companies — teams that hire engineers and feel the onboarding + access pain
-most acutely. The buyer is likely someone who owns that cost:
+most acutely. Our current view of the buyers, in priority order:
 
-- **IT / DevOps / Platform leads** — they carry the manual access work today.
-- **Engineering managers / Heads of Eng** — they feel slow time-to-productivity.
-- **People / HR Ops** — they own the onboarding experience.
+1. **People / HR leadership (primary)** — CPO, HR partners, partners. They own
+   the onboarding experience and feel the cost of a slow, painful start most
+   directly.
+2. **Engineering managers / Heads of Eng** — they feel slow time-to-productivity
+   for new hires.
+3. **IT / DevOps managers** — they handle access provisioning today and carry
+   that manual toil.
+4. **Senior management (CEO / founders)** — economic buyers who care about the
+   overall cost of slow onboarding.
 
-(Which of these actually buys is an open question we want the landing page to
-help answer.)
+Lead the message with the People/HR angle, then reinforce with the eng and IT
+pains. We'll use the landing page to confirm which persona actually converts.
 
 ## The value proposition
 
