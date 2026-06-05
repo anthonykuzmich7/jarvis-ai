@@ -19,22 +19,55 @@ interface NavBarProps {
 
 export function NavBar({ items, className }: NavBarProps) {
   const [activeTab, setActiveTab] = useState(items[0].name);
-  const [isMobile, setIsMobile] = useState(false);
 
+  // Scroll-spy: light up (and spring the tubelight to) the section in view.
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const sectionItems = items.filter(
+      (item) => item.url.startsWith("#") && item.url.length > 1,
+    );
+    const homeItem = items.find((item) => item.url === "#");
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    const elements = sectionItems
+      .map((item) => {
+        const el = document.getElementById(item.url.slice(1));
+        return el ? { item, el } : null;
+      })
+      .filter(
+        (entry): entry is { item: NavItem; el: HTMLElement } => entry !== null,
+      );
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const match = elements.find((e) => e.el === entry.target);
+            if (match) setActiveTab(match.item.name);
+          }
+        }
+      },
+      // A thin band near the top of the viewport decides the active section.
+      { rootMargin: "-40% 0px -55% 0px", threshold: 0 },
+    );
+
+    elements.forEach(({ el }) => observer.observe(el));
+
+    // Near the very top, fall back to the first (Home) tab.
+    const handleScroll = () => {
+      if (window.scrollY < 240 && homeItem) setActiveTab(homeItem.name);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [items]);
 
   return (
     <div
       className={cn(
-        "fixed bottom-0 sm:top-0 left-1/2 -translate-x-1/2 z-50 mb-6 sm:pt-6",
+        "fixed bottom-0 sm:bottom-auto sm:top-0 left-1/2 -translate-x-1/2 z-50 mb-6 sm:pt-6",
         className,
       )}
     >

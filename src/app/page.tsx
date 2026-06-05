@@ -1,6 +1,7 @@
 import { JarvisHero } from "@/components/jarvis-hero";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { SiteNav } from "@/components/site-nav";
+import DisplayCards from "@/components/ui/display-cards";
 import {
   KeyIcon,
   CompassIcon,
@@ -92,7 +93,7 @@ function ProblemSection() {
   ];
 
   return (
-    <section id="problem" className="border-t border-border bg-muted">
+    <section id="problem" className="scroll-mt-24 border-t border-border bg-muted">
       <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
         <SectionHeading
           eyebrow="The problem"
@@ -172,49 +173,39 @@ function MeetJarvis() {
 }
 
 function FeaturesSection() {
-  const features = [
+  const featureCards = [
     {
-      icon: KeyIcon,
-      title: "Access without the wait",
-      body: "When someone joins, Jarvis provisions the access they need — no IT specialist in the loop — and answers how merge requests, deploys, and ownership work here.",
+      icon: <KeyIcon className="size-4 text-background" />,
+      title: "Access",
+      description: "Granted on day one",
+      date: "No IT specialist",
     },
     {
-      icon: CompassIcon,
-      title: "Knows how your company works",
-      body: "Connected to your knowledge sources like Confluence, he understands the product, who owns what, and who to ask when you're stuck.",
+      icon: <CompassIcon className="size-4 text-background" />,
+      title: "Context",
+      description: "Knows how the company runs",
+      date: "Confluence + your stack",
     },
     {
-      icon: BrainIcon,
-      title: "Carries your work context",
-      body: "Your Slack threads, meetings, and contacts come with you. Start a feature and your AI tools already know the context — no hunting and pasting.",
+      icon: <BrainIcon className="size-4 text-background" />,
+      title: "Memory",
+      description: "Carries your work context",
+      date: "Slack · meetings · MCP",
     },
   ];
 
   return (
-    <section id="features" className="border-t border-border bg-muted">
+    <section id="features" className="scroll-mt-24 border-t border-border bg-muted">
       <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
         <SectionHeading
           eyebrow="What it does"
           title="One teammate, three jobs"
           description="Jarvis gets people in the door, then keeps helping them do the work."
         />
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {features.map((f) => (
-            <div
-              key={f.title}
-              className="rounded-2xl border border-border bg-card p-7"
-            >
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                <f.icon className="h-6 w-6" />
-              </span>
-              <h3 className="mt-5 text-xl font-semibold text-foreground">
-                {f.title}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                {f.body}
-              </p>
-            </div>
-          ))}
+        <div className="mt-16 flex min-h-[440px] items-center justify-center overflow-hidden lg:mt-24 lg:min-h-[520px]">
+          <div className="origin-center scale-50 sm:scale-75 lg:scale-110">
+            <DisplayCards cards={featureCards} />
+          </div>
         </div>
       </div>
     </section>
@@ -243,7 +234,7 @@ function TeamSection() {
   ];
 
   return (
-    <section id="team" className="border-t border-border">
+    <section id="team" className="scroll-mt-24 border-t border-border">
       <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
         <SectionHeading
           eyebrow="For your team"
@@ -317,7 +308,7 @@ function OutcomesSection() {
 
 function WaitlistSection() {
   return (
-    <section id="waitlist" className="border-t border-border">
+    <section id="waitlist" className="scroll-mt-24 border-t border-border">
       <div className="mx-auto max-w-4xl px-6 py-20 sm:py-28">
         <div className="rounded-3xl bg-primary px-6 py-14 text-center sm:px-12">
           <h2 className="text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl text-balance">
@@ -357,7 +348,7 @@ function FaqSection() {
   ];
 
   return (
-    <section id="faq" className="border-t border-border bg-muted">
+    <section id="faq" className="scroll-mt-24 border-t border-border bg-muted">
       <div className="mx-auto max-w-3xl px-6 py-20 sm:py-28">
         <SectionHeading eyebrow="FAQ" title="The questions you're already asking" />
         <div className="mt-12 divide-y divide-border">
