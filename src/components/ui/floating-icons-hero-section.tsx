@@ -97,7 +97,7 @@ const Icon = ({
     >
       {/* Inner wrapper for the continuous floating animation. */}
       <motion.div
-        className="flex items-center justify-center w-14 h-14 md:w-20 md:h-20 p-3 rounded-2xl shadow-sm bg-card/80 backdrop-blur-md border border-border grayscale"
+        className="flex items-center justify-center w-14 h-14 md:w-20 md:h-20 p-3 rounded-2xl shadow-sm bg-card/80 backdrop-blur-md border border-border"
         animate={
           prefersReduced
             ? undefined
