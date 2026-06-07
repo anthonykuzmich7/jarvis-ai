@@ -80,5 +80,6 @@ body {
 
 .wordmark {
   font-family: var(--font-jetbrains), monospace;
+  font-weight: 400;
   letter-spacing: -0.01em;
 }

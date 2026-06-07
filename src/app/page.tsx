@@ -20,11 +20,11 @@ import {
 function Wordmark({ className }: { className?: string }) {
   return (
     <a
-      href="#"
+      href="/"
       aria-label="jarvis"
       className={"wordmark text-base font-normal text-foreground " + (className ?? "")}
     >
-      jarvis<span className="cursor-blink" aria-hidden>_</span>
+      jarvis<span className="cursor-blink select-none" aria-hidden>_</span>
     </a>
   );
 }
@@ -369,7 +369,7 @@ function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-10 sm:flex-row">
         <div className="flex items-center gap-3 text-foreground">
           <span className="wordmark text-sm font-normal">
-            jarvis<span className="cursor-blink" aria-hidden>_</span>
+            jarvis<span className="cursor-blink select-none" aria-hidden>_</span>
           </span>
           <span className="text-xs text-muted-foreground">working title</span>
         </div>
