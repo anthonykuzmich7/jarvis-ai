@@ -16,33 +16,19 @@ import {
   CheckIcon,
 } from "@/components/icons";
 
-function Logo({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
-      <rect width="24" height="24" rx="7" fill="currentColor" />
-      <path
-        d="M12 6v7.5a2.5 2.5 0 1 1-2.5-2.5"
-        stroke="white"
-        strokeWidth="1.9"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="15.5" cy="8" r="1.3" fill="white" />
-    </svg>
-  );
-}
 
 function Wordmark({ className }: { className?: string }) {
   return (
     <a
       href="#"
-      className={
-        "flex items-center gap-2 text-lg font-extrabold tracking-tight text-foreground " +
-        (className ?? "")
-      }
+      aria-label="jarvis"
+      style={{
+        fontFamily: "var(--font-jetbrains), monospace",
+        letterSpacing: "-0.01em",
+      }}
+      className={"text-base font-normal text-foreground " + (className ?? "")}
     >
-      <Logo className="h-7 w-7 text-foreground" />
-      Jarvis<span className="text-muted-foreground">AI</span>
+      jarvis<span className="cursor-blink" aria-hidden>_</span>
     </a>
   );
 }
@@ -385,12 +371,17 @@ function SiteFooter() {
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-10 sm:flex-row">
-        <div className="flex items-center gap-2 font-extrabold tracking-tight text-foreground">
-          <Logo className="h-6 w-6 text-foreground" />
-          Jarvis<span className="text-muted-foreground">AI</span>
-          <span className="ml-2 text-xs font-normal text-muted-foreground">
-            working title
+        <div className="flex items-center gap-3 text-foreground">
+          <span
+            style={{
+              fontFamily: "var(--font-jetbrains), monospace",
+              letterSpacing: "-0.01em",
+            }}
+            className="text-sm font-normal"
+          >
+            jarvis<span className="cursor-blink" aria-hidden>_</span>
           </span>
+          <span className="text-xs text-muted-foreground">working title</span>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <ShieldIcon className="h-4 w-4" />
