@@ -77,3 +77,8 @@ body {
 .cursor-blink {
   animation: blink 1.1s step-end infinite;
 }
+
+.wordmark {
+  font-family: var(--font-jetbrains), monospace;
+  letter-spacing: -0.01em;
+}

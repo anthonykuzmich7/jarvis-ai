@@ -22,11 +22,7 @@ function Wordmark({ className }: { className?: string }) {
     <a
       href="#"
       aria-label="jarvis"
-      style={{
-        fontFamily: "var(--font-jetbrains), monospace",
-        letterSpacing: "-0.01em",
-      }}
-      className={"text-base font-normal text-foreground " + (className ?? "")}
+      className={"wordmark text-base font-normal text-foreground " + (className ?? "")}
     >
       jarvis<span className="cursor-blink" aria-hidden>_</span>
     </a>
@@ -372,13 +368,7 @@ function SiteFooter() {
     <footer className="border-t border-border bg-background">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-10 sm:flex-row">
         <div className="flex items-center gap-3 text-foreground">
-          <span
-            style={{
-              fontFamily: "var(--font-jetbrains), monospace",
-              letterSpacing: "-0.01em",
-            }}
-            className="text-sm font-normal"
-          >
+          <span className="wordmark text-sm font-normal">
             jarvis<span className="cursor-blink" aria-hidden>_</span>
           </span>
           <span className="text-xs text-muted-foreground">working title</span>
