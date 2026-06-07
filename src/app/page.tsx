@@ -8,33 +8,15 @@ import { WaitlistForm } from "@/components/waitlist-form";
 import { SiteNav } from "@/components/site-nav";
 import { ShieldIcon } from "@/components/icons";
 
-function Logo({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
-      <rect width="24" height="24" rx="7" fill="currentColor" />
-      <path
-        d="M12 6v7.5a2.5 2.5 0 1 1-2.5-2.5"
-        stroke="white"
-        strokeWidth="1.9"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="15.5" cy="8" r="1.3" fill="white" />
-    </svg>
-  );
-}
 
 function Wordmark({ className }: { className?: string }) {
   return (
     <a
-      href="#"
-      className={
-        "flex items-center gap-2 text-lg font-extrabold tracking-tight text-foreground " +
-        (className ?? "")
-      }
+      href="/"
+      aria-label="jarvis"
+      className={"wordmark text-2xl text-foreground " + (className ?? "")}
     >
-      <Logo className="h-7 w-7 text-foreground" />
-      Jarvis<span className="text-muted-foreground">AI</span>
+      jarvis<span className="cursor-blink select-none" aria-hidden>_</span>
     </a>
   );
 }
@@ -144,12 +126,11 @@ function SiteFooter() {
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-10 sm:flex-row">
-        <div className="flex items-center gap-2 font-extrabold tracking-tight text-foreground">
-          <Logo className="h-6 w-6 text-foreground" />
-          Jarvis<span className="text-muted-foreground">AI</span>
-          <span className="ml-2 text-xs font-normal text-muted-foreground">
-            working title
+        <div className="flex items-center gap-3 text-foreground">
+          <span className="wordmark text-sm">
+            jarvis<span className="cursor-blink select-none" aria-hidden>_</span>
           </span>
+          <span className="text-xs text-muted-foreground">working title</span>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <ShieldIcon className="h-4 w-4" />
@@ -164,7 +145,7 @@ export default function Home() {
   return (
     <>
       {/* Fixed brand mark (top-left); tubelight nav floats top-center / bottom on mobile. */}
-      <div className="fixed left-5 top-5 z-50 sm:left-7 sm:top-7">
+      <div className="fixed left-8 top-6 z-50 sm:left-10 sm:top-8">
         <Wordmark />
       </div>
       <SiteNav />
