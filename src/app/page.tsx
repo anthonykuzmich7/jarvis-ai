@@ -3,9 +3,10 @@ import { ProblemTimeline } from "@/components/problem-timeline";
 import { MeetJarvis } from "@/components/meet-jarvis";
 import { FeatureShowcase } from "@/components/feature-showcase";
 import { TeamSpotlight } from "@/components/team-spotlight";
+import { OutcomesSwitch } from "@/components/outcomes-switch";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { SiteNav } from "@/components/site-nav";
-import { ShieldIcon, CheckIcon } from "@/components/icons";
+import { ShieldIcon } from "@/components/icons";
 
 function Logo({ className }: { className?: string }) {
   return (
@@ -61,47 +62,6 @@ function SectionHeading({
         </p>
       ) : null}
     </div>
-  );
-}
-
-function OutcomesSection() {
-  const outcomes = [
-    {
-      title: "Day one, not week two",
-      body: "Access and answers arrive immediately, so new hires start contributing right away.",
-    },
-    {
-      title: "IT gets its time back",
-      body: "No more manual access grants or repeating the same onboarding walkthroughs.",
-    },
-    {
-      title: "Knowledge that stays",
-      body: "Company process lives in Jarvis, not only in the heads of your senior people.",
-    },
-  ];
-
-  return (
-    <section className="border-t border-border bg-muted">
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
-        <SectionHeading eyebrow="What changes" title="The outcome we're after" />
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {outcomes.map((o) => (
-            <div
-              key={o.title}
-              className="rounded-2xl border border-border bg-card p-7"
-            >
-              <CheckIcon className="h-6 w-6 text-foreground" />
-              <h3 className="mt-4 text-lg font-semibold text-foreground">
-                {o.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {o.body}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -215,7 +175,7 @@ export default function Home() {
         <MeetJarvis />
         <FeatureShowcase />
         <TeamSpotlight />
-        <OutcomesSection />
+        <OutcomesSwitch />
         <WaitlistSection />
         <FaqSection />
       </main>
