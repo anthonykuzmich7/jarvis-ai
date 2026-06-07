@@ -1,5 +1,6 @@
 import { JarvisHero } from "@/components/jarvis-hero";
 import { ProblemTimeline } from "@/components/problem-timeline";
+import { MeetJarvis } from "@/components/meet-jarvis";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { SiteNav } from "@/components/site-nav";
 import DisplayCards from "@/components/ui/display-cards";
@@ -7,8 +8,6 @@ import {
   KeyIcon,
   CompassIcon,
   BrainIcon,
-  SlackIcon,
-  PlugIcon,
   UsersIcon,
   ShieldIcon,
   CheckIcon,
@@ -68,55 +67,6 @@ function SectionHeading({
         </p>
       ) : null}
     </div>
-  );
-}
-
-function MeetJarvis() {
-  const surfaces = [
-    { icon: SlackIcon, label: "As a Slack user", body: "DM him like any teammate." },
-    { icon: UsersIcon, label: "As a real account", body: "A member of your systems." },
-    { icon: PlugIcon, label: "Over MCP", body: "Inside tools like Claude Code." },
-  ];
-
-  return (
-    <section className="border-t border-border">
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          <div>
-            <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Meet Jarvis
-            </span>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl text-balance">
-              A teammate, not another chatbot
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground text-pretty">
-              Think of the helpful senior who answers your questions for the
-              first month — except Jarvis is available instantly, never forgets a
-              process, and can actually grant the access instead of pointing you
-              to someone who can.
-            </p>
-            <p className="mt-4 text-muted-foreground">
-              You plug his body into your company once. He shows up wherever your
-              people already work.
-            </p>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {surfaces.map((s) => (
-              <div
-                key={s.label}
-                className="rounded-2xl border border-border bg-card p-5"
-              >
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground/5 text-foreground">
-                  <s.icon className="h-5 w-5" />
-                </span>
-                <p className="mt-4 font-semibold text-foreground">{s.label}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{s.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
 
