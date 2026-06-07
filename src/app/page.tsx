@@ -1,17 +1,10 @@
 import { JarvisHero } from "@/components/jarvis-hero";
 import { ProblemTimeline } from "@/components/problem-timeline";
 import { MeetJarvis } from "@/components/meet-jarvis";
+import { FeatureShowcase } from "@/components/feature-showcase";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { SiteNav } from "@/components/site-nav";
-import DisplayCards from "@/components/ui/display-cards";
-import {
-  KeyIcon,
-  CompassIcon,
-  BrainIcon,
-  UsersIcon,
-  ShieldIcon,
-  CheckIcon,
-} from "@/components/icons";
+import { UsersIcon, ShieldIcon, CheckIcon } from "@/components/icons";
 
 function Logo({ className }: { className?: string }) {
   return (
@@ -67,46 +60,6 @@ function SectionHeading({
         </p>
       ) : null}
     </div>
-  );
-}
-
-function FeaturesSection() {
-  const featureCards = [
-    {
-      icon: <KeyIcon className="size-4 text-background" />,
-      title: "Access",
-      description: "Granted on day one",
-      date: "No IT specialist",
-    },
-    {
-      icon: <CompassIcon className="size-4 text-background" />,
-      title: "Context",
-      description: "Knows how the company runs",
-      date: "Confluence + your stack",
-    },
-    {
-      icon: <BrainIcon className="size-4 text-background" />,
-      title: "Memory",
-      description: "Carries your work context",
-      date: "Slack · meetings · MCP",
-    },
-  ];
-
-  return (
-    <section id="features" className="scroll-mt-24 border-t border-border bg-muted">
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
-        <SectionHeading
-          eyebrow="What it does"
-          title="One teammate, three jobs"
-          description="Jarvis gets people in the door, then keeps helping them do the work."
-        />
-        <div className="mt-16 flex min-h-[440px] items-center justify-center overflow-hidden lg:mt-24 lg:min-h-[520px]">
-          <div className="origin-center scale-50 sm:scale-75 lg:scale-110">
-            <DisplayCards cards={featureCards} />
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -312,7 +265,7 @@ export default function Home() {
         <JarvisHero />
         <ProblemTimeline />
         <MeetJarvis />
-        <FeaturesSection />
+        <FeatureShowcase />
         <TeamSection />
         <OutcomesSection />
         <WaitlistSection />
