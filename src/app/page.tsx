@@ -22,7 +22,7 @@ function Wordmark({ className }: { className?: string }) {
     <a
       href="/"
       aria-label="jarvis"
-      className={"wordmark text-xl text-foreground " + (className ?? "")}
+      className={"wordmark text-2xl text-foreground " + (className ?? "")}
     >
       jarvis<span className="cursor-blink select-none" aria-hidden>_</span>
     </a>
@@ -386,7 +386,7 @@ export default function Home() {
   return (
     <>
       {/* Fixed brand mark (top-left); tubelight nav floats top-center / bottom on mobile. */}
-      <div className="fixed left-5 top-5 z-50 sm:left-7 sm:top-7">
+      <div className="fixed left-8 top-6 z-50 sm:left-10 sm:top-8">
         <Wordmark />
       </div>
       <SiteNav />
