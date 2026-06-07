@@ -1,4 +1,5 @@
 import { JarvisHero } from "@/components/jarvis-hero";
+import { ProblemTimeline } from "@/components/problem-timeline";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { SiteNav } from "@/components/site-nav";
 import DisplayCards from "@/components/ui/display-cards";
@@ -6,9 +7,6 @@ import {
   KeyIcon,
   CompassIcon,
   BrainIcon,
-  ClockIcon,
-  HelpIcon,
-  WrenchIcon,
   SlackIcon,
   PlugIcon,
   UsersIcon,
@@ -70,56 +68,6 @@ function SectionHeading({
         </p>
       ) : null}
     </div>
-  );
-}
-
-function ProblemSection() {
-  const pains = [
-    {
-      icon: ClockIcon,
-      title: "Two weeks to get unblocked",
-      body: "New hires wait days for access to the tools they were hired to use. The first sprint is half-spent just getting in.",
-    },
-    {
-      icon: HelpIcon,
-      title: "Nobody knows who to ask",
-      body: "Is it DevOps? A team lead? The platform team? The process lives in people's heads and stale docs, so everyone guesses.",
-    },
-    {
-      icon: WrenchIcon,
-      title: "IT drowns in the same requests",
-      body: "Specialists spend real hours granting access and re-explaining how merge requests, deploys, and ownership work.",
-    },
-  ];
-
-  return (
-    <section id="problem" className="scroll-mt-24 border-t border-border bg-muted">
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
-        <SectionHeading
-          eyebrow="The problem"
-          title="Joining a company is slow, and it costs everyone"
-          description="Access and onboarding knowledge are scattered across Slack, wikis, and senior engineers' memory. New hires rebuild it slowly — and expensively."
-        />
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {pains.map((p) => (
-            <div
-              key={p.title}
-              className="rounded-2xl border border-border bg-card p-6"
-            >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-foreground/5 text-foreground">
-                <p.icon className="h-6 w-6" />
-              </span>
-              <h3 className="mt-5 text-lg font-semibold text-foreground">
-                {p.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {p.body}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -412,7 +360,7 @@ export default function Home() {
 
       <main className="flex-1">
         <JarvisHero />
-        <ProblemSection />
+        <ProblemTimeline />
         <MeetJarvis />
         <FeaturesSection />
         <TeamSection />
