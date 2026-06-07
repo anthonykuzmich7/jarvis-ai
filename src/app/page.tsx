@@ -2,9 +2,10 @@ import { JarvisHero } from "@/components/jarvis-hero";
 import { ProblemTimeline } from "@/components/problem-timeline";
 import { MeetJarvis } from "@/components/meet-jarvis";
 import { FeatureShowcase } from "@/components/feature-showcase";
+import { TeamSpotlight } from "@/components/team-spotlight";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { SiteNav } from "@/components/site-nav";
-import { UsersIcon, ShieldIcon, CheckIcon } from "@/components/icons";
+import { ShieldIcon, CheckIcon } from "@/components/icons";
 
 function Logo({ className }: { className?: string }) {
   return (
@@ -60,59 +61,6 @@ function SectionHeading({
         </p>
       ) : null}
     </div>
-  );
-}
-
-function TeamSection() {
-  const roles = [
-    {
-      label: "People & HR",
-      primary: true,
-      body: "Give every new hire a smooth first day instead of a two-week scramble.",
-    },
-    {
-      label: "Engineering managers",
-      body: "Cut time-to-first-commit. New engineers ship instead of waiting.",
-    },
-    {
-      label: "IT & DevOps",
-      body: "Stop hand-granting access and re-answering the same onboarding questions.",
-    },
-    {
-      label: "Leadership",
-      body: "Recover weeks of lost productivity across every hire you make.",
-    },
-  ];
-
-  return (
-    <section id="team" className="scroll-mt-24 border-t border-border">
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
-        <SectionHeading
-          eyebrow="For your team"
-          title="Built for everyone onboarding touches"
-          description="Different people feel the pain differently. Jarvis answers to all of them."
-        />
-        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {roles.map((r) => (
-            <div
-              key={r.label}
-              className="relative flex flex-col rounded-2xl border border-border bg-card p-6"
-            >
-              {r.primary ? (
-                <span className="absolute right-4 top-4 rounded-full bg-foreground/5 px-2.5 py-1 text-xs font-semibold text-foreground">
-                  Primary
-                </span>
-              ) : null}
-              <UsersIcon className="h-6 w-6 text-foreground" />
-              <h3 className="mt-4 font-semibold text-foreground">{r.label}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {r.body}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -266,7 +214,7 @@ export default function Home() {
         <ProblemTimeline />
         <MeetJarvis />
         <FeatureShowcase />
-        <TeamSection />
+        <TeamSpotlight />
         <OutcomesSection />
         <WaitlistSection />
         <FaqSection />
