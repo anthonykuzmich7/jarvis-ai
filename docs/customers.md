@@ -3,52 +3,99 @@
 > This file holds our current thinking. Several points are assumptions to test
 > with the landing page — see [open-questions.md](./open-questions.md).
 
-## Who we sell to
+## Who feels this pain most
 
-IT companies — teams that hire engineers and feel the onboarding + access pain
-most acutely. Our current view of the buyers, in priority order:
+Companies that are **growing fast and are mature by headcount** — roughly
+**100+ people** — with lots of open positions and a real, visible growth curve
+(for example, ~2x team growth over the past year and still hiring hard). The label
+"startup vs. not" is the wrong cut; OpenAI is also called a startup. What matters
+is **growth and people-maturity**: a steady stream of new hires and the budget to
+solve their onboarding.
 
-1. **People / HR leadership (primary)** — CPO, HR partners, partners. They own
-   the onboarding experience and feel the cost of a slow, painful start most
-   directly.
-2. **Engineering managers / Heads of Eng** — they feel slow time-to-productivity
-   for new hires.
-3. **IT / DevOps managers** — they handle access provisioning today and carry
-   that manual toil.
-4. **Senior management (CEO / founders)** — economic buyers who care about the
-   overall cost of slow onboarding.
+They also tend to be **early adopters** — teams already integrating AI tools, who
+expect interactive context, not another PDF. The pain is sharpest where roles are
+specialized and distinct (developers, designers, marketers, analysts), the team is
+growing too fast for senior people to personally onboard everyone, and knowledge
+is scattered across Confluence, Notion, Slack, Drive, and Jira.
 
-Lead the message with the People/HR angle, then reinforce with the eng and IT
-pains. We'll use the landing page to confirm which persona actually converts.
+We deliberately do *not* aim at tiny teams — they onboard informally and have no
+budget. We aim at companies large and active enough that slow onboarding is a
+measurable cost.
 
-## The value proposition
+## Buyers, in priority order
 
-For the company:
+We sell to **C-level leaders who own how fast a team becomes productive.** The
+buying motion differs by company, so we target the group rather than one title:
 
-- **Faster time-to-productivity.** New hires get unblocked in a day or two
-  instead of one to two weeks.
-- **Less IT toil.** Stop manually granting access and re-answering the same
-  onboarding questions.
-- **Knowledge that doesn't walk out the door.** Company process and context live
-  in Jarvis, not only in senior people's heads.
+1. **COO / Head of Operations (primary).** Often part of recruiting, with finance
+   and HR reporting into them. They make the call on new tools and budget, and
+   they care directly about the number of new hires and how fast those hires
+   become productive. They live in OKR/KPI systems and employee effectiveness.
+2. **CTO / Head of Engineering.** Feels slow engineer time-to-productivity
+   directly — environment setup, deploy context, "who owns this," repeated for
+   every hire. The hands-on dev onboarding plus sticky context takes that off the
+   team's plate.
+3. **CRO / revenue leadership.** Cares that new sales and marketing hires ramp
+   fast and start contributing to the number sooner.
 
-For the new hire:
+The common thread: leaders who are measured on team velocity and efficiency —
+which is exactly the language Jarvis sells in. People/HR leadership is a relevant
+champion and influencer, but we lead with the operational, performance-framed
+pitch to the C-level economic buyer.
 
-- One place to ask "how do I…" and "who owns…" and actually get the access, not
-  just a pointer to another person.
+## What we're selling
+
+Not a knowledge base. Not a chatbot. Not another HR onboarding tool.
+
+We're selling **a chief of staff for every employee**:
+
+> Imagine every engineer, every marketer — even every junior — in your company
+> has their own chief of staff that gathers their context and acts on their
+> behalf, from day one.
+
+And the operational version for the buyer: **onboard your best people so their
+time-to-performance shrinks, and grow more top performers inside your team.**
 
 ## Why a company would pay
 
-The pain is measurable, which makes it sellable. We can frame ROI around:
+The value is measurable, which makes it sellable:
 
-- weeks of new-hire productivity recovered,
-- IT/DevOps hours saved per hire,
-- fewer interruptions to senior engineers.
+- **Faster time-to-productivity** for each new hire (days, not two weeks).
+- **Senior and stakeholder time recovered** from repetitive onboarding and access
+  toil.
+- **Sticky daily usage** after onboarding — the agent keeps driving the employee's
+  work, so the spend isn't a one-week event.
 
-## How Jarvis is different from what exists
+## How we're different
 
-- Not just a **help-center bot**: he can actually *grant* access, not only answer.
-- Not just an **internal wiki / search**: he carries live company context and
-  your personal work context.
-- Not just **another SaaS dashboard**: he shows up where people already are —
-  Slack, a real user account, or via MCP inside tools like Claude Code.
+- **Not one-and-done.** Our key difference from other onboarding agents is
+  **stickiness** — the context built *during* onboarding keeps the agent in daily
+  use long after. Onboarding is the entry; context is the retention.
+- **It acts.** Agentic by design — opens the chat, drafts the intro, finds the
+  slot, books the call — rather than only answering.
+- **It does the part a doc can't.** A guide on your screen during setup that points
+  at the real thing to click, not a checklist you read alone.
+- **Layered and isolated context.** Company / team / personal, with sensitive
+  context kept separated between teams.
+- **A personal layer that plugs into your AI tools.** The employee's accumulated
+  context can feed their own tools (e.g. Claude Code over MCP).
+- **It replaces the static doc.** Fresh, per-person, per-direction context instead
+  of a company onboarding document nobody keeps current.
+- **It's honest.** When it doesn't know, it routes you to the human who probably
+  does, with the reason — it doesn't bluff.
+
+## The comparison set
+
+- **Onboarding agents (direct competitors).** Closest to us. The gap we exploit:
+  they're built around the one-time onboarding moment; we use onboarding as the
+  wedge and win on sticky, context-driven daily usage.
+- **"General shared context" startups** (several chasing this, including within a
+  single YC batch). We avoid competing head-on by entering through onboarding and
+  a specific buyer rather than pitching generic company-wide context.
+- **Knowledge bases / wikis (Confluence, Notion).** Static, you have to go find
+  them, they go stale, no actions, no personalization.
+- **HR onboarding tools (Workday, BambooHR flows).** Paperwork and checklists, not
+  a hands-on guide through the actual work environment.
+- **Generic AI chatbots.** No company context, no isolation, can't act.
+- **A human buddy** — the thing that actually works, which is exactly what doesn't
+  scale. We're the scalable version of the approach everyone agrees is best.
