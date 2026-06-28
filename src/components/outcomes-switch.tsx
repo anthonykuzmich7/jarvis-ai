@@ -57,7 +57,7 @@ function Switch({
     <div
       role="tablist"
       aria-label="Compare today with Jarvis"
-      className="inline-flex rounded-full border border-border bg-card p-1"
+      className="inline-flex rounded-full border border-stone/20 bg-card p-1"
     >
       {options.map((o) => {
         const isOn = mode === o.id;
@@ -68,13 +68,13 @@ function Switch({
             aria-selected={isOn}
             type="button"
             onClick={() => onChange(o.id)}
-            className="relative rounded-full px-5 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="relative rounded-full px-5 py-2 text-sm font-medium tracking-[-0.14px] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             {isOn ? (
               <motion.span
                 layoutId="outcome-switch-thumb"
                 aria-hidden
-                className="absolute inset-0 rounded-full bg-foreground"
+                className="absolute inset-0 rounded-full bg-pressed-charcoal"
                 transition={
                   reduce
                     ? { duration: 0 }
@@ -85,7 +85,7 @@ function Switch({
             <span
               className={
                 "relative z-10 transition-colors " +
-                (isOn ? "text-background" : "text-muted-foreground hover:text-foreground")
+                (isOn ? "text-white" : "text-muted-foreground hover:text-foreground")
               }
             >
               {o.label}
@@ -122,13 +122,10 @@ export function OutcomesSwitch() {
   };
 
   return (
-    <section className="border-t border-border bg-muted">
+    <section className="bg-cloud-veil">
       <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
         <div className="flex flex-col items-center text-center">
-          <span className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            What changes
-          </span>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl text-balance">
+          <h2 className="font-display text-3xl font-medium leading-[1.2] tracking-[-0.64px] text-foreground sm:text-4xl text-balance">
             The outcome we&apos;re after
           </h2>
           <div className="mt-8">
@@ -143,7 +140,7 @@ export function OutcomesSwitch() {
             return (
               <div
                 key={row.dimension}
-                className="flex items-center gap-5 border-t border-border py-7 last:border-b"
+                className="flex items-center gap-5 border-t border-stone/15 py-7 last:border-b"
               >
                 {/* Status badge: waiting clock -> filled check. */}
                 <div className="relative h-9 w-9 shrink-0">
@@ -151,7 +148,7 @@ export function OutcomesSwitch() {
                     {isJarvis ? (
                       <motion.span
                         key="check"
-                        className="absolute inset-0 flex items-center justify-center rounded-full bg-foreground text-background"
+                        className="absolute inset-0 flex items-center justify-center rounded-full bg-pressed-charcoal text-white"
                         initial={reduce ? false : { opacity: 0, scale: 0.5 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={reduce ? undefined : { opacity: 0, scale: 0.5 }}
@@ -162,7 +159,7 @@ export function OutcomesSwitch() {
                     ) : (
                       <motion.span
                         key="clock"
-                        className="absolute inset-0 flex items-center justify-center rounded-full border border-border bg-card text-muted-foreground"
+                        className="absolute inset-0 flex items-center justify-center rounded-full border border-stone/20 bg-card text-muted-foreground"
                         initial={reduce ? false : { opacity: 0, scale: 0.5 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={reduce ? undefined : { opacity: 0, scale: 0.5 }}
@@ -175,7 +172,7 @@ export function OutcomesSwitch() {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <p className="text-[11px] font-medium tracking-[-0.1px] text-fog">
                     {row.dimension}
                   </p>
                   <div className="mt-1.5 overflow-hidden">

@@ -263,7 +263,7 @@ export function ProblemTimeline() {
   return (
     <section
       id="problem"
-      className="relative scroll-mt-24 overflow-hidden border-t border-white/10 bg-[#0a0a0b] text-white"
+      className="relative scroll-mt-24 overflow-hidden bg-midnight-ink text-white"
     >
       {/* Faint blueprint grid for atmosphere; fades toward the bottom. */}
       <div
@@ -274,10 +274,7 @@ export function ProblemTimeline() {
         <div className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-20">
           {/* Left: the framing + the big animated clock. */}
           <div ref={ref} className="lg:sticky lg:top-28 lg:self-start">
-            <span className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
-              The problem
-            </span>
-            <h2 className="mt-5 text-3xl font-bold leading-[1.1] tracking-tight text-balance sm:text-[2.75rem]">
+            <h2 className="font-display text-3xl font-medium leading-[1.1] tracking-tight text-balance sm:text-[2.75rem]">
               A new hire&apos;s first two weeks,
               <br className="hidden sm:block" /> spent mostly waiting.
             </h2>

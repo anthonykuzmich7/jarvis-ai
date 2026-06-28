@@ -162,14 +162,14 @@ function ConnectedBody() {
 
       {/* Core. */}
       <motion.div
-        className="absolute left-1/2 flex h-[80px] w-[80px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[24px] bg-foreground text-background shadow-[0_24px_60px_-22px_rgba(0,0,0,0.55)] sm:h-[92px] sm:w-[92px] sm:rounded-[26px]"
+        className="absolute left-1/2 flex h-[80px] w-[80px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[24px] bg-pressed-charcoal text-white shadow-[rgba(4,69,144,0.12)_0px_24px_40px_4px] sm:h-[92px] sm:w-[92px] sm:rounded-[26px]"
         style={{ top: `${(CORE.y / 400) * 100}%` }}
         initial={reduce ? false : { scale: 0.55, opacity: 0 }}
         animate={on ? { scale: 1, opacity: 1 } : undefined}
         transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
       >
         <JMark className="h-11 w-11 sm:h-12 sm:w-12" />
-        <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground sm:text-[11px]">
+        <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-medium tracking-[-0.1px] text-fog sm:text-[11px]">
           Jarvis
         </span>
       </motion.div>
@@ -187,7 +187,7 @@ function ConnectedBody() {
           <motion.div
             whileHover={reduce ? undefined : { y: -3 }}
             transition={{ duration: 0.3, ease: EASE }}
-            className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-card/90 px-3 py-3.5 text-center shadow-sm backdrop-blur-sm sm:gap-2 sm:px-4 sm:py-4"
+            className="flex flex-col items-center gap-1.5 rounded-[32px] border border-stone/20 bg-paper-white/90 px-3 py-3.5 text-center shadow-[rgba(4,69,144,0.08)_0px_14px_20px_4px] backdrop-blur-sm sm:gap-2 sm:px-4 sm:py-4"
           >
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-foreground/5 text-foreground sm:h-10 sm:w-10">
               <n.icon className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
@@ -207,16 +207,13 @@ function ConnectedBody() {
 
 export function MeetJarvis() {
   return (
-    <section className="relative overflow-hidden border-t border-border">
+    <section className="relative overflow-hidden bg-card">
       <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Meet Jarvis
-          </span>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl text-balance">
+          <h2 className="font-display text-3xl font-medium leading-[1.2] tracking-[-0.64px] text-foreground sm:text-4xl text-balance">
             A teammate, not another chatbot
           </h2>
-          <p className="mt-5 text-lg text-muted-foreground text-pretty">
+          <p className="mt-5 text-lg leading-[1.4] tracking-[-0.18px] text-muted-foreground text-pretty">
             Plug his body into your company once. The same Jarvis then shows up
             wherever your people already work, available instantly and already
             holding the context.
