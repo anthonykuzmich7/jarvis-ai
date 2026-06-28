@@ -57,16 +57,13 @@ export function TeamSpotlight() {
   const p = personas[active];
 
   return (
-    <section id="team" className="scroll-mt-24 border-t border-border">
+    <section id="team" className="scroll-mt-24 bg-background">
       <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            For your team
-          </span>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl text-balance">
+          <h2 className="font-display text-3xl font-medium leading-[1.2] tracking-[-0.64px] text-foreground sm:text-4xl text-balance">
             Built for everyone onboarding touches
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground text-pretty">
+          <p className="mt-5 text-lg leading-[1.4] tracking-[-0.18px] text-muted-foreground text-pretty">
             Different people feel the pain differently. Jarvis answers to all of
             them.
           </p>
@@ -84,13 +81,13 @@ export function TeamSpotlight() {
                 onFocus={() => setActive(i)}
                 onClick={() => setActive(i)}
                 aria-pressed={isActive}
-                className="relative rounded-full px-4 py-2 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="relative rounded-full px-4 py-2 text-sm font-medium tracking-[-0.14px] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 {isActive ? (
                   <motion.span
                     layoutId="team-spotlight-pill"
                     aria-hidden
-                    className="absolute inset-0 rounded-full bg-foreground"
+                    className="absolute inset-0 rounded-full bg-pressed-charcoal"
                     transition={
                       reduce
                         ? { duration: 0 }
@@ -102,14 +99,14 @@ export function TeamSpotlight() {
                   className={
                     "relative z-10 flex items-center gap-2 transition-colors " +
                     (isActive
-                      ? "text-background"
+                      ? "text-white"
                       : "text-muted-foreground hover:text-foreground")
                   }
                 >
                   <span
                     className={
                       "h-1.5 w-1.5 rounded-full transition-colors " +
-                      (isActive ? "bg-background" : "bg-foreground/30")
+                      (isActive ? "bg-white" : "bg-foreground/30")
                     }
                   />
                   {per.role}
@@ -120,7 +117,7 @@ export function TeamSpotlight() {
         </div>
 
         {/* Spotlight panel. */}
-        <div className="relative mx-auto mt-8 min-h-[280px] max-w-3xl overflow-hidden rounded-3xl border border-border bg-card px-7 py-9 shadow-xl shadow-foreground/5 sm:min-h-[260px] sm:px-12 sm:py-12">
+        <div className="relative mx-auto mt-8 min-h-[280px] max-w-3xl overflow-hidden rounded-[32px] border border-stone/20 bg-card px-7 py-9 shadow-[rgba(4,69,144,0.08)_0px_14px_20px_4px] sm:min-h-[260px] sm:px-12 sm:py-12">
           <AnimatePresence mode="wait">
             <motion.div
               key={active}
@@ -130,18 +127,18 @@ export function TeamSpotlight() {
               transition={{ duration: 0.4, ease: EASE }}
             >
               <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                <span className="text-base font-semibold text-foreground">
+                <span className="text-base font-medium tracking-[-0.16px] text-foreground">
                   {p.role}
                 </span>
-                <span className="text-sm text-muted-foreground">{p.who}</span>
+                <span className="text-sm tracking-[-0.14px] text-muted-foreground">{p.who}</span>
                 {p.primary ? (
-                  <span className="rounded-full border border-border bg-muted px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <span className="rounded-full border border-stone/20 bg-morning-tint px-2.5 py-0.5 text-[10px] font-medium tracking-[-0.1px] text-stone">
                     where it lands first
                   </span>
                 ) : null}
               </div>
 
-              <p className="mt-7 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+              <p className="mt-7 text-[11px] font-medium tracking-[-0.1px] text-fog">
                 What they feel
               </p>
               <p className="mt-2 text-xl leading-snug text-muted-foreground text-pretty sm:text-2xl">
@@ -154,11 +151,11 @@ export function TeamSpotlight() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: EASE, delay: reduce ? 0 : 0.18 }}
               >
-                <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground text-background">
+                <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-pressed-charcoal text-white">
                   <ArrowRightIcon className="h-4 w-4" />
                 </span>
                 <div>
-                  <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <p className="text-[11px] font-medium tracking-[-0.1px] text-fog">
                     With Jarvis
                   </p>
                   <p className="mt-1 text-2xl font-semibold leading-tight tracking-tight text-foreground text-balance sm:text-[1.75rem]">

@@ -39,12 +39,12 @@ function StageFrame({
 }) {
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2 border-b border-border px-5 py-3">
+      <div className="flex items-center gap-2 border-b border-stone/15 bg-cloud-veil/40 px-5 py-3">
         <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground/40" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cornflower/60" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-cornflower" />
         </span>
-        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+        <span className="text-[11px] font-medium tracking-[-0.1px] text-fog">
           {status}
         </span>
       </div>
@@ -239,46 +239,51 @@ export function FeatureShowcase() {
   return (
     <section
       id="features"
-      className="scroll-mt-24 border-t border-border bg-muted"
+      className="scroll-mt-24 bg-background"
     >
       <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
         <div className="grid items-start gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16">
           {/* Left: framing + selectable jobs. */}
           <div>
-            <span className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              What it does
-            </span>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl text-balance">
+            <h2 className="font-display text-3xl font-medium leading-[1.2] tracking-[-0.64px] text-foreground sm:text-4xl text-balance">
               One teammate, three jobs
             </h2>
-            <p className="mt-4 max-w-md text-lg text-muted-foreground text-pretty">
+            <p className="mt-4 max-w-md text-lg leading-[1.4] tracking-[-0.18px] text-muted-foreground text-pretty">
               He gets people in the door, then keeps helping them do the work.
             </p>
 
             <div className="mt-10 flex flex-col">
               {jobs.map((job, i) => {
                 const isActive = i === active;
+                const tintColors = [
+                  "bg-morning-tint text-signal-blue",
+                  "bg-lilac-mist text-amethyst",
+                  "bg-sprout text-[#2a9e5e]",
+                ];
                 return (
                   <button
                     key={job.n}
                     type="button"
                     onClick={() => setActive(i)}
                     aria-pressed={isActive}
-                    className="group relative border-t border-border py-5 text-left last:border-b"
+                    className="group relative border-t border-stone/15 py-5 text-left last:border-b"
                   >
                     <div className="flex items-baseline gap-4">
+                      {/* Icon tile replaces numbered marker */}
                       <span
                         className={
-                          "font-mono text-sm font-semibold tabular-nums transition-colors " +
-                          (isActive ? "text-foreground" : "text-muted-foreground/50")
+                          "flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl transition-colors " +
+                          (isActive
+                            ? tintColors[i]
+                            : "bg-cloud-veil text-muted-foreground/50 group-hover:bg-morning-tint/50 group-hover:text-muted-foreground")
                         }
                       >
-                        {job.n}
+                        <job.icon className="h-4 w-4" />
                       </span>
                       <div className="flex-1">
                         <h3
                           className={
-                            "text-lg font-semibold tracking-tight transition-colors sm:text-xl " +
+                            "text-lg font-medium tracking-[-0.18px] transition-colors sm:text-xl " +
                             (isActive
                               ? "text-foreground"
                               : "text-muted-foreground group-hover:text-foreground")
@@ -288,7 +293,7 @@ export function FeatureShowcase() {
                         </h3>
                         {isActive ? (
                           <motion.p
-                            className="mt-2 text-sm leading-relaxed text-muted-foreground"
+                            className="mt-2 text-sm leading-relaxed tracking-[-0.14px] text-muted-foreground"
                             initial={reduce ? false : { opacity: 0, y: -4 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.4, ease: EASE }}
@@ -299,12 +304,12 @@ export function FeatureShowcase() {
                       </div>
                     </div>
 
-                    {/* Auto-advance progress line; also drives the cycle. */}
+                    {/* Auto-advance progress line */}
                     {isActive && !reduce ? (
                       <motion.span
                         key={`progress-${active}`}
                         aria-hidden
-                        className="absolute bottom-[-1px] left-0 h-px w-full origin-left bg-foreground"
+                        className="absolute bottom-[-1px] left-0 h-px w-full origin-left bg-pressed-charcoal"
                         initial={{ scaleX: 0 }}
                         animate={{ scaleX: 1 }}
                         transition={{ duration: CYCLE_MS / 1000, ease: "linear" }}
@@ -320,7 +325,7 @@ export function FeatureShowcase() {
           </div>
 
           {/* Right: the live stage. */}
-          <div className="relative h-[360px] overflow-hidden rounded-2xl border border-border bg-card shadow-xl shadow-foreground/5 sm:h-[400px]">
+          <div className="relative h-[360px] overflow-hidden rounded-[32px] border border-stone/20 bg-card shadow-[rgba(4,69,144,0.08)_0px_14px_20px_4px] sm:h-[400px]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}

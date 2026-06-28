@@ -1,4 +1,4 @@
-import { JarvisHero } from "@/components/jarvis-hero";
+import { ScrubHero } from "@/components/scrub-hero";
 import { ProblemTimeline } from "@/components/problem-timeline";
 import { MeetJarvis } from "@/components/meet-jarvis";
 import { FeatureShowcase } from "@/components/feature-showcase";
@@ -16,30 +16,29 @@ function Wordmark({ className }: { className?: string }) {
       aria-label="jarvis"
       className={"wordmark text-2xl text-foreground " + (className ?? "")}
     >
-      jarvis<span className="cursor-blink select-none" aria-hidden>_</span>
+      jarvis<span className="cursor-blink select-none" aria-hidden="true">_</span>
     </a>
   );
 }
 
 function SectionHeading({
-  eyebrow,
   title,
   description,
+  eyebrow: _eyebrow, // kept for API compat, not rendered
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description?: string;
 }) {
   return (
     <div className="mx-auto max-w-2xl text-center">
-      <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-        {eyebrow}
-      </span>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl text-balance">
+      <h2
+        className="font-display text-3xl font-medium leading-[1.2] tracking-[-0.64px] text-foreground sm:text-4xl text-balance"
+      >
         {title}
       </h2>
       {description ? (
-        <p className="mt-4 text-lg text-muted-foreground text-pretty">
+        <p className="mt-5 text-lg leading-[1.4] tracking-[-0.18px] text-muted-foreground text-pretty">
           {description}
         </p>
       ) : null}
@@ -49,17 +48,17 @@ function SectionHeading({
 
 function WaitlistSection() {
   return (
-    <section id="waitlist" className="scroll-mt-24 border-t border-border">
+    <section id="waitlist" className="scroll-mt-24 bg-background">
       <div className="mx-auto max-w-4xl px-6 py-20 sm:py-28">
-        <div className="rounded-3xl bg-primary px-6 py-14 text-center sm:px-12">
-          <h2 className="text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl text-balance">
+        <div className="rounded-[32px] bg-pressed-charcoal px-6 py-14 text-center sm:px-12">
+          <h2 className="font-display text-3xl font-medium leading-[1.2] tracking-[-0.64px] text-white sm:text-4xl text-balance">
             Get Jarvis for your team
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-primary-foreground/80 text-pretty">
+          <p className="mx-auto mt-4 max-w-xl text-lg leading-[1.4] tracking-[-0.18px] text-white/70 text-pretty">
             We&apos;re building this now and onboarding early teams. Leave your
             email and we&apos;ll be in touch.
           </p>
-          <div className="mt-10 rounded-2xl bg-background p-5 sm:p-6">
+          <div className="mt-10 rounded-2xl bg-sky-wash p-5 sm:p-6">
             <WaitlistForm />
           </div>
         </div>
@@ -89,15 +88,15 @@ function FaqSection() {
   ];
 
   return (
-    <section id="faq" className="scroll-mt-24 border-t border-border bg-muted">
+    <section id="faq" className="scroll-mt-24 bg-card">
       <div className="mx-auto max-w-3xl px-6 py-20 sm:py-28">
-        <SectionHeading eyebrow="FAQ" title="The questions you're already asking" />
-        <div className="mt-12 divide-y divide-border">
+        <SectionHeading title="The questions you&apos;re already asking" />
+        <div className="mt-12 divide-y divide-border/30">
           {faqs.map((f) => (
             <details key={f.q} className="group py-5">
-              <summary className="flex cursor-pointer items-center justify-between gap-4 text-left font-semibold text-foreground marker:content-none">
+              <summary className="flex cursor-pointer items-center justify-between gap-4 text-left font-medium leading-[1.35] tracking-[-0.14px] text-foreground marker:content-none">
                 {f.q}
-                <span className="text-muted-foreground transition-transform group-open:rotate-45">
+                <span className="shrink-0 text-muted-foreground transition-transform group-open:rotate-45">
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -111,7 +110,7 @@ function FaqSection() {
                   </svg>
                 </span>
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-3 text-sm leading-relaxed tracking-[-0.14px] text-muted-foreground">
                 {f.a}
               </p>
             </details>
@@ -124,13 +123,11 @@ function FaqSection() {
 
 function SiteFooter() {
   return (
-    <footer className="border-t border-border bg-background">
+    <footer className="border-t border-border/30 bg-card">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-10 sm:flex-row">
         <div className="flex items-center gap-3 text-foreground">
-          <span className="wordmark text-sm">
-            jarvis<span className="cursor-blink select-none" aria-hidden>_</span>
-          </span>
-          <span className="text-xs text-muted-foreground">working title</span>
+          <span className="wordmark text-sm">jarvis</span>
+          <span className="text-xs text-fog">working title</span>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <ShieldIcon className="h-4 w-4" />
@@ -144,14 +141,14 @@ function SiteFooter() {
 export default function Home() {
   return (
     <>
-      {/* Fixed brand mark (top-left); tubelight nav floats top-center / bottom on mobile. */}
-      <div className="fixed left-8 top-6 z-50 sm:left-10 sm:top-8">
+      {/* Brand mark fixed top-left; tubelight nav floats top-center / bottom on mobile. */}
+      <div className="fixed left-6 top-5 z-50 sm:left-8 sm:top-7">
         <Wordmark />
       </div>
       <SiteNav />
 
       <main className="flex-1">
-        <JarvisHero />
+        <ScrubHero />
         <ProblemTimeline />
         <MeetJarvis />
         <FeatureShowcase />

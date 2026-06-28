@@ -1,43 +1,72 @@
 @import "tailwindcss";
 
 /*
-  Jarvis AI — monochrome theme (Vercel-style): white surfaces, black ink,
-  hairline #eaeaea borders, Geist typeface. Mapped to shadcn semantic tokens
-  so the shadcn Button and imported components resolve via `cn`.
-  Tailwind's default palette stays available alongside these.
+  Jarvis AI — Geniestudio design system.
+  Pale blue sky canvas, Pressed Charcoal CTAs, Plus Jakarta Sans display,
+  Geist for all UI text. See docs/design/geniestudio.md for the full spec.
 */
 @theme inline {
-  --color-background: #ffffff;
-  --color-foreground: #000000;
+  /* ── Core semantic surfaces ─────────────────────────────────── */
+  --color-background: #ebf5ff;     /* Sky Wash — page canvas */
+  --color-foreground: #0a0d12;     /* Midnight Ink */
 
-  --color-card: #ffffff;
-  --color-card-foreground: #000000;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #000000;
+  --color-card: #fafdff;           /* Paper White */
+  --color-card-foreground: #0a0d12;
+  --color-popover: #fafdff;
+  --color-popover-foreground: #0a0d12;
 
-  /* Primary = black. */
-  --color-primary: #000000;
+  /* Pressed Charcoal is the ONLY filled action color */
+  --color-primary: #181d27;
   --color-primary-foreground: #ffffff;
 
-  --color-secondary: #fafafa;
-  --color-secondary-foreground: #000000;
+  --color-secondary: #f6f7f8;      /* Cloud Veil */
+  --color-secondary-foreground: #0a0d12;
 
-  --color-muted: #fafafa;
-  --color-muted-foreground: #666666;
+  --color-muted: #f6f7f8;          /* Cloud Veil */
+  --color-muted-foreground: #535862; /* Stone */
 
-  --color-accent: #f5f5f5;
-  --color-accent-foreground: #000000;
+  --color-accent: #cce7ff;         /* Morning Tint */
+  --color-accent-foreground: #0a0d12;
 
   --color-destructive: #e5484d;
   --color-destructive-foreground: #ffffff;
-  --color-success: #000000;
+  --color-success: #181d27;
 
-  --color-border: #eaeaea;
-  --color-input: #eaeaea;
-  --color-ring: #000000;
+  /* Stone for hairline card borders */
+  --color-border: #535862;
+  --color-input: #535862;
+  --color-ring: #181d27;
 
+  /* ── Geniestudio full palette ──────────────────────────────── */
+  --color-sky-wash: #ebf5ff;
+  --color-paper-white: #fafdff;
+  --color-cloud-veil: #f6f7f8;
+  --color-midnight-ink: #0a0d12;
+  --color-pressed-charcoal: #181d27;
+  --color-stone: #535862;
+  --color-fog: #93979f;
+  --color-cornflower: #4fbeff;
+  --color-tangerine: #f26110;
+  --color-amethyst: #9552e0;
+  --color-mustard: #bb9915;
+  --color-signal-blue: #0099ff;
+  --color-deep-cobalt: #0069e0;
+  --color-morning-tint: #cce7ff;
+  --color-lilac-mist: #f1e6ff;
+  --color-sprout: #d3f6e3;
+
+  /* ── Typography ────────────────────────────────────────────── */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Aeonik substitute — Plus Jakarta Sans weight 500, -0.02em tracking */
+  --font-display: var(--font-plus-jakarta), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* ── Border radius ─────────────────────────────────────────── */
+  --radius-cards: 32px;
+  --radius-icons: 16px;
+  --radius-pills: 9999px;
+  --radius-buttons: 32px;
+  --radius-cards-inner: 8px;
 }
 
 html {
@@ -65,21 +94,27 @@ body {
   }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-9px); }
+}
+
 ::selection {
-  background: rgba(0, 0, 0, 0.12);
+  background: rgba(79, 190, 255, 0.2);
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
-}
-
-.cursor-blink {
-  animation: blink 1.1s step-end infinite;
-}
-
+/* Wordmark uses JetBrains Mono bold, matching the main branch. */
 .wordmark {
   font-family: var(--font-jetbrains), monospace;
   font-weight: 700;
   letter-spacing: -0.02em;
+}
+
+/* Blinking cursor underscore in the wordmark */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.cursor-blink {
+  animation: cursor-blink 1.1s step-end infinite;
 }
