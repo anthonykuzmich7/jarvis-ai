@@ -447,7 +447,7 @@ export function JarvisHero() {
         <Floater x="5%"  y="30%" delay={1.0} dur={3.8} amp={4}><Plus color="#93c5fd" /></Floater>
         <Floater x="92%" y="28%" delay={0.3} dur={4.2} amp={4}><Plus color="#93c5fd" /></Floater>
         <Floater x="48%" y="5%"  delay={0.7} dur={3.5} amp={5}>
-          <div className="h-2.5 w-2.5 rounded-full bg-cornflower/40" />
+          <div className="h-2.5 w-2.5 rounded-full bg-signal-violet/40" />
         </Floater>
       </div>
 
@@ -485,7 +485,7 @@ export function JarvisHero() {
           >
             <a
               href="#waitlist"
-              className="inline-flex items-center justify-center rounded-full bg-pressed-charcoal px-8 py-3.5 text-base font-medium tracking-[-0.16px] text-white shadow-[rgba(10,13,18,0.8)_0px_1px_2px_0px,rgb(10,13,18)_0px_0px_0px_1px] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pressed-charcoal"
+              className="inline-flex items-center justify-center rounded-full bg-coal-ink px-8 py-3.5 text-base font-medium tracking-[-0.16px] text-white shadow-[rgba(28,26,23,0.8)_0px_1px_2px_0px,rgb(28,26,23)_0px_0px_0px_1px] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coal-ink"
             >
               Join the waitlist
             </a>

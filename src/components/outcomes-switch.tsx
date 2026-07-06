@@ -57,7 +57,7 @@ function Switch({
     <div
       role="tablist"
       aria-label="Compare today with Jarvis"
-      className="inline-flex rounded-full border border-stone/20 bg-card p-1"
+      className="inline-flex rounded-full border border-ash bg-card p-1"
     >
       {options.map((o) => {
         const isOn = mode === o.id;
@@ -74,7 +74,7 @@ function Switch({
               <motion.span
                 layoutId="outcome-switch-thumb"
                 aria-hidden
-                className="absolute inset-0 rounded-full bg-pressed-charcoal"
+                className="absolute inset-0 rounded-full bg-coal-ink"
                 transition={
                   reduce
                     ? { duration: 0 }
@@ -122,7 +122,7 @@ export function OutcomesSwitch() {
   };
 
   return (
-    <section className="bg-cloud-veil">
+    <section className="bg-parchment">
       <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
         <div className="flex flex-col items-center text-center">
           <h2 className="font-display text-3xl font-medium leading-[1.2] tracking-[-0.64px] text-foreground sm:text-4xl text-balance">
@@ -148,7 +148,7 @@ export function OutcomesSwitch() {
                     {isJarvis ? (
                       <motion.span
                         key="check"
-                        className="absolute inset-0 flex items-center justify-center rounded-full bg-pressed-charcoal text-white"
+                        className="absolute inset-0 flex items-center justify-center rounded-full bg-coal-ink text-white"
                         initial={reduce ? false : { opacity: 0, scale: 0.5 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={reduce ? undefined : { opacity: 0, scale: 0.5 }}
@@ -172,7 +172,7 @@ export function OutcomesSwitch() {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-medium tracking-[-0.1px] text-fog">
+                  <p className="text-[11px] font-medium tracking-[-0.1px] text-graphite">
                     {row.dimension}
                   </p>
                   <div className="mt-1.5 overflow-hidden">

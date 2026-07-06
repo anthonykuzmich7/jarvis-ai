@@ -39,12 +39,12 @@ function StageFrame({
 }) {
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2 border-b border-stone/15 bg-cloud-veil/40 px-5 py-3">
+      <div className="flex items-center gap-2 border-b border-ash bg-parchment/40 px-5 py-3">
         <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cornflower/60" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-cornflower" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint-pulse/50" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-mint-pulse" />
         </span>
-        <span className="text-[11px] font-medium tracking-[-0.1px] text-fog">
+        <span className="text-[11px] font-medium tracking-[-0.1px] text-graphite">
           {status}
         </span>
       </div>
@@ -256,9 +256,9 @@ export function FeatureShowcase() {
               {jobs.map((job, i) => {
                 const isActive = i === active;
                 const tintColors = [
-                  "bg-morning-tint text-signal-blue",
-                  "bg-lilac-mist text-amethyst",
-                  "bg-sprout text-[#2a9e5e]",
+                  "bg-sky-blush/40 text-signal-violet",
+                  "bg-deep-violet/10 text-deep-violet",
+                  "bg-emerald-tag/15 text-mint-pulse",
                 ];
                 return (
                   <button
@@ -275,7 +275,7 @@ export function FeatureShowcase() {
                           "flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl transition-colors " +
                           (isActive
                             ? tintColors[i]
-                            : "bg-cloud-veil text-muted-foreground/50 group-hover:bg-morning-tint/50 group-hover:text-muted-foreground")
+                            : "bg-ash text-muted-foreground/50 group-hover:bg-sky-blush/30 group-hover:text-muted-foreground")
                         }
                       >
                         <job.icon className="h-4 w-4" />
@@ -309,7 +309,7 @@ export function FeatureShowcase() {
                       <motion.span
                         key={`progress-${active}`}
                         aria-hidden
-                        className="absolute bottom-[-1px] left-0 h-px w-full origin-left bg-pressed-charcoal"
+                        className="absolute bottom-[-1px] left-0 h-px w-full origin-left bg-coal-ink"
                         initial={{ scaleX: 0 }}
                         animate={{ scaleX: 1 }}
                         transition={{ duration: CYCLE_MS / 1000, ease: "linear" }}

@@ -1,72 +1,69 @@
 @import "tailwindcss";
 
 /*
-  Jarvis AI — Geniestudio design system.
-  Pale blue sky canvas, Pressed Charcoal CTAs, Plus Jakarta Sans display,
-  Geist for all UI text. See docs/design/geniestudio.md for the full spec.
+  Jarvis AI — Panxo design system.
+  Warm ink / ledger paper: coal-ink text on near-white surfaces,
+  smolder orange CTAs, Geist display (Mona Sans substitute), Inter body.
+  See docs/design/panxo.md for the full spec.
 */
 @theme inline {
   /* ── Core semantic surfaces ─────────────────────────────────── */
-  --color-background: #ebf5ff;     /* Sky Wash — page canvas */
-  --color-foreground: #0a0d12;     /* Midnight Ink */
+  --color-background: #fafafa;       /* Ledger White — page canvas */
+  --color-foreground: #1c1a17;       /* Coal Ink */
 
-  --color-card: #fafdff;           /* Paper White */
-  --color-card-foreground: #0a0d12;
-  --color-popover: #fafdff;
-  --color-popover-foreground: #0a0d12;
+  --color-card: #ffffff;             /* Elevated Card */
+  --color-card-foreground: #1c1a17;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #1c1a17;
 
-  /* Pressed Charcoal is the ONLY filled action color */
-  --color-primary: #181d27;
+  /* Primary = Coal Ink filled pill */
+  --color-primary: #1c1a17;
   --color-primary-foreground: #ffffff;
 
-  --color-secondary: #f6f7f8;      /* Cloud Veil */
-  --color-secondary-foreground: #0a0d12;
+  --color-secondary: #f7f3eb;        /* Parchment */
+  --color-secondary-foreground: #1c1a17;
 
-  --color-muted: #f6f7f8;          /* Cloud Veil */
-  --color-muted-foreground: #535862; /* Stone */
+  --color-muted: #f7f3eb;            /* Parchment */
+  --color-muted-foreground: #7e7d7b; /* Slate Mid */
 
-  --color-accent: #cce7ff;         /* Morning Tint */
-  --color-accent-foreground: #0a0d12;
+  --color-accent: #bdd8ff;           /* Sky Blush */
+  --color-accent-foreground: #1c1a17;
 
   --color-destructive: #e5484d;
   --color-destructive-foreground: #ffffff;
-  --color-success: #181d27;
+  --color-success: #05933b;
 
-  /* Stone for hairline card borders */
-  --color-border: #535862;
-  --color-input: #535862;
-  --color-ring: #181d27;
+  --color-border: #f1f1f1;           /* Ash — hairline borders */
+  --color-input: #f1f1f1;
+  --color-ring: #1c1a17;
 
-  /* ── Geniestudio full palette ──────────────────────────────── */
-  --color-sky-wash: #ebf5ff;
-  --color-paper-white: #fafdff;
-  --color-cloud-veil: #f6f7f8;
-  --color-midnight-ink: #0a0d12;
-  --color-pressed-charcoal: #181d27;
-  --color-stone: #535862;
-  --color-fog: #93979f;
-  --color-cornflower: #4fbeff;
-  --color-tangerine: #f26110;
-  --color-amethyst: #9552e0;
-  --color-mustard: #bb9915;
-  --color-signal-blue: #0099ff;
-  --color-deep-cobalt: #0069e0;
-  --color-morning-tint: #cce7ff;
-  --color-lilac-mist: #f1e6ff;
-  --color-sprout: #d3f6e3;
+  /* ── Panxo full palette ──────────────────────────────────────── */
+  --color-coal-ink: #1c1a17;
+  --color-ledger-white: #fafafa;
+  --color-parchment: #f7f3eb;
+  --color-ash: #f1f1f1;
+  --color-slate-mid: #7e7d7b;
+  --color-graphite: #5a5957;
+  --color-stone: #969594;
+  --color-fossil: #bab9b8;
+  --color-smolder: #ff6020;
+  --color-signal-violet: #777eff;
+  --color-deep-violet: #731fff;
+  --color-mint-pulse: #05933b;
+  --color-emerald-tag: #10b981;
+  --color-sky-blush: #bdd8ff;
 
-  /* ── Typography ────────────────────────────────────────────── */
-  --font-sans: var(--font-geist-sans);
+  /* ── Typography ──────────────────────────────────────────────── */
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
-  /* Aeonik substitute — Plus Jakarta Sans weight 500, -0.02em tracking */
-  --font-display: var(--font-plus-jakarta), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-geist-sans); /* Mona Sans substitute */
 
-  /* ── Border radius ─────────────────────────────────────────── */
-  --radius-cards: 32px;
-  --radius-icons: 16px;
-  --radius-pills: 9999px;
-  --radius-buttons: 32px;
-  --radius-cards-inner: 8px;
+  /* ── Border radius ───────────────────────────────────────────── */
+  --radius-cards: 10px;
+  --radius-badges: 7px;
+  --radius-pills: 999px;
+  --radius-buttons: 48px;
+  --radius-cards-inner: 12px;
 }
 
 html {
@@ -100,14 +97,14 @@ body {
 }
 
 ::selection {
-  background: rgba(79, 190, 255, 0.2);
+  background: rgba(255, 96, 32, 0.12);
 }
 
-/* Wordmark uses JetBrains Mono bold, matching the main branch. */
+/* Wordmark: Geist display font, tight tracking. */
 .wordmark {
-  font-family: var(--font-jetbrains), monospace;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.035em;
 }
 
 /* Blinking cursor underscore in the wordmark */

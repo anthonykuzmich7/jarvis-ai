@@ -87,7 +87,7 @@ export function TeamSpotlight() {
                   <motion.span
                     layoutId="team-spotlight-pill"
                     aria-hidden
-                    className="absolute inset-0 rounded-full bg-pressed-charcoal"
+                    className="absolute inset-0 rounded-full bg-coal-ink"
                     transition={
                       reduce
                         ? { duration: 0 }
@@ -117,7 +117,7 @@ export function TeamSpotlight() {
         </div>
 
         {/* Spotlight panel. */}
-        <div className="relative mx-auto mt-8 min-h-[280px] max-w-3xl overflow-hidden rounded-[32px] border border-stone/20 bg-card px-7 py-9 shadow-[rgba(4,69,144,0.08)_0px_14px_20px_4px] sm:min-h-[260px] sm:px-12 sm:py-12">
+        <div className="relative mx-auto mt-8 min-h-[280px] max-w-3xl overflow-hidden rounded-2xl border border-ash bg-card px-7 py-9 shadow-[rgba(43,43,48,0.08)_0px_8px_24px_0px] sm:min-h-[260px] sm:px-12 sm:py-12">
           <AnimatePresence mode="wait">
             <motion.div
               key={active}
@@ -132,13 +132,13 @@ export function TeamSpotlight() {
                 </span>
                 <span className="text-sm tracking-[-0.14px] text-muted-foreground">{p.who}</span>
                 {p.primary ? (
-                  <span className="rounded-full border border-stone/20 bg-morning-tint px-2.5 py-0.5 text-[10px] font-medium tracking-[-0.1px] text-stone">
+                  <span className="rounded-full border border-ash bg-sky-blush/30 px-2.5 py-0.5 text-[10px] font-medium tracking-[-0.1px] text-graphite">
                     where it lands first
                   </span>
                 ) : null}
               </div>
 
-              <p className="mt-7 text-[11px] font-medium tracking-[-0.1px] text-fog">
+              <p className="mt-7 text-[11px] font-medium tracking-[-0.1px] text-graphite">
                 What they feel
               </p>
               <p className="mt-2 text-xl leading-snug text-muted-foreground text-pretty sm:text-2xl">
@@ -151,11 +151,11 @@ export function TeamSpotlight() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: EASE, delay: reduce ? 0 : 0.18 }}
               >
-                <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-pressed-charcoal text-white">
+                <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-coal-ink text-white">
                   <ArrowRightIcon className="h-4 w-4" />
                 </span>
                 <div>
-                  <p className="text-[11px] font-medium tracking-[-0.1px] text-fog">
+                  <p className="text-[11px] font-medium tracking-[-0.1px] text-graphite">
                     With Jarvis
                   </p>
                   <p className="mt-1 text-2xl font-semibold leading-tight tracking-tight text-foreground text-balance sm:text-[1.75rem]">

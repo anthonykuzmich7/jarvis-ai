@@ -263,7 +263,7 @@ export function ProblemTimeline() {
   return (
     <section
       id="problem"
-      className="relative scroll-mt-24 overflow-hidden bg-midnight-ink text-white"
+      className="relative scroll-mt-24 overflow-hidden bg-coal-ink text-white"
     >
       {/* Faint blueprint grid for atmosphere; fades toward the bottom. */}
       <div

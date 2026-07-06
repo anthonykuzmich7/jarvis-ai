@@ -1,0 +1,409 @@
+"use client";
+
+import * as React from "react";
+import { motion, useAnimationFrame, useInView, useReducedMotion } from "framer-motion";
+
+const EASE = [0.16, 1, 0.3, 1] as const;
+
+/* ─── Brand marks ────────────────────────────────────────────── */
+
+function SlackMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 2447.6 2452.5" xmlns="http://www.w3.org/2000/svg" aria-hidden className={className}>
+      <g clipRule="evenodd" fillRule="evenodd">
+        <path d="m897.4 0c-135.3.1-244.8 109.9-244.7 245.2-.1 135.3 109.5 245.1 244.8 245.2h244.8v-245.1c.1-135.3-109.5-245.1-244.9-245.3.1 0 .1 0 0 0m0 654h-652.6c-135.3.1-244.9 109.9-244.8 245.2-.2 135.3 109.4 245.1 244.7 245.3h652.7c135.3-.1 244.9-109.9 244.8-245.2.1-135.4-109.5-245.2-244.8-245.3z" fill="#36c5f0"/>
+        <path d="m2447.6 899.2c.1-135.3-109.5-245.1-244.8-245.2-135.3.1-244.9 109.9-244.8 245.2v245.3h244.8c135.3-.1 244.9-109.9 244.8-245.3zm-652.7 0v-654c.1-135.2-109.4-245-244.7-245.2-135.3.1-244.9 109.9-244.8 245.2v654c-.2 135.3 109.4 245.1 244.7 245.3 135.3-.1 244.9-109.9 244.8-245.3z" fill="#2eb67d"/>
+        <path d="m1550.1 2452.5c135.3-.1 244.9-109.9 244.8-245.2.1-135.3-109.5-245.1-244.8-245.2h-244.8v245.2c-.1 135.2 109.5 245 244.8 245.2zm0-654.1h652.7c135.3-.1 244.9-109.9 244.8-245.2.2-135.3-109.4-245.1-244.7-245.3h-652.7c-135.3.1-244.9 109.9-244.8 245.2-.1 135.4 109.4 245.2 244.7 245.3z" fill="#ecb22e"/>
+        <path d="m0 1553.2c-.1 135.3 109.5 245.1 244.8 245.2 135.3-.1 244.9-109.9 244.8-245.2v-245.2h-244.8c-135.3.1-244.9 109.9-244.8 245.2zm652.7 0v654c-.2 135.3 109.4 245.1 244.7 245.3 135.3-.1 244.9-109.9 244.8-245.2v-653.9c.2-135.3-109.4-245.1-244.7-245.3-135.4 0-244.9 109.8-244.8 245.1 0 0 0 .1 0 0" fill="#e01e5a"/>
+      </g>
+    </svg>
+  );
+}
+
+/* Zoom: just the blue "Z" shape on transparent — sits on white icon bg */
+function ZoomMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden className={className}>
+      <path
+        fill="#0B5CFF"
+        d="M204.032 207.872H75.008c-8.448 0-16.64-4.608-20.48-12.032-4.608-8.704-2.816-19.2 4.096-26.112l89.856-89.856H83.968c-17.664 0-32-14.336-32-32h118.784c8.448 0 16.64 4.608 20.48 12.032 4.608 8.704 2.816 19.2-4.096 26.112l-89.6 90.112h74.496c17.664 0 32 14.08 32 31.744Z"
+      />
+    </svg>
+  );
+}
+
+function GitHubMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="#181717" xmlns="http://www.w3.org/2000/svg" aria-hidden className={className}>
+      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+    </svg>
+  );
+}
+
+/* Jira: official three-block stepping mark with blue gradient */
+function JiraMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 -30.632388516510233 255.324 285.95638851651023" xmlns="http://www.w3.org/2000/svg" aria-hidden className={className}>
+      <defs>
+        <linearGradient id="jira-base">
+          <stop offset=".18" stopColor="#0052cc"/>
+          <stop offset="1" stopColor="#2684ff"/>
+        </linearGradient>
+        <linearGradient id="jira-b" x1="98.031%" x2="58.888%" href="#jira-base" y1=".161%" y2="40.766%"/>
+        <linearGradient id="jira-c" x1="100.665%" x2="55.402%" href="#jira-base" y1=".455%" y2="44.727%"/>
+      </defs>
+      <path d="M244.658 0H121.707a55.502 55.502 0 0 0 55.502 55.502h22.649V77.37c.02 30.625 24.841 55.447 55.466 55.467V10.666C255.324 4.777 250.55 0 244.658 0z" fill="#2684ff"/>
+      <path d="M183.822 61.262H60.872c.019 30.625 24.84 55.447 55.466 55.467h22.649v21.938c.039 30.625 24.877 55.43 55.502 55.43V71.93c0-5.891-4.776-10.667-10.667-10.667z" fill="url(#jira-b)"/>
+      <path d="M122.951 122.489H0c0 30.653 24.85 55.502 55.502 55.502h22.72v21.867c.02 30.597 24.798 55.408 55.396 55.466V133.156c0-5.891-4.776-10.667-10.667-10.667z" fill="url(#jira-c)"/>
+    </svg>
+  );
+}
+
+/* Granola: actual brand mark — dark "G" shape on white icon container */
+function GranolaMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 1308.2438965 1350" xmlns="http://www.w3.org/2000/svg" aria-hidden className={className}>
+      <path fill="#1E1E1E" d="M1033.7697754,1021.5519409c-21.5993652,24.2390747-40.1063843,38.9168091-50.3071899,45.9337769c-4.7957153,3.1881104-7.7962036,7.6500244-11.9937134,11.4755859c-22.1997681,19.1352539-46.2614746,24.8300781-63.06073,38.2254639c-22.7993164,17.8594971-107.9772339,39.0952148-132.1790771,46.5419922c-40.9568481,9.3083496-87.0346069,12.6678467-137.4344482,10.7545166c-10.9053955,0-20.991272-0.0043945-30.2585449-0.7252197c-3.7649536-0.2927246-7.5383911,0.675293-11.3141479,0.7230225c-0.1495361,0.0021973-0.2905884,0.0021973-0.4226685,0.0021973c-0.4011841,0-1.0690918-0.2862549-2.0055542-0.8564453c-1.0635376-0.6470947-2.2635498-1.0601807-3.5089722-1.0601807c-0.3252563,0-0.6525269-0.0292969-0.9745483-0.0726318c-5.079895-0.6959229-7.78125,1.0863037-9.7347412,2.0770264c-1.4796143,0.7501221-3.0903931,0.12146-4.4910889-0.7674561c-4.4314575-2.8129883-14.3168945-9.1362305-17.6815796-10.1606445c-3.3172607-1.0081787-3.6425171,0.3685303-5.4051514,0.6785889c-1.1813965,0.2081299-2.4096069-0.2070312-3.2974854-1.0124512c-0.9940186-0.9008789-2.0576172-2.2006836-4.4989014-3.4992676c-4.4888306-2.3859863-6.8792114,3.0352783-13.5491943-3.0321045c-0.9690552-0.8812256-1.5383301-2.6135254-2.845459-2.6959229c-0.3275146-0.0206299-0.5649414-0.0401611-0.8869629-0.1030273c-6.7153931-1.3029785-18.9173584-3.7995605-27.1170044-6.2895508c-9.6000977-2.5517578-6.6083069-4.4597168-10.8088074-6.3730469c-56.3989868-21.0496826-136.7931519-62.5150146-166.1929932-91.8565674c-10.7991943-10.8436279-23.3979187-35.7210083-31.1984558-42.1016846c-6.0003052-5.1036377-18.0027161-15.3076172-21.0029907-20.4100952c-2.3995667-4.46521-0.0043335-12.7537231-4.2025452-18.4946899c-5.4000549-7.0169678-16.20224-10.8468628-26.4021149-26.7940674c-11.3994293-17.859436-17.9988098-41.4598999-29.3980103-65.6978149C201.9965973,854.911499,175.0002289,786.0202026,175,660.3612671c0-84.1989746,38.999939-200.9341125,55.8001099-216.8802185c10.7962036-10.2072754,9.5955048-32.528595,17.3930664-43.3721619c89.0116882-123.7463379,244.8043213-214.7861938,430.2043457-224.3546295c7.5328979-0.3865662,15.072876-0.6276245,22.6151733-0.7156677c45.7410278-0.5339661,91.583374,4.4694061,136.0370483,15.3110352c44.4141846,10.8320007,86.8728638,27.7349396,128.2607422,46.9507446c0,0,4.9141846,0.3894501,6.2098389,1.025589c2.1591797,1.0615234,3.0708008,2.9949188,5.2293091,4.0579529c2.1591797,1.0615234,5.2803345,0.1610107,7.638855,0.6438293c7.774292,1.5916138,9.1699829,6.2081909,10.6022949,8.0475006c1.7391968,2.2333527,3.8304443,3.0867004,7.7841187,4.2215271c10.3123169,2.9599457,11.6682129,6.3678436,13.0709839,7.9369965c1.119751,1.2547913,1.607605,2.8812866,2.1669922,4.3390503c0.567688,1.4821777,1.6954956,2.8354187,3.2773438,3.2061462c3.4158325,0.8006287,8.0632935,4.9833679,9.0244751,10.689209c0.626709,3.7198792,4.6495361,5.3226929,3.550293,12.3006287c-0.3560791,2.2603149,2.0496826,5.6016541-10.5968628,18.0704041s-39.1845703,20.3282166-55.3406982,14.1350403c-55.8503418-21.4093018-64.1322632-25.5296631-86.5679932-31.6485291c-40.9569092-11.1700439-75.8527832-18.759491-118.357605-17.9596558c-67.8004761,1.2758789-121.2071533,7.6550598-185.40625,29.9805298c-28.1415405,9.9719849-81.2704468,37.1080322-107.9295349,58.2385254c-26.6590576,21.1304932-65.2558594,50.3164368-81.1852112,77.333252c-5.5780029,9.4605408-11.855896,18.4968567-25.0551147,33.1670837c-19.1992798,21.0486755-41.4223938,81.9349976-48.6236267,111.2775879c-1.8004761,6.378479,2.9920044,13.3964844,0.5931396,19.776062c-2.4002686,7.0158081-13.8008423,10.2126465-15.0008545,15.9525757c-4.7991028,20.4112549-3.5990906,46.5614014-3.5990906,68.8848267c0,12.1184082,3.6023254,28.7008667,7.8019104,38.2695923c2.9993286,6.378479,12.6040039,10.8457642,13.8040161,17.2242432c0.5993347,4.4628906-5.393158,9.5643921-5.3984375,13.3910522c0,3.18927,5.394104,46.5743408,8.3945923,52.9528198c4.2018738,7.6532593,17.4031372,17.21875,21.0031738,26.1479492c2.3988953,6.378418-4.2071533,12.7611694,0.5928955,19.1396484c2.9995728,3.8277588,12.6074829,3.8223267,16.2075195,8.9248047c4.7988892,6.3773804,14.9953308,24.8699341,19.7965393,30.6152954c3.6000366,4.46521,10.2007751,6.3861084,13.2003479,8.2993774c8.997345,6.378479,1.2043762,12.1140747,9.6021729,21.6806641c26.3995667,29.9800415,67.201355,66.9834595,106.2017517,83.5680542c6.0163574,2.557251,67.7541504,26.1316528,71.3931885,26.1478882c86.9951172,12.8286133,184.8383179,11.6269531,269.4393921-35.5750732c19.8032227-10.8468628,131.9692383-88.8079224,150.5701294-181.2953491c4.199585-18.4979858,9.5991821-63.1557007,7.1991577-81.0162354c-9.6012573-66.338501-50.4778442-161.756897-125.4051514-197.0944824c-39.9141846-18.8244629-70.1998291-18.5001221-77.9994507-17.2241821c-22.7984009,4.4640503-30.5991821-8.9313354-51.5977783-7.019104c-64.199707,5.1035767-127.1983032,22.9663086-176.3981323,74.6334229c-45.0004272,47.8394775-54.0087891,109.0753784-31.208313,147.9856567c2.4000244,5.1025391,1.2000122,11.4831543-3.6000366,14.6723633c-2.0986328,1.2759399-4.0477295,2.8704834-4.9475098,4.5453491c-1.7897339,3.3290405,3.3853149,5.1079712,6.9530029,6.3568115c24.9576416,8.7318726,33.9572754,50.8421631,66.9963379,49.0578003h7.197998c0,0,13.8040771-0.0042725,19.2036743-6.3827515c4.4381104-5.2423706,4.4185791-11.3465576,1.2727051-14.0631104c-1.402771-1.2108765-3.1762085-1.93396-3.5881348-3.7410278c-0.453186-1.9924316-0.6798096-4.6146851-0.6807251-5.7930298c0-1.2758789,1.8004761-1.9208984,1.8004761-3.1968384c-0.0032349-3.8255615-4.199585-7.0148315-3.6000366-10.840332c0.3848877-2.0368652,3.2131348-4.854248,5.2076416-6.9572754c1.515625-1.5979004,1.5371704-3.633667,0.5454102-5.6001587c-0.0357666-0.0704956-0.0715942-0.1419678-0.1064453-0.2146606c-0.9614868-1.973999-1.1403809-4.317688-0.4866943-6.4130859c0.3761597-1.2044067,0.8314209-2.4910889,0.8325806-3.7767944c0.5995483-5.7399292-1.7919922-8.2928467-2.3924561-12.7558594c0-1.5761108,8.5443726-5.3193359,11.559082-7.65979c0.8889771-0.6893921,0.9841919-1.8438721,0.6906128-2.9300537c-0.6234131-2.3154907-1.4516602-3.0331421-1.4516602-7.2695923c0-1.0189209,0.8607788-2.444458,1.8949585-3.7886353c2.0835571-2.710083,4.000061-5.5979614,4.940918-8.8847656l1.6586914-5.7875977c0.692688-2.4196167,2.5321655-4.3448486,4.9182129-5.1459351c4.1344604-1.3908081,2.2167358-8.130249,6.1550903-10.0077515c1.145874-0.5463867,4.0239258,0.1473999,8.6333618-0.8325806c9.5946045-1.913269,2.9984131-5.1036377,4.7956543-10.2050781c0.8390503-3.1242065,3.4406738-2.8141479,5.9555664-2.5648193c2.0162964,0.2005615,3.9796753-0.4606934,5.4301147-1.8753662c1.4275513-1.3908081,2.8681641-3.0212402,4.8108521-3.8494263c2.4325562-1.0341187,8.8131714-1.2336426,13.3790283-1.2715454c1.8786621-0.0162354,3.7443237-0.2851562,5.6099243-0.505127c5.0961304-0.5994873,12.3264771-0.2439575,15.819397-0.7740479c4.1973267-0.6395874,6.5961914-4.4662476,10.1941528-4.4672852c3.0007324,0,7.2055664,5.102478,10.2051392,5.102478c2.9995728-0.0021362,5.9989014-2.5517578,8.9984741-2.5517578c1.7995605,0.0010986,2.4000244,3.1859741,5.3984985,3.1870728h1.1967773c0,0,27.6039429,0.6352539,56.4033203,18.4936523c19.7999878,12.1194458,34.2044678,41.4663086,34.2044678,41.4663086c13.7987671,23.6005249-1.5100708,47.8635864-1.5100708,69.5507812c0,8.9302368,2.9960938,16.5846558,1.1967773,24.8774414c-1.2011719,6.3773804-6.0023804,11.4852905-7.8030396,16.5889893c-1.7973022,4.4640503-1.7949829,10.2061157-7.7909546,18.4935913c-4.8000488,7.0158081-7.2055664,7.0136719-8.4055786,8.2896118c-1.8004761,1.913269-17.3364258,25.4072266-27.5360718,34.338562c-27,24.2389526-51.9569092,31.3372803-88.5570679,31.9746704c-16.1987915,0.6384277-17.9992676,3.8320923-20.399292,3.8320923c-8.4012451,0.6373901-46.7924194-1.2727051-58.7957764-3.1860352c0,0-53.3973389-10.2051392-74.4005127-20.4102173c-11.3996582-5.1035767-86.4050293-60.6016846-103.2052002-91.857666c-52.200531-98.2316895-40.1960449-202.8430176,13.8040466-273.0081177c39.0001831-51.0297852,103.1976013-117.3682556,255.5943298-130.1272583c77.4008179-6.3784485,146.4083862,3.8309326,200.4093628,29.3458252c76.1978149,35.7210693,131.9972534,98.868103,166.796936,173.498291C1154.8005371,743.2822266,1151.369751,887.5991211,1033.7697754,1021.5519409z"/>
+    </svg>
+  );
+}
+
+/* ─── Config ─────────────────────────────────────────────────── */
+
+const TOOLS = [
+  { id: "slack",   Mark: SlackMark,  pad: "p-[11px]" },
+  { id: "zoom",    Mark: ZoomMark,   pad: "p-[13px]" }, // white bg shows, padded
+  { id: "github",  Mark: GitHubMark, pad: "p-[12px]" },
+  { id: "jira",    Mark: JiraMark,   pad: "p-[9px]"  },
+  { id: "granola", Mark: GranolaMark,pad: "p-[10px]"  }, // dark G on white bg
+] as const;
+
+/* Orbit geometry — larger ellipse to fill vertical space */
+const W  = 520;
+const H  = 300;
+const CX = W / 2;   // 260
+const CY = H / 2;   // 150
+const RX = 200;     // wider orbit
+const RY = 100;     // taller orbit
+const ICON   = 52;
+const PERIOD = 18000; // ms per orbit
+
+/* Connector from orbit ring bottom to SVG bottom */
+const TRUNK_Y1 = CY + RY; // 250
+const TRUNK_Y2 = H;        // 300
+/* Animated dash period (dash 3 + gap 8 = 11) */
+const DASH_PERIOD = 11;
+
+/* Eye constants (48-unit SVG viewBox) */
+const EYE_L_CX    = 17.9609;
+const EYE_R_CX    = 29.9609;
+const EYE_CY      = 20.895;
+const EYE_MAX_SHIFT = 7.0;
+
+const CONTEXT_ROWS = [
+  { label: "Slack messages & decisions", delay: 0.00 },
+  { label: "Zoom meeting transcripts",   delay: 0.10 },
+  { label: "GitHub docs & PRs",          delay: 0.20 },
+  { label: "Team knowledge",             delay: 0.30 },
+] as const;
+
+/* ─── Helpers ────────────────────────────────────────────────── */
+
+function getIconState(index: number, elapsed: number) {
+  const phase = (index / TOOLS.length) * 2 * Math.PI;
+  const angle = phase + (elapsed / PERIOD) * 2 * Math.PI;
+  const sinA  = Math.sin(angle);
+  const cosA  = Math.cos(angle);
+  const normY = (sinA + 1) / 2;
+  const scale = 0.70 + 0.32 * normY;
+  return {
+    x: CX + cosA * RX,
+    y: CY + sinA * RY,
+    scale,
+    zIndex: Math.round(15 + sinA * 10), // always positive (5–25)
+    sinA,
+    cosA,
+  };
+}
+
+function Check({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden className={className}>
+      <path d="M3.5 8.5l3 3 6-6" stroke="currentColor" strokeWidth="1.8"
+        strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+/* ─── Orbit scene ────────────────────────────────────────────── */
+
+function OrbitScene({ live }: { live: boolean }) {
+  const reduce = useReducedMotion();
+
+  const iconRefs    = React.useRef<(HTMLDivElement | null)[]>([]);
+  const lineRefs    = React.useRef<(SVGLineElement | null)[]>([]);
+  const leftEyeRef  = React.useRef<SVGEllipseElement>(null);
+  const rightEyeRef = React.useRef<SVGEllipseElement>(null);
+  const eyeShift    = React.useRef(0);
+
+  /* Blink state */
+  const blinkStartRef = React.useRef<number | null>(null);
+  const nextBlinkRef  = React.useRef(1800);
+
+  const initStates = React.useMemo(() => TOOLS.map((_, i) => getIconState(i, 0)), []);
+
+  useAnimationFrame((elapsed) => {
+    if (!live || reduce) return;
+
+    let maxSin   = -Infinity;
+    let focusCos = 0;
+
+    TOOLS.forEach((_, i) => {
+      const { x, y, scale, zIndex, sinA, cosA } = getIconState(i, elapsed);
+
+      const icon = iconRefs.current[i];
+      if (icon) {
+        icon.style.transform = `translate(${(x - ICON / 2).toFixed(2)}px, ${(y - ICON / 2).toFixed(2)}px) scale(${scale.toFixed(3)})`;
+        icon.style.zIndex    = String(zIndex);
+        icon.style.opacity   = "1";
+      }
+
+      const line = lineRefs.current[i];
+      if (line) {
+        line.setAttribute("x1", x.toFixed(2));
+        line.setAttribute("y1", y.toFixed(2));
+        line.style.opacity = (0.06 + 0.18 * ((sinA + 1) / 2)).toFixed(3);
+      }
+
+      if (sinA > maxSin) { maxSin = sinA; focusCos = cosA; }
+    });
+
+    /* Eye tracking */
+    eyeShift.current += (focusCos * EYE_MAX_SHIFT - eyeShift.current) * 0.06;
+    const s = eyeShift.current;
+
+    /* Blink */
+    if (elapsed > nextBlinkRef.current && blinkStartRef.current === null) {
+      blinkStartRef.current = elapsed;
+      nextBlinkRef.current  = elapsed + 3000 + Math.random() * 3500;
+    }
+    let eyeRy = 7;
+    if (blinkStartRef.current !== null) {
+      const t = elapsed - blinkStartRef.current;
+      if (t < 90)        eyeRy = 7 * (1 - t / 90);
+      else if (t < 220)  eyeRy = 7 * ((t - 90) / 130);
+      else               blinkStartRef.current = null;
+    }
+
+    if (leftEyeRef.current) {
+      leftEyeRef.current.setAttribute("cx", (EYE_L_CX + s).toFixed(3));
+      leftEyeRef.current.setAttribute("ry", eyeRy.toFixed(2));
+    }
+    if (rightEyeRef.current) {
+      rightEyeRef.current.setAttribute("cx", (EYE_R_CX + s).toFixed(3));
+      rightEyeRef.current.setAttribute("ry", eyeRy.toFixed(2));
+    }
+  });
+
+  return (
+    <div className="relative mx-auto" style={{ width: W, height: H }}>
+
+      {/* SVG: orbit ring + icon→center lines + animated trunk connector */}
+      <svg
+        width={W} height={H}
+        viewBox={`0 0 ${W} ${H}`}
+        className="pointer-events-none absolute inset-0"
+        aria-hidden
+      >
+        {/* Dashed orbit ring */}
+        <ellipse
+          cx={CX} cy={CY} rx={RX} ry={RY}
+          stroke="#bab9b8" strokeWidth="1" fill="none"
+          strokeDasharray="2 10" opacity="0.5"
+        />
+
+        {/* Animated flowing trunk line — violet dots flowing toward pill */}
+        <motion.line
+          x1={CX} y1={TRUNK_Y1}
+          x2={CX} y2={TRUNK_Y2}
+          stroke="#777eff"
+          strokeWidth="1.5"
+          strokeDasharray="3 8"
+          opacity={0.5}
+          animate={live ? { strokeDashoffset: [0, -DASH_PERIOD] } : undefined}
+          transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
+        />
+
+        {/* Icon → Jarvis center lines */}
+        {TOOLS.map((_, i) => {
+          const init = initStates[i];
+          return (
+            <line
+              key={i}
+              ref={(el) => { lineRefs.current[i] = el; }}
+              x1={init.x.toFixed(2)} y1={init.y.toFixed(2)}
+              x2={CX} y2={CY}
+              stroke="#777eff" strokeWidth="1"
+              style={{ opacity: 0.09 }}
+            />
+          );
+        })}
+      </svg>
+
+      {/* Orbiting icon badges */}
+      {TOOLS.map(({ id, Mark, pad }, i) => {
+        const init = initStates[i];
+        return (
+          <div
+            key={id}
+            ref={(el) => { iconRefs.current[i] = el; }}
+            className={`absolute left-0 top-0 overflow-hidden rounded-full border border-ash bg-white ${pad}`}
+            style={{
+              width: ICON, height: ICON,
+              willChange: "transform",
+              transform: `translate(${(init.x - ICON / 2).toFixed(2)}px, ${(init.y - ICON / 2).toFixed(2)}px) scale(${init.scale.toFixed(3)})`,
+              zIndex: init.zIndex,
+              boxShadow: "0 2px 14px rgba(43,43,48,0.09), 0 1px 3px rgba(43,43,48,0.06)",
+            }}
+          >
+            <Mark className="h-full w-full" />
+          </div>
+        );
+      })}
+
+      {/* Jarvis center node */}
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{ zIndex: 50 }}
+      >
+        <div
+          className="relative flex h-[68px] w-[68px] items-center justify-center rounded-full"
+          style={{
+            backgroundColor: "#0E1A43",
+            boxShadow: "0 0 0 5px rgba(119,126,255,0.18), 0 8px 28px rgba(14,26,67,0.28)",
+          }}
+        >
+          <svg viewBox="0 0 48 48" fill="none" className="h-[38px] w-[38px]" aria-hidden>
+            <ellipse ref={leftEyeRef}  cx={EYE_L_CX} cy={EYE_CY} rx="3" ry="7" fill="#C5F4FF"/>
+            <ellipse ref={rightEyeRef} cx={EYE_R_CX} cy={EYE_CY} rx="3" ry="7" fill="#C5F4FF"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Full section ───────────────────────────────────────────── */
+
+export function OrbitSyncJarvis() {
+  const ref    = React.useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.15 });
+  const reduce = useReducedMotion();
+  const on     = inView || !!reduce;
+
+  return (
+    <section className="relative overflow-hidden bg-ledger-white">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_55%_45%_at_50%_46%,rgba(119,126,255,0.055)_0%,transparent_100%)]"
+      />
+
+      <div ref={ref} className="relative mx-auto max-w-6xl px-6 py-20 sm:py-28">
+
+        {/* Heading */}
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-balance font-display text-3xl font-semibold leading-[1.15] tracking-[-0.64px] text-foreground sm:text-4xl">
+            The context layer your AI was missing
+          </h2>
+          <p className="mt-4 text-pretty text-lg leading-relaxed text-muted-foreground">
+            Jarvis orbits your stack — reading, indexing, staying in sync.
+            Every AI query gets the full picture.
+          </p>
+        </div>
+
+        {/* Orbit */}
+        <motion.div
+          className="mt-14 flex justify-center"
+          initial={reduce ? false : { opacity: 0 }}
+          animate={on ? { opacity: 1 } : undefined}
+          transition={{ duration: 0.7, ease: EASE }}
+        >
+          <OrbitScene live={on} />
+        </motion.div>
+
+        {/* Pill → trunk → card — SVG connector bridges orbit to pill */}
+        <div className="mt-0 flex flex-col items-center">
+
+          <motion.div
+            className="flex items-center gap-2.5 rounded-full border border-ash bg-white px-4 py-2 shadow-[0_4px_16px_rgba(43,43,48,0.07)]"
+            initial={reduce ? false : { opacity: 0, scale: 0.86 }}
+            animate={on ? { opacity: 1, scale: 1 } : undefined}
+            transition={{ duration: 0.38, ease: EASE, delay: 0.66 }}
+          >
+            <motion.span
+              className="h-[7px] w-[7px] rounded-full bg-signal-violet"
+              animate={on && !reduce ? { opacity: [1, 0.15, 1] } : undefined}
+              transition={{ duration: 1.9, repeat: Infinity }}
+            />
+            <span className="text-[13px] font-medium text-foreground">
+              Context query received
+            </span>
+          </motion.div>
+
+          <motion.div
+            className="w-px bg-fossil"
+            style={{ height: 22, transformOrigin: "top" }}
+            initial={reduce ? false : { scaleY: 0 }}
+            animate={on ? { scaleY: 1 } : undefined}
+            transition={{ duration: 0.25, ease: EASE, delay: 0.86 }}
+          />
+
+          {/* Context card */}
+          <motion.div
+            className="w-full max-w-md overflow-hidden rounded-xl border border-ash bg-white shadow-[0_8px_40px_rgba(43,43,48,0.09)]"
+            initial={reduce ? false : { opacity: 0, y: 16 }}
+            animate={on ? { opacity: 1, y: 0 } : undefined}
+            transition={{ duration: 0.5, ease: EASE, delay: 0.96 }}
+          >
+            <div className="flex items-center justify-between border-b border-ash px-6 py-4">
+              <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
+                Company Context
+              </span>
+              <motion.span
+                className="flex items-center gap-1.5 rounded-full bg-mint-pulse/10 px-3 py-1 text-[11px] font-semibold text-mint-pulse"
+                initial={reduce ? false : { opacity: 0 }}
+                animate={on ? { opacity: 1 } : undefined}
+                transition={{ duration: 0.3, delay: 1.2 }}
+              >
+                <motion.span
+                  className="h-[6px] w-[6px] rounded-full bg-mint-pulse"
+                  animate={on && !reduce ? { opacity: [1, 0.25, 1] } : undefined}
+                  transition={{ duration: 2.2, repeat: Infinity }}
+                />
+                Live
+              </motion.span>
+            </div>
+
+            <div className="divide-y divide-ash/50 px-6">
+              {CONTEXT_ROWS.map(({ label, delay }) => (
+                <motion.div
+                  key={label}
+                  className="flex items-center justify-between py-[14px]"
+                  initial={reduce ? false : { opacity: 0, x: -8 }}
+                  animate={on ? { opacity: 1, x: 0 } : undefined}
+                  transition={{ duration: 0.34, ease: EASE, delay: 1.3 + delay }}
+                >
+                  <span className="text-[13.5px] text-muted-foreground">{label}</span>
+                  <span className="flex items-center gap-1.5 text-[13.5px] font-semibold text-mint-pulse">
+                    <Check className="h-4 w-4" />
+                    Synced
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
