@@ -1,6 +1,7 @@
 import { ScrubHero } from "@/components/scrub-hero";
 import { ProblemSection } from "@/components/problem-section";
 import { OrbitSyncJarvis } from "@/components/orbit-sync-jarvis";
+import { JarvisOverlaySection } from "@/components/jarvis-overlay-section";
 import { FeatureShowcase } from "@/components/feature-showcase";
 import { TeamSpotlight } from "@/components/team-spotlight";
 import { OutcomesSwitch } from "@/components/outcomes-switch";
@@ -165,6 +166,7 @@ export default function Home() {
         <ScrubHero />
         <ProblemSection />
         <OrbitSyncJarvis />
+        <JarvisOverlaySection />
         <FeatureShowcase />
         <TeamSpotlight />
         <OutcomesSwitch />
