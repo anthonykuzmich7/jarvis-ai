@@ -15,10 +15,12 @@ interface NavItem {
 interface NavBarProps {
   items: NavItem[];
   className?: string;
+  cta?: { label: string; url: string; icon: LucideIcon };
 }
 
-export function NavBar({ items, className }: NavBarProps) {
+export function NavBar({ items, className, cta }: NavBarProps) {
   const [activeTab, setActiveTab] = useState(items[0].name);
+  const CtaIcon = cta?.icon;
 
   // Scroll-spy: light up (and spring the tubelight to) the section in view.
   useEffect(() => {
@@ -83,8 +85,9 @@ export function NavBar({ items, className }: NavBarProps) {
               onClick={() => setActiveTab(item.name)}
               className={cn(
                 "relative cursor-pointer text-sm font-medium px-5 py-2 rounded-full transition-colors tracking-[-0.14px]",
-                "text-graphite hover:text-foreground",
-                isActive && "text-white",
+                isActive
+                  ? "text-white hover:text-white/90"
+                  : "text-graphite hover:text-coal-ink",
               )}
             >
               <span className="hidden md:inline">{item.name}</span>
@@ -112,6 +115,19 @@ export function NavBar({ items, className }: NavBarProps) {
             </Link>
           );
         })}
+
+        {/* Panxo-style filled CTA pill — always visible, no tubelight */}
+        {cta && CtaIcon && (
+          <Link
+            href={cta.url}
+            className="relative ml-0.5 cursor-pointer rounded-full bg-coal-ink px-5 py-2 text-sm font-semibold tracking-[-0.14px] text-white transition-colors hover:bg-graphite"
+          >
+            <span className="hidden md:inline">{cta.label}</span>
+            <span className="md:hidden">
+              <CtaIcon size={18} strokeWidth={2} />
+            </span>
+          </Link>
+        )}
       </div>
     </div>
   );
