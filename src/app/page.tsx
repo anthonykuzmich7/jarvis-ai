@@ -61,18 +61,47 @@ function SectionHeading({
 
 function WaitlistSection() {
   return (
-    <section id="waitlist" className="scroll-mt-24 bg-background">
-      <div className="mx-auto max-w-4xl px-6 py-20 sm:py-28">
-        <div className="rounded-2xl bg-coal-ink px-6 py-14 text-center sm:px-12">
-          <h2 className="font-display text-3xl font-semibold leading-[1.15] tracking-[-0.64px] text-white sm:text-4xl text-balance">
-            Get Jarvis for your team
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-[17px] leading-[1.5] tracking-[-0.16px] text-white/70 text-pretty">
-            We&apos;re building this now and onboarding early teams. Leave your
-            email and we&apos;ll be in touch.
-          </p>
-          <div className="mt-10 rounded-xl bg-parchment p-5 sm:p-6">
-            <WaitlistForm />
+    <section id="waitlist" className="scroll-mt-24 bg-ledger-white">
+      <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
+        {/* Contained card with Panxo video background */}
+        <div
+          className="relative rounded-[20px]"
+          style={{
+            boxShadow:
+              "rgba(95,99,106,0.14) 0px 0px 0px 1px, rgba(43,43,48,0.2) 0px 12px 48px 0px",
+          }}
+        >
+          {/* Background video — same source as panxo.com hero */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-hidden
+            className="absolute inset-0 h-full w-full object-cover rounded-[20px]"
+            src="https://framerusercontent.com/assets/JSWnPN9pwLkqzwQU31viRhMAJA.mp4"
+          />
+
+          {/* Content */}
+          <div className="relative z-10 px-8 py-20 text-center sm:px-16 sm:py-24">
+            <h2 className="font-display text-[40px] font-bold leading-[1.1] tracking-[-1.44px] text-coal-ink text-balance sm:text-[52px] sm:tracking-[-2px]">
+              Get Jarvis for your team
+            </h2>
+            <p className="mx-auto mt-5 max-w-lg text-[17px] leading-[1.55] tracking-[-0.16px] text-graphite text-pretty">
+              We&apos;re building this now and onboarding early teams. Leave
+              your email and we&apos;ll be in touch.
+            </p>
+
+            {/* Frosted glass form card */}
+            <div
+              className="mx-auto mt-12 max-w-3xl rounded-2xl bg-white/80 px-8 py-8 backdrop-blur-md sm:px-10"
+              style={{
+                boxShadow:
+                  "rgba(255,255,255,0.35) 0px 0px 0px 1px, rgba(43,43,48,0.1) 0px 4px 24px 0px",
+              }}
+            >
+              <WaitlistForm />
+            </div>
           </div>
         </div>
       </div>
