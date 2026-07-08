@@ -302,13 +302,13 @@ export function OrbitSyncJarvis() {
   const on     = inView || !!reduce;
 
   return (
-    <section className="relative overflow-hidden bg-ledger-white">
+    <section className="relative flex min-h-dvh flex-col justify-start overflow-hidden bg-ledger-white">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_55%_45%_at_50%_46%,rgba(119,126,255,0.055)_0%,transparent_100%)]"
       />
 
-      <div ref={ref} className="relative mx-auto max-w-6xl px-6 py-20 sm:py-28">
+      <div ref={ref} className="relative mx-auto w-full max-w-6xl px-6 pt-14 pb-24 sm:pt-16 sm:pb-32">
 
         {/* Heading */}
         <div className="mx-auto max-w-2xl text-center">
@@ -323,7 +323,7 @@ export function OrbitSyncJarvis() {
 
         {/* Orbit */}
         <motion.div
-          className="mt-14 flex justify-center"
+          className="mt-8 flex justify-center"
           initial={reduce ? false : { opacity: 0 }}
           animate={on ? { opacity: 1 } : undefined}
           transition={{ duration: 0.7, ease: EASE }}

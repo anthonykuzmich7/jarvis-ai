@@ -3,7 +3,6 @@ import { ProblemSection } from "@/components/problem-section";
 import { OrbitSyncJarvis } from "@/components/orbit-sync-jarvis";
 import { JarvisOverlaySection } from "@/components/jarvis-overlay-section";
 import { FeatureShowcase } from "@/components/feature-showcase";
-import { TeamSpotlight } from "@/components/team-spotlight";
 import { OutcomesSwitch } from "@/components/outcomes-switch";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { SiteNav } from "@/components/site-nav";
@@ -168,7 +167,6 @@ export default function Home() {
         <OrbitSyncJarvis />
         <JarvisOverlaySection />
         <FeatureShowcase />
-        <TeamSpotlight />
         <OutcomesSwitch />
         <WaitlistSection />
         <FaqSection />
