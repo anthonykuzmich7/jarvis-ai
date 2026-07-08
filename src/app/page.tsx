@@ -117,46 +117,73 @@ function FaqSection() {
     },
     {
       q: "What about data privacy?",
-      a: "Jarvis separates your personal work context (your Slack, meetings, contacts) from shared company knowledge. You control what teammates and admins can see.",
+      a: "Jarvis separates your personal work context — your Slack, meetings, contacts — from shared company knowledge. You control what teammates and admins can see.",
     },
     {
       q: "What does it connect to?",
-      a: "Slack and your knowledge base to start, with identity, code hosting, meetings, and cloud on the roadmap. He also exposes context to AI tools over MCP.",
+      a: "Slack and your knowledge base to start, with identity providers, code hosting, meetings, and cloud on the roadmap. Jarvis also exposes context to AI tools over MCP.",
     },
     {
       q: "Is it available today?",
       a: "We're in early access and validating with design partners. Join the waitlist and we'll reach out as we open spots.",
     },
+    {
+      q: "Does it work with our existing tools?",
+      a: "Yes — Jarvis sits on top of what you already use. It reads from Slack, Confluence, GitHub, and your identity provider. No migration, no new workflow.",
+    },
+    {
+      q: "How long does setup take?",
+      a: "Most teams are running in under a day. Connect your integrations, define your access rules, and Jarvis is ready to onboard your next hire.",
+    },
   ];
 
   return (
     <section id="faq" className="scroll-mt-24 bg-ledger-white">
-      <div className="mx-auto max-w-3xl px-6 py-20 sm:py-28">
-        <SectionHeading title="The questions you&apos;re already asking" />
-        <div className="mt-12 divide-y divide-ash">
-          {faqs.map((f) => (
-            <details key={f.q} className="group py-5">
-              <summary className="flex cursor-pointer items-center justify-between gap-4 text-left font-semibold leading-[1.35] tracking-[-0.14px] text-foreground marker:content-none">
-                {f.q}
-                <span className="shrink-0 text-graphite transition-transform group-open:rotate-45">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.75"
-                    strokeLinecap="round"
-                    className="h-5 w-5"
-                    aria-hidden
+      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
+        <div className="grid gap-16 lg:grid-cols-[2fr_3fr] lg:gap-24">
+
+          {/* Left — sticky heading block */}
+          <div className="lg:pt-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-graphite">
+              FAQ
+            </p>
+            <h2 className="mt-3 font-display text-[32px] font-bold leading-[1.13] tracking-[-0.96px] text-coal-ink sm:text-[40px] sm:tracking-[-1.2px]">
+              Questions you&apos;re already asking.
+            </h2>
+            <p className="mt-4 text-[15px] leading-[1.6] tracking-[-0.12px] text-slate-mid">
+              Still have something on your mind?{" "}
+              <a
+                href="mailto:hello@jarvis.ai"
+                className="font-medium text-coal-ink underline underline-offset-2 hover:text-graphite transition-colors"
+              >
+                Drop us a line.
+              </a>
+            </p>
+          </div>
+
+          {/* Right — accordion */}
+          <div className="divide-y divide-ash border-t border-ash">
+            {faqs.map((f) => (
+              <details key={f.q} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-6 text-left [&::-webkit-details-marker]:hidden">
+                  <span className="text-[16px] font-semibold leading-[1.4] tracking-[-0.2px] text-coal-ink group-open:text-coal-ink">
+                    {f.q}
+                  </span>
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-ash bg-white text-graphite transition-transform duration-200 group-open:rotate-45"
+                    style={{ boxShadow: "rgba(95,99,106,0.08) 0px 0px 0px 1px" }}
                   >
-                    <path d="M12 5v14M5 12h14" />
-                  </svg>
-                </span>
-              </summary>
-              <p className="mt-3 text-sm leading-relaxed tracking-[-0.12px] text-muted-foreground">
-                {f.a}
-              </p>
-            </details>
-          ))}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" className="h-3.5 w-3.5" aria-hidden>
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                  </span>
+                </summary>
+                <p className="mt-3 text-[14px] leading-[1.65] tracking-[-0.1px] text-slate-mid">
+                  {f.a}
+                </p>
+              </details>
+            ))}
+          </div>
+
         </div>
       </div>
     </section>
