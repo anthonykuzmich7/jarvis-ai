@@ -209,14 +209,27 @@ function MobileHero() {
 
   return (
     <section
-      className="relative min-h-[100dvh] w-full overflow-hidden"
+      className="flex h-[100dvh] w-full flex-col overflow-hidden"
       style={{ backgroundColor: "#FAFDFC" }}
     >
-      {/* Video constrained to bottom 62% — smaller robot, avoids portrait over-crop */}
-      <div
-        className="absolute inset-x-0 bottom-0 overflow-hidden"
-        style={{ height: "62vh" }}
-      >
+      {/* Copy — natural height, no fixed positioning */}
+      <div className="flex flex-col items-center px-6 pt-20 pb-8 text-center">
+        <h1 className="font-display text-balance text-center text-[36px] font-semibold leading-[1.12] tracking-[-0.72px] text-coal-ink">
+          You invested in AI tools.<br />They still don&rsquo;t know your company.
+        </h1>
+        <p className="mt-4 max-w-[320px] text-center text-[16px] leading-[1.5] tracking-[-0.16px] text-muted-foreground text-pretty">
+          Every session starts from zero. Jarvis syncs your company&rsquo;s context — Slack, meetings, docs, and code — so your AI tools finally have the full picture.
+        </p>
+        <a
+          href="#waitlist-mobile"
+          className="mt-7 rounded-full bg-coal-ink px-7 py-3.5 text-sm font-medium leading-none text-white"
+        >
+          Join the waitlist
+        </a>
+      </div>
+
+      {/* Robot video — fills remaining space, no gap */}
+      <div className="relative flex-1 overflow-hidden">
         <video
           ref={videoRef}
           muted
@@ -226,28 +239,13 @@ function MobileHero() {
           style={{
             opacity: ready ? 1 : 0,
             objectFit: "cover",
-            objectPosition: "56% center",
-            transform: "translateY(8%)",
+            objectPosition: "48% center",
+            transform: "scale(1.45) translateY(-20%)",
+            transformOrigin: "center center",
           }}
         >
           <source src="/robot-scrub-keyframes.mp4" type="video/mp4" />
         </video>
-      </div>
-
-      {/* Copy — sits in the top 38%, clear of the robot */}
-      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-start px-6 pt-20">
-        <h1 className="font-display text-balance text-center text-[36px] font-semibold leading-[1.12] tracking-[-0.72px] text-coal-ink">
-          You invested in AI tools.<br />They still don&rsquo;t know your company.
-        </h1>
-        <p className="mt-4 max-w-[320px] text-center text-[16px] leading-[1.5] tracking-[-0.16px] text-muted-foreground text-pretty">
-          Every session starts from zero. Jarvis syncs your company&rsquo;s context — Slack, meetings, docs, and code — so your AI tools finally have the full picture.
-        </p>
-        <a
-          href="#waitlist-mobile"
-          className="pointer-events-auto mt-7 rounded-full bg-coal-ink px-7 py-3.5 text-sm font-medium leading-none text-white"
-        >
-          Join the waitlist
-        </a>
       </div>
     </section>
   );
