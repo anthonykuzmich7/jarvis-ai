@@ -74,6 +74,7 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "cv03", "cv04", "cv09", "cv11";
   -webkit-font-smoothing: antialiased;
 }
 

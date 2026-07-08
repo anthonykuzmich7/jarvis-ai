@@ -1,204 +1,90 @@
 "use client";
 
 import * as React from "react";
-import {
-  motion,
-  AnimatePresence,
-  useInView,
-  useReducedMotion,
-} from "framer-motion";
-import { CheckIcon, ClockIcon } from "@/components/icons";
-
-/*
-  "What changes" — a single Today / With Jarvis switch. Flipping it transforms
-  each row's state from today's pain to the Jarvis outcome, the status badge
-  morphing from a waiting clock to a filled check. It auto-flips once on scroll
-  to demonstrate the change, then the visitor can toggle freely. One clean
-  switch (distinct from the per-item selectors elsewhere). Transform/opacity
-  motion only; reduced-motion safe.
-*/
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import { CheckIcon } from "@/components/icons";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-type Mode = "today" | "jarvis";
-
-const rows = [
+const stats = [
   {
-    dimension: "Time to productivity",
-    today: "New hires wait around two weeks to get unblocked.",
-    jarvis: "Day one, not week two.",
+    label: "Time to first commit",
+    metric: "Day 2",
+    win: "Sarah pushed her first PR on Tuesday. Jarvis had her context synced and access ready before she even opened her laptop.",
+    check: "Jarvis handled it",
   },
   {
-    dimension: "IT workload",
-    today: "Hours spent hand-granting access and repeating walkthroughs.",
-    jarvis: "IT gets its time back.",
+    label: "IT access tickets",
+    metric: "0",
+    win: "12 systems, 18 minutes. Jarvis provisioned everything the moment Sarah's offer was signed — no IT queue, no waiting.",
+    check: "Auto-provisioned",
   },
   {
-    dimension: "Where knowledge lives",
-    today: "Locked in senior people's heads and stale docs.",
-    jarvis: "In Jarvis, current and always on.",
+    label: "Senior dev interrupts",
+    metric: "Instant",
+    win: "Who owns billing? Who built auth? Sarah got her answers without pinging a single senior dev. They didn't even know she'd asked.",
+    check: "Always available",
   },
 ];
-
-function Switch({
-  mode,
-  onChange,
-  reduce,
-}: {
-  mode: Mode;
-  onChange: (m: Mode) => void;
-  reduce: boolean | null;
-}) {
-  const options: { id: Mode; label: string }[] = [
-    { id: "today", label: "Today" },
-    { id: "jarvis", label: "With Jarvis" },
-  ];
-  return (
-    <div
-      role="tablist"
-      aria-label="Compare today with Jarvis"
-      className="inline-flex rounded-full border border-ash bg-card p-1"
-    >
-      {options.map((o) => {
-        const isOn = mode === o.id;
-        return (
-          <button
-            key={o.id}
-            role="tab"
-            aria-selected={isOn}
-            type="button"
-            onClick={() => onChange(o.id)}
-            className="relative rounded-full px-5 py-2 text-sm font-medium tracking-[-0.14px] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            {isOn ? (
-              <motion.span
-                layoutId="outcome-switch-thumb"
-                aria-hidden
-                className="absolute inset-0 rounded-full bg-coal-ink"
-                transition={
-                  reduce
-                    ? { duration: 0 }
-                    : { type: "spring", stiffness: 420, damping: 34 }
-                }
-              />
-            ) : null}
-            <span
-              className={
-                "relative z-10 transition-colors " +
-                (isOn ? "text-white" : "text-muted-foreground hover:text-foreground")
-              }
-            >
-              {o.label}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 export function OutcomesSwitch() {
   const reduce = useReducedMotion();
   const ref = React.useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.4 });
-  const [mode, setMode] = React.useState<Mode>("today");
-  const touched = React.useRef(false);
-
-  // Reduced motion shows the resolved outcome without animating the flip.
-  const activeMode: Mode = reduce ? "jarvis" : mode;
-
-  // Auto-flip once on scroll to demonstrate the change.
-  React.useEffect(() => {
-    if (!inView || reduce || touched.current) return;
-    const t = setTimeout(() => {
-      if (!touched.current) setMode("jarvis");
-    }, 750);
-    return () => clearTimeout(t);
-  }, [inView, reduce]);
-
-  const change = (m: Mode) => {
-    touched.current = true;
-    setMode(m);
-  };
+  const inView = useInView(ref, { once: true, amount: 0.25 });
 
   return (
-    <section className="bg-parchment">
+    <section className="bg-ledger-white">
       <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
-        <div className="flex flex-col items-center text-center">
-          <h2 className="font-display text-3xl font-medium leading-[1.2] tracking-[-0.64px] text-foreground sm:text-4xl text-balance">
-            The outcome we&apos;re after
+
+        {/* Heading */}
+        <div className="mb-12 text-center">
+          <h2 className="font-display text-[32px] font-bold leading-[1.13] tracking-[-0.96px] text-coal-ink sm:text-[40px] sm:tracking-[-1.2px]">
+            What changes with Jarvis.
           </h2>
-          <div className="mt-8">
-            <Switch mode={activeMode} onChange={change} reduce={reduce} />
-          </div>
         </div>
 
-        <div ref={ref} className="mx-auto mt-14 max-w-3xl">
-          {rows.map((row, i) => {
-            const isJarvis = activeMode === "jarvis";
-            const delay = reduce ? 0 : i * 0.07;
-            return (
-              <div
-                key={row.dimension}
-                className="flex items-center gap-5 border-t border-stone/15 py-7 last:border-b"
-              >
-                {/* Status badge: waiting clock -> filled check. */}
-                <div className="relative h-9 w-9 shrink-0">
-                  <AnimatePresence mode="wait" initial={false}>
-                    {isJarvis ? (
-                      <motion.span
-                        key="check"
-                        className="absolute inset-0 flex items-center justify-center rounded-full bg-coal-ink text-white"
-                        initial={reduce ? false : { opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={reduce ? undefined : { opacity: 0, scale: 0.5 }}
-                        transition={{ duration: 0.3, ease: EASE, delay }}
-                      >
-                        <CheckIcon className="h-[18px] w-[18px]" />
-                      </motion.span>
-                    ) : (
-                      <motion.span
-                        key="clock"
-                        className="absolute inset-0 flex items-center justify-center rounded-full border border-stone/20 bg-card text-muted-foreground"
-                        initial={reduce ? false : { opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={reduce ? undefined : { opacity: 0, scale: 0.5 }}
-                        transition={{ duration: 0.3, ease: EASE, delay }}
-                      >
-                        <ClockIcon className="h-[18px] w-[18px]" />
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </div>
+        {/* Stat grid */}
+        <div
+          ref={ref}
+          className="grid grid-cols-1 gap-px bg-ash sm:grid-cols-3 overflow-hidden rounded-[10px] border border-ash"
+          style={{ boxShadow: "rgba(95,99,106,0.08) 0px 0px 0px 1px, rgba(43,43,48,0.1) 0px 1px 4px 0px" }}
+        >
+          {stats.map((s, i) => (
+            <motion.div
+              key={s.label}
+              className="flex flex-col bg-card px-7 py-7"
+              initial={reduce ? false : { opacity: 0, y: 16 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.48, ease: EASE, delay: reduce ? 0 : i * 0.1 }}
+            >
+              {/* Category label — Inter 400 14px slate-mid per Panxo stat cell spec */}
+              <p className="text-[14px] font-normal leading-snug text-slate-mid">
+                {s.label}
+              </p>
 
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-medium tracking-[-0.1px] text-graphite">
-                    {row.dimension}
-                  </p>
-                  <div className="mt-1.5 overflow-hidden">
-                    <AnimatePresence mode="wait">
-                      <motion.p
-                        key={activeMode}
-                        className={
-                          "text-lg leading-snug sm:text-xl " +
-                          (isJarvis
-                            ? "font-semibold text-foreground"
-                            : "text-muted-foreground")
-                        }
-                        initial={reduce ? false : { opacity: 0, y: isJarvis ? 14 : -14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={reduce ? undefined : { opacity: 0, y: isJarvis ? -14 : 14 }}
-                        transition={{ duration: 0.38, ease: EASE, delay }}
-                      >
-                        {isJarvis ? row.jarvis : row.today}
-                      </motion.p>
-                    </AnimatePresence>
-                  </div>
-                </div>
+              {/* Metric — Mona Sans 700 (Geist) per Panxo spec */}
+              <p className="mt-2 font-display text-[44px] font-bold leading-none tracking-[-1.44px] text-coal-ink sm:text-[52px]">
+                {s.metric}
+              </p>
+
+              {/* Win copy */}
+              <p className="mt-4 flex-1 text-[13px] leading-[1.6] tracking-[-0.1px] text-slate-mid">
+                {s.win}
+              </p>
+
+              {/* Check badge */}
+              <div className="mt-5 flex items-center gap-2">
+                <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-mint-pulse">
+                  <CheckIcon className="h-2.5 w-2.5 text-white" />
+                </span>
+                <span className="text-[11px] font-semibold text-mint-pulse">
+                  {s.check}
+                </span>
               </div>
-            );
-          })}
+            </motion.div>
+          ))}
         </div>
+
       </div>
     </section>
   );
