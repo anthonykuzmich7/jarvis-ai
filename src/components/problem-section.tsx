@@ -86,7 +86,7 @@ export function ProblemSection() {
   return (
     <>
       <style>{CSS}</style>
-      <section style={sectionStyle}>
+      <section id="problem" className="scroll-mt-24" style={sectionStyle}>
         <div style={layoutStyle}>
 
           {/* ── LEFT COPY ── */}
