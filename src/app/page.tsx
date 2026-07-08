@@ -7,6 +7,7 @@ import { OutcomesSwitch } from "@/components/outcomes-switch";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { SiteNav } from "@/components/site-nav";
 import { ShieldIcon } from "@/components/icons";
+import { MobileLayout } from "@/components/mobile/mobile-layout";
 
 
 function JarvisFace({ className }: { className?: string }) {
@@ -217,7 +218,8 @@ export default function Home() {
       </div>
       <SiteNav />
 
-      <main className="flex-1">
+      {/* Desktop layout — hidden on mobile */}
+      <main className="hidden md:flex flex-1 flex-col">
         <ScrubHero />
         <ProblemSection />
         <OrbitSyncJarvis />
@@ -227,7 +229,12 @@ export default function Home() {
         <WaitlistSection />
         <FaqSection />
       </main>
-      <SiteFooter />
+      <div className="hidden md:block"><SiteFooter /></div>
+
+      {/* Mobile layout — hidden on desktop */}
+      <div className="md:hidden">
+        <MobileLayout />
+      </div>
     </>
   );
 }
