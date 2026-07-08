@@ -33,8 +33,8 @@ export function OutcomesSwitch() {
   const inView = useInView(ref, { once: true, amount: 0.25 });
 
   return (
-    <section className="flex min-h-dvh flex-col items-center justify-center bg-ledger-white">
-      <div className="mx-auto w-full max-w-5xl px-6 py-28 sm:py-36">
+    <section className="bg-ledger-white">
+      <div className="mx-auto w-full max-w-5xl px-6 py-24 sm:py-32">
 
         {/* Heading */}
         <div className="mb-12 text-center">

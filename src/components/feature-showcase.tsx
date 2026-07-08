@@ -366,8 +366,8 @@ export function FeatureShowcase() {
   const ActiveDemo = jobs[active].Demo;
 
   return (
-    <section id="features" className="scroll-mt-24 bg-background flex flex-col justify-center min-h-dvh">
-      <div className="mx-auto w-full max-w-6xl px-6 py-16 sm:py-20">
+    <section id="features" className="scroll-mt-24 bg-background">
+      <div className="mx-auto w-full max-w-6xl px-6 py-24 sm:py-32">
         <div className="grid items-center gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16">
 
           {/* Left: heading + selectable job list */}
