@@ -1,5 +1,5 @@
 import { ScrubHero } from "@/components/scrub-hero";
-import { ProblemSection } from "@/components/problem-section";
+import { StrugglesSection } from "@/components/struggles-section";
 import { OrbitSyncJarvis } from "@/components/orbit-sync-jarvis";
 import { JarvisOverlaySection } from "@/components/jarvis-overlay-section";
 import { FeatureShowcase } from "@/components/feature-showcase";
@@ -221,7 +221,7 @@ export default function Home() {
       {/* Desktop layout — hidden on mobile */}
       <main className="hidden md:flex flex-1 flex-col">
         <ScrubHero />
-        <ProblemSection />
+        <StrugglesSection />
         <OrbitSyncJarvis />
         <JarvisOverlaySection />
         <FeatureShowcase />

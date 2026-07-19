@@ -133,3 +133,20 @@ export function UsersIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function LaptopIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <rect width="18" height="12" x="3" y="4" rx="2" ry="2" />
+      <line x1="2" x2="22" y1="20" y2="20" />
+    </svg>
+  );
+}
+
+export function MessageCircleIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+    </svg>
+  );
+}
