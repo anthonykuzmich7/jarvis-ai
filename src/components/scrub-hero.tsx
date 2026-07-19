@@ -235,17 +235,17 @@ export function ScrubHero() {
       {/* Hero copy — sits in the upper third, clear of the robot */}
       <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center pb-[44vh] px-6">
         <h1 className="font-display text-balance text-center text-[44px] font-semibold leading-[1.12] tracking-[-0.88px] text-coal-ink sm:text-[56px] sm:tracking-[-1.12px]">
-          You invested in AI tools.<br />They still don&rsquo;t know your company.
+          Stop repeating yourself.<br />To your AI — and to your team.
         </h1>
-        <p className="mt-5 max-w-[560px] text-center text-[17px] leading-[1.5] tracking-[-0.17px] text-muted-foreground text-pretty">
-          Every session starts from zero. Jarvis syncs your company&rsquo;s context — Slack, meetings, docs, and code — so your AI tools finally have the full picture. Automatically. Always fresh.
+        <p className="mt-5 max-w-[600px] text-center text-[17px] leading-[1.5] tracking-[-0.17px] text-muted-foreground text-pretty">
+          Jarvis connects to every tool you work in. Syncs your context locally — private, on your device. And when your AI or your teammates need to know something, it gets exactly the right context. Just tag Jarvis.
         </p>
         <a
           href="#waitlist"
           className="pointer-events-auto mt-8 rounded-full bg-coal-ink px-7 py-3.5 text-sm font-medium leading-none text-white transition-all hover:opacity-90 hover:shadow-md hover:-translate-y-px"
           style={{ cursor: "pointer" }}
         >
-          Join the waitlist
+          Get early access
         </a>
       </div>
 
