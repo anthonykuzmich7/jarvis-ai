@@ -399,10 +399,10 @@ function MobileContextLayer() {
           How it works
         </p>
         <h2 className="mt-3 font-display text-[28px] font-bold leading-[1.13] tracking-[-0.84px] text-coal-ink text-balance">
-          The context layer your AI was missing
+          Connect once. Tag Jarvis anywhere.
         </h2>
         <p className="mt-4 text-[15px] leading-[1.6] tracking-[-0.12px] text-slate-mid">
-          Jarvis orbits your stack — reading, indexing, staying in sync. Every AI query gets the full picture.
+          Sign in once — Slack, Gmail, Granola, no IT ticket required. Then tag @jarvis anywhere you work and get the answer with sources.
         </p>
 
         {/* Sources → Jarvis card */}

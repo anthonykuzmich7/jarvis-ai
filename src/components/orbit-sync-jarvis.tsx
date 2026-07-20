@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { motion, useAnimationFrame, useInView, useReducedMotion } from "framer-motion";
+import { ClaudeCodeTerminal, TYPE_SPEED_MS } from "@/components/claude-code-terminal";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -100,12 +101,76 @@ const EYE_R_CX    = 29.9609;
 const EYE_CY      = 20.895;
 const EYE_MAX_SHIFT = 7.0;
 
-const CONTEXT_ROWS = [
-  { label: "Slack messages & decisions", delay: 0.00 },
-  { label: "Zoom meeting transcripts",   delay: 0.10 },
-  { label: "GitHub docs & PRs",          delay: 0.20 },
-  { label: "Team knowledge",             delay: 0.30 },
-] as const;
+/* ─── Demo copy — the payoff after "connect once, tag anywhere" ──
+   Three roles, three very different questions — everyone at the
+   company should see themselves in one of these, without the card
+   ever labeling who's asking. Sources are drawn from the same five
+   orbiting tools above, so the "full picture" claim stays concrete
+   instead of abstract. Rotates automatically, in place. */
+type Demo = {
+  /** Internal label only — never rendered, kept for readability. */
+  role: string;
+  question: string;
+  answer: string;
+  sources: { icon: string; label: string }[];
+};
+
+const DEMOS: Demo[] = [
+  {
+    role: "Engineering",
+    question:
+      "@jarvis what's blocking the payments migration, and who should I ping?",
+    answer:
+      "Two PRs are waiting on review — #212 and #215, both assigned to Dmitri. He flagged a schema conflict in Wednesday's standup, tracked in Jira PAY-77.",
+    sources: [
+      { icon: "⌥", label: "PR #212" },
+      { icon: "⌥", label: "PR #215" },
+      { icon: "🗂", label: "Jira PAY-77" },
+      { icon: "🎥", label: "Zoom — standup, Wed" },
+    ],
+  },
+  {
+    role: "Leaders",
+    question: "@jarvis I was heads-down all week — what decisions did I miss?",
+    answer:
+      "Three: sales closed the Acme enterprise deal, eng pushed SSO to next sprint after Tuesday's sync, and the new pricing page shipped in PR #301.",
+    sources: [
+      { icon: "💬", label: "#leadership" },
+      { icon: "🎙", label: "Granola — all-hands, Thu" },
+      { icon: "🗂", label: "Jira SSO-14" },
+      { icon: "⌥", label: "PR #301" },
+    ],
+  },
+  {
+    role: "Finance & Sales",
+    question:
+      "@jarvis what's the status on the Acme deal in Salesforce — anything to flag before the renewal call?",
+    answer:
+      "Acme's at 62% probability per Tuesday's pipeline review. Dana flagged pushback on price in Monday's call, and legal's redlines are still open in the thread.",
+    sources: [
+      { icon: "🎙", label: "Granola — pipeline review, Tue" },
+      { icon: "🎥", label: "Zoom — renewal call, Mon" },
+      { icon: "💬", label: "#sales-acme" },
+    ],
+  },
+];
+
+/* Demo timing — kept in sync with the props passed to ClaudeCodeTerminal
+   below so the auto-advance timer matches what's actually on screen. */
+const DEMO_START_DELAY   = 700;
+const DEMO_ANSWER_DELAY  = 2200;
+const DEMO_SOURCES_DELAY = 2700;
+const DEMO_READ_HOLD     = 3800; // time to read the answer before advancing
+
+function demoDurationMs(question: string) {
+  return DEMO_START_DELAY + question.length * TYPE_SPEED_MS + DEMO_SOURCES_DELAY + DEMO_READ_HOLD;
+}
+
+/* Fixed terminal-body height — generous enough for the longest question
+   (2 lines), longest answer (~3 lines), and a 4-chip, 2-row source list
+   (the Engineering and Leaders demos), so the card never resizes when
+   the content swaps. */
+const DEMO_CARD_HEIGHT = 300;
 
 /* ─── Helpers ────────────────────────────────────────────────── */
 
@@ -124,15 +189,6 @@ function getIconState(index: number, elapsed: number) {
     sinA,
     cosA,
   };
-}
-
-function Check({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" aria-hidden className={className}>
-      <path d="M3.5 8.5l3 3 6-6" stroke="currentColor" strokeWidth="1.8"
-        strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
 }
 
 /* ─── Orbit scene ────────────────────────────────────────────── */
@@ -283,7 +339,7 @@ function OrbitScene({ live }: { live: boolean }) {
             boxShadow: "0 0 0 5px rgba(119,126,255,0.18), 0 8px 28px rgba(14,26,67,0.28)",
           }}
         >
-          <svg viewBox="0 0 48 48" fill="none" className="h-[38px] w-[38px]" aria-hidden>
+          <svg viewBox="0 0 48 48" fill="none" className="h-full w-full" aria-hidden>
             <ellipse ref={leftEyeRef}  cx={EYE_L_CX} cy={EYE_CY} rx="3" ry="7" fill="#C5F4FF"/>
             <ellipse ref={rightEyeRef} cx={EYE_R_CX} cy={EYE_CY} rx="3" ry="7" fill="#C5F4FF"/>
           </svg>
@@ -301,6 +357,17 @@ export function OrbitSyncJarvis() {
   const reduce = useReducedMotion();
   const on     = inView || !!reduce;
 
+  const [demoIndex, setDemoIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!on || reduce) return;
+    const t = setTimeout(
+      () => setDemoIndex((i) => (i + 1) % DEMOS.length),
+      demoDurationMs(DEMOS[demoIndex].question),
+    );
+    return () => clearTimeout(t);
+  }, [on, reduce, demoIndex]);
+
   return (
     <section id="product" className="relative flex min-h-dvh scroll-mt-24 flex-col justify-start overflow-hidden bg-ledger-white">
       <div
@@ -313,11 +380,12 @@ export function OrbitSyncJarvis() {
         {/* Heading */}
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-balance font-display text-3xl font-semibold leading-[1.15] tracking-[-0.64px] text-foreground sm:text-4xl">
-            The context layer your AI was missing
+            Connect once. Tag Jarvis anywhere.
           </h2>
           <p className="mt-4 text-pretty text-lg leading-relaxed text-muted-foreground">
-            Jarvis orbits your stack — reading, indexing, staying in sync.
-            Every AI query gets the full picture.
+            Sign in once — Slack, Gmail, Granola, no IT ticket required. Then
+            tag @jarvis anywhere you work: ask in plain language, get the
+            answer with sources.
           </p>
         </div>
 
@@ -346,7 +414,7 @@ export function OrbitSyncJarvis() {
               transition={{ duration: 1.9, repeat: Infinity }}
             />
             <span className="text-[13px] font-medium text-foreground">
-              Context query received
+              Synced locally. Nothing leaves your device.
             </span>
           </motion.div>
 
@@ -358,49 +426,27 @@ export function OrbitSyncJarvis() {
             transition={{ duration: 0.25, ease: EASE, delay: 0.86 }}
           />
 
-          {/* Context card */}
+          {/* Claude Code demo — the payoff: tag @jarvis, get the full picture.
+              The window itself (chrome, title bar, fixed size) mounts once
+              and never changes; only the content inside crossfades as the
+              role rotates — see contentKey on ClaudeCodeTerminal. */}
           <motion.div
-            className="w-full max-w-md overflow-hidden rounded-xl border border-ash bg-white shadow-[0_8px_40px_rgba(43,43,48,0.09)]"
+            className="w-full max-w-xl"
             initial={reduce ? false : { opacity: 0, y: 16 }}
             animate={on ? { opacity: 1, y: 0 } : undefined}
             transition={{ duration: 0.5, ease: EASE, delay: 0.96 }}
           >
-            <div className="flex items-center justify-between border-b border-ash px-6 py-4">
-              <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
-                Company Context
-              </span>
-              <motion.span
-                className="flex items-center gap-1.5 rounded-full bg-mint-pulse/10 px-3 py-1 text-[11px] font-semibold text-mint-pulse"
-                initial={reduce ? false : { opacity: 0 }}
-                animate={on ? { opacity: 1 } : undefined}
-                transition={{ duration: 0.3, delay: 1.2 }}
-              >
-                <motion.span
-                  className="h-[6px] w-[6px] rounded-full bg-mint-pulse"
-                  animate={on && !reduce ? { opacity: [1, 0.25, 1] } : undefined}
-                  transition={{ duration: 2.2, repeat: Infinity }}
-                />
-                Live
-              </motion.span>
-            </div>
-
-            <div className="divide-y divide-ash/50 px-6">
-              {CONTEXT_ROWS.map(({ label, delay }) => (
-                <motion.div
-                  key={label}
-                  className="flex items-center justify-between py-[14px]"
-                  initial={reduce ? false : { opacity: 0, x: -8 }}
-                  animate={on ? { opacity: 1, x: 0 } : undefined}
-                  transition={{ duration: 0.34, ease: EASE, delay: 1.3 + delay }}
-                >
-                  <span className="text-[13.5px] text-muted-foreground">{label}</span>
-                  <span className="flex items-center gap-1.5 text-[13.5px] font-semibold text-mint-pulse">
-                    <Check className="h-4 w-4" />
-                    Synced
-                  </span>
-                </motion.div>
-              ))}
-            </div>
+            <ClaudeCodeTerminal
+              question={DEMOS[demoIndex].question}
+              answer={DEMOS[demoIndex].answer}
+              sources={DEMOS[demoIndex].sources}
+              active={on}
+              startDelay={DEMO_START_DELAY}
+              answerDelay={DEMO_ANSWER_DELAY}
+              sourcesDelay={DEMO_SOURCES_DELAY}
+              height={DEMO_CARD_HEIGHT}
+              contentKey={demoIndex}
+            />
           </motion.div>
         </div>
       </div>

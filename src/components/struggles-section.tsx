@@ -1,8 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { LaptopIcon, MessageCircleIcon } from "@/components/icons";
+import {
+  ClaudeCodeTerminal,
+  TypedMention,
+  useRevealPhases,
+  useTypedQuestion,
+} from "@/components/claude-code-terminal";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -60,207 +66,19 @@ const TABS: {
   },
 ];
 
-const MENTION = "@jarvis";
-
-/* ── Typing hook ──────────────────────────────────────────────── */
-
-function useTypedQuestion(text: string, active: boolean, startDelay = 600) {
-  const reduce = useReducedMotion();
-  const [count, setCount] = React.useState(0);
-  const done = count >= text.length;
-
-  React.useEffect(() => {
-    if (!active) return;
-    if (reduce) {
-      setCount(text.length);
-      return;
-    }
-    setCount(0);
-    const speed = 24;
-    let interval: ReturnType<typeof setInterval> | undefined;
-    const delay = setTimeout(() => {
-      const start = performance.now();
-      interval = setInterval(() => {
-        const next = Math.min(
-          Math.floor((performance.now() - start) / speed),
-          text.length,
-        );
-        setCount(next);
-        if (next >= text.length && interval) clearInterval(interval);
-      }, speed);
-    }, startDelay);
-    return () => {
-      clearTimeout(delay);
-      if (interval) clearInterval(interval);
-    };
-  }, [active, text, reduce, startDelay]);
-
-  return { count, done };
-}
-
-/* Renders the typed question with the @jarvis mention colored. */
-function TypedMention({
-  text,
-  count,
-  mentionClass,
-}: {
-  text: string;
-  count: number;
-  mentionClass: string;
-}) {
-  const mentionLen = MENTION.length;
-  const typedMention = text.slice(0, Math.min(count, mentionLen));
-  const typedRest = count > mentionLen ? text.slice(mentionLen, count) : "";
-  return (
-    <>
-      <span className={mentionClass}>{typedMention}</span>
-      {typedRest}
-    </>
-  );
-}
-
-/* Reveal phases shared by both demo windows. */
-function useRevealPhases(
-  questionDone: boolean,
-  active: boolean,
-  answerDelay = 650,
-  sourcesDelay = 1250,
-) {
-  const reduce = useReducedMotion();
-  const [answerVisible, setAnswerVisible] = React.useState(false);
-  const [sourcesVisible, setSourcesVisible] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!active || !questionDone) return;
-    if (reduce) {
-      setAnswerVisible(true);
-      setSourcesVisible(true);
-      return;
-    }
-    const t1 = setTimeout(() => setAnswerVisible(true), answerDelay);
-    const t2 = setTimeout(() => setSourcesVisible(true), sourcesDelay);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, [questionDone, active, reduce, answerDelay, sourcesDelay]);
-
-  return { answerVisible, sourcesVisible };
-}
-
 /* ── Claude Code window (Technical tab) ───────────────────────── */
-
-/* The Claude spark — Claude.com's own sprite animation (60ms/frame),
-   extracted from claude.com and trimmed to 72 frames (star shapes removed). */
-const SPARK_FRAMES = 72;
-
-function ClaudeSpark({ size = 28, className }: { size?: number; className?: string }) {
-  return (
-    <span
-      aria-hidden
-      className={"inline-block shrink-0 overflow-hidden " + (className ?? "")}
-      style={{ width: size, height: size }}
-    >
-      <span
-        className="cc-spark-strip block"
-        style={{
-          width: size,
-          height: size * SPARK_FRAMES,
-          background: "#D97757",
-          maskImage: 'url("/claude-spark-strip.webp")',
-          WebkitMaskImage: 'url("/claude-spark-strip.webp")',
-          maskSize: "100% 100%",
-          WebkitMaskSize: "100% 100%",
-          transform: `translateY(${-100 * (4 / SPARK_FRAMES)}%)`,
-        }}
-      />
-    </span>
-  );
-}
 
 function ClaudeCodeWindow({ active }: { active: boolean }) {
   const tab = TABS[0];
-  const { count, done } = useTypedQuestion(tab.question, active);
-  const { answerVisible, sourcesVisible } = useRevealPhases(done, active, 2800, 3450);
-
   return (
-    <div
-      className="overflow-hidden rounded-[12px] bg-coal-ink"
-      style={{ boxShadow: "rgba(95,99,106,0.12) 0px 0px 0px 1px, rgba(43,43,48,0.1) 0px 1px 4px 0px" }}
-    >
-      <style>{`
-        @keyframes cc-spark-spin {
-          0% { transform: translateY(0); }
-          to { transform: translateY(calc(-100% * 71 / 72)); }
-        }
-        .cc-spark-strip { animation: cc-spark-spin 4320ms steps(72, jump-none) infinite; }
-        @media (prefers-reduced-motion: reduce) {
-          .cc-spark-strip { animation: none; }
-        }
-      `}</style>
-
-      {/* Title bar */}
-      <div className="relative flex h-10 items-center border-b border-white/10 px-4">
-        <div className="flex items-center gap-2" aria-hidden>
-          <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-          <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
-          <span className="h-3 w-3 rounded-full bg-[#28c840]" />
-        </div>
-        <span className="absolute left-1/2 -translate-x-1/2 font-mono text-[11px] text-white/40">
-          Claude Code
-        </span>
-      </div>
-
-      {/* Terminal body */}
-      <div className="min-h-[248px] p-6 font-mono text-[13px] leading-[1.7]">
-        <div className="text-white/90">
-          <span className="mr-2 select-none text-white/35">❯</span>
-          <TypedMention text={tab.question} count={count} mentionClass="text-signal-violet" />
-          {!done && active && (
-            <span aria-hidden className="cursor-blink select-none text-white/70">▍</span>
-          )}
-        </div>
-
-        {/* Claude Code thinking spinner — the Claude spark */}
-        {done && !answerVisible && (
-          <div className="mt-5 flex items-center gap-3 text-white/50" aria-hidden>
-            <ClaudeSpark size={28} />
-            <span>Thinking…</span>
-          </div>
-        )}
-
-        <div
-          className="mt-5 flex gap-2.5 text-white/85"
-          style={{
-            opacity: answerVisible ? 1 : 0,
-            transform: answerVisible ? "translateY(0)" : "translateY(8px)",
-            transition: "opacity 420ms cubic-bezier(0.16,1,0.3,1), transform 420ms cubic-bezier(0.16,1,0.3,1)",
-          }}
-        >
-          <span className="select-none text-mint-pulse" aria-hidden>⏺</span>
-          <p>{tab.answer}</p>
-        </div>
-
-        <div
-          className="mt-5 flex flex-wrap gap-2 pl-[22px]"
-          style={{
-            opacity: sourcesVisible ? 1 : 0,
-            transform: sourcesVisible ? "translateY(0)" : "translateY(6px)",
-            transition: "opacity 380ms cubic-bezier(0.16,1,0.3,1), transform 380ms cubic-bezier(0.16,1,0.3,1)",
-          }}
-        >
-          {tab.sources.map((s) => (
-            <span
-              key={s.label}
-              className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[11px] tracking-[-0.1px] text-white/65"
-            >
-              <span aria-hidden>{s.icon}</span>
-              {s.label}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
+    <ClaudeCodeTerminal
+      question={tab.question}
+      answer={tab.answer}
+      sources={tab.sources}
+      active={active}
+      answerDelay={2800}
+      sourcesDelay={3450}
+    />
   );
 }
 
