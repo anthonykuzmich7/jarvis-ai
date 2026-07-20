@@ -227,9 +227,6 @@ function MobileHero() {
         >
           Get early access
         </a>
-        <p className="mt-3 max-w-[300px] text-center text-[12.5px] leading-[1.5] text-slate-mid">
-          Synced locally, scoped to what you can already see — nothing new to approve, nothing sent anywhere else.
-        </p>
       </div>
 
       {/* Robot video — fills remaining space, no gap */}

@@ -247,9 +247,6 @@ export function ScrubHero() {
         >
           Get early access
         </a>
-        <p className="mt-4 max-w-[420px] text-center text-[13px] leading-[1.5] text-slate-mid">
-          Synced locally, scoped to what you can already see — nothing new to approve, nothing sent anywhere else.
-        </p>
       </div>
       {!ready && (
         <div
