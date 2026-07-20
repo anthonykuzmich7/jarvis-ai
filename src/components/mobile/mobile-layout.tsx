@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { CheckIcon } from "@/components/icons";
+import { TrustSection } from "@/components/trust-section";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -215,10 +216,10 @@ function MobileHero() {
       {/* Copy — natural height, no fixed positioning */}
       <div className="flex flex-col items-center px-6 pt-20 pb-8 text-center">
         <h1 className="font-display text-balance text-center text-[36px] font-semibold leading-[1.12] tracking-[-0.72px] text-coal-ink">
-          Stop repeating yourself.<br />To your AI — and to your team.
+          Slack threads. Meeting notes. Code reviews.<br />Jarvis turns all of it into three things you should do today.
         </h1>
         <p className="mt-4 max-w-[320px] text-center text-[16px] leading-[1.5] tracking-[-0.16px] text-muted-foreground text-pretty">
-          Jarvis connects to every tool you work in. Syncs your context locally{" "}— private, on your device. And when your AI or your teammates need to know something, it gets exactly the right context. Just tag Jarvis.
+          Reads everything you&apos;re already cleared to see, syncs it locally, and hands your AI — and you — the context to act on it now.
         </p>
         <a
           href="#waitlist-mobile"
@@ -226,6 +227,9 @@ function MobileHero() {
         >
           Get early access
         </a>
+        <p className="mt-3 max-w-[300px] text-center text-[12.5px] leading-[1.5] text-slate-mid">
+          Synced locally, scoped to what you can already see — nothing new to approve, nothing sent anywhere else.
+        </p>
       </div>
 
       {/* Robot video — fills remaining space, no gap */}
@@ -431,6 +435,22 @@ function MobileContextLayer() {
         </div>
       </motion.div>
     </section>
+  );
+}
+
+/* ── Inline CTA ────────────────────────────────────────────────── */
+
+function MobileInlineCta() {
+  return (
+    <div className="flex justify-center bg-ledger-white px-6 py-10">
+      <a
+        href="#waitlist-mobile"
+        className="rounded-full border border-ash bg-white px-6 py-3 text-sm font-medium text-coal-ink transition-all"
+        style={{ boxShadow: "rgba(95,99,106,0.08) 0px 0px 0px 1px" }}
+      >
+        Get early access
+      </a>
+    </div>
   );
 }
 
@@ -683,7 +703,9 @@ export function MobileLayout() {
     <div className="flex flex-col bg-ledger-white">
       <MobileHero />
       <MobileProblem />
+      <TrustSection />
       <MobileContextLayer />
+      <MobileInlineCta />
       <MobileFeatures />
       <MobileOutcomes />
       <MobileWaitlist />
