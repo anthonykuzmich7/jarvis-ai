@@ -1,5 +1,6 @@
 import { ScrubHero } from "@/components/scrub-hero";
 import { StrugglesSection } from "@/components/struggles-section";
+import { TrustSection } from "@/components/trust-section";
 import { OrbitSyncJarvis } from "@/components/orbit-sync-jarvis";
 import { JarvisOverlaySection } from "@/components/jarvis-overlay-section";
 import { FeatureShowcase } from "@/components/feature-showcase";
@@ -56,6 +57,20 @@ function SectionHeading({
           {description}
         </p>
       ) : null}
+    </div>
+  );
+}
+
+function InlineCta() {
+  return (
+    <div className="flex justify-center bg-ledger-white py-10">
+      <a
+        href="#waitlist"
+        className="rounded-full border border-ash bg-white px-6 py-3 text-sm font-medium text-coal-ink transition-all hover:border-fossil hover:-translate-y-px"
+        style={{ boxShadow: "rgba(95,99,106,0.08) 0px 0px 0px 1px" }}
+      >
+        Get early access
+      </a>
     </div>
   );
 }
@@ -222,7 +237,9 @@ export default function Home() {
       <main className="hidden md:flex flex-1 flex-col">
         <ScrubHero />
         <StrugglesSection />
+        <TrustSection />
         <OrbitSyncJarvis />
+        <InlineCta />
         <JarvisOverlaySection />
         <FeatureShowcase />
         <OutcomesSwitch />
