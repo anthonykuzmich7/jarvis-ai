@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { CheckIcon } from "@/components/icons";
+import { TrustSection } from "@/components/trust-section";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -437,6 +438,22 @@ function MobileContextLayer() {
   );
 }
 
+/* ── Inline CTA ────────────────────────────────────────────────── */
+
+function MobileInlineCta() {
+  return (
+    <div className="flex justify-center bg-ledger-white px-6 py-10">
+      <a
+        href="#waitlist-mobile"
+        className="rounded-full border border-ash bg-white px-6 py-3 text-sm font-medium text-coal-ink transition-all"
+        style={{ boxShadow: "rgba(95,99,106,0.08) 0px 0px 0px 1px" }}
+      >
+        Get early access
+      </a>
+    </div>
+  );
+}
+
 /* ── Features ──────────────────────────────────────────────────── */
 
 const features = [
@@ -686,7 +703,9 @@ export function MobileLayout() {
     <div className="flex flex-col bg-ledger-white">
       <MobileHero />
       <MobileProblem />
+      <TrustSection />
       <MobileContextLayer />
+      <MobileInlineCta />
       <MobileFeatures />
       <MobileOutcomes />
       <MobileWaitlist />
