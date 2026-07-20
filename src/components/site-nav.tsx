@@ -15,7 +15,7 @@ export function SiteNav() {
   return (
     <NavBar
       items={navItems}
-      cta={{ label: "Get early access", url: "#waitlist", icon: Mail }}
+      cta={{ label: "Join waitlist", url: "#waitlist", icon: Mail }}
     />
   );
 }
