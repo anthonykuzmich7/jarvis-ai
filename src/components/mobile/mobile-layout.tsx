@@ -216,10 +216,10 @@ function MobileHero() {
       {/* Copy — natural height, no fixed positioning */}
       <div className="flex flex-col items-center px-6 pt-20 pb-8 text-center">
         <h1 className="font-display text-balance text-center text-[36px] font-semibold leading-[1.12] tracking-[-0.72px] text-coal-ink">
-          Slack threads. Meeting notes. Code reviews.<br />Jarvis turns all of it into three things you should do today.
+          Stop repeating yourself.<br />To your AI — and to your team.
         </h1>
         <p className="mt-4 max-w-[320px] text-center text-[16px] leading-[1.5] tracking-[-0.16px] text-muted-foreground text-pretty">
-          Reads everything you&apos;re already cleared to see, syncs it locally, and hands your AI — and you — the context to act on it now.
+          Jarvis connects to every tool you work in. Syncs your context locally{" "}— private, on your device. And when your AI or your teammates need to know something, it gets exactly the right context. Just tag Jarvis.
         </p>
         <a
           href="#waitlist-mobile"

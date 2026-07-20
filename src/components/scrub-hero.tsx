@@ -235,10 +235,10 @@ export function ScrubHero() {
       {/* Hero copy — sits in the upper third, clear of the robot */}
       <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center pb-[44vh] px-6">
         <h1 className="font-display text-balance text-center text-[44px] font-semibold leading-[1.12] tracking-[-0.88px] text-coal-ink sm:text-[56px] sm:tracking-[-1.12px]">
-          Slack threads. Meeting notes. Code reviews.<br />Jarvis turns all of it into three things you should do today.
+          Stop repeating yourself.<br />To your AI — and to your team.
         </h1>
         <p className="mt-5 max-w-[600px] text-center text-[17px] leading-[1.5] tracking-[-0.17px] text-muted-foreground text-pretty">
-          Reads everything you&apos;re already cleared to see, syncs it locally, and hands your AI — and you — the context to act on it now.
+          Jarvis connects to every tool you work in. Syncs your context locally — private, on your device. And when your AI or your teammates need to know something, it gets exactly the right context. Just tag Jarvis.
         </p>
         <a
           href="#waitlist"
