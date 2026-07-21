@@ -26,6 +26,25 @@ const TABS: {
   sources: { icon: string; label: string }[];
 }[] = [
   {
+    id: "non-technical",
+    label: "Non-technical",
+    struggleLead: "Your product ships faster than your pitch deck.",
+    struggleRest:
+      " On the call, a technical buyer asks about the API — and the real answer lives in an engineering Slack channel, written in dev-speak, three releases ahead of your battle card.",
+    question: "@jarvis did we ship SSO? and what should I not promise about the API yet?",
+    answer: (
+      <>
+        SSO shipped June 30 — SAML, tested with Okta and Azure AD. And careful
+        on the API: in Friday&rsquo;s eng sync the team said the rate-limit
+        rework lands next sprint — don&rsquo;t promise custom limits yet.
+      </>
+    ),
+    sources: [
+      { icon: "💬", label: "#api-platform" },
+      { icon: "🎙", label: "Granola — eng sync, Jul 10" },
+    ],
+  },
+  {
     id: "technical",
     label: "Technical",
     struggleLead: "Day 3.",
@@ -45,31 +64,12 @@ const TABS: {
       { icon: "⌥", label: "auth-service PR #142" },
     ],
   },
-  {
-    id: "non-technical",
-    label: "Non-technical",
-    struggleLead: "Your product ships faster than your pitch deck.",
-    struggleRest:
-      " On the call, a technical buyer asks about the API — and the real answer lives in an engineering Slack channel, written in dev-speak, three releases ahead of your battle card.",
-    question: "@jarvis did we ship SSO? and what should I not promise about the API yet?",
-    answer: (
-      <>
-        SSO shipped June 30 — SAML, tested with Okta and Azure AD. And careful
-        on the API: in Friday&rsquo;s eng sync the team said the rate-limit
-        rework lands next sprint — don&rsquo;t promise custom limits yet.
-      </>
-    ),
-    sources: [
-      { icon: "💬", label: "#api-platform" },
-      { icon: "🎙", label: "Granola — eng sync, Jul 10" },
-    ],
-  },
 ];
 
 /* ── Claude Code window (Technical tab) ───────────────────────── */
 
 function ClaudeCodeWindow({ active }: { active: boolean }) {
-  const tab = TABS[0];
+  const tab = TABS.find((t) => t.id === "technical")!;
   return (
     <ClaudeCodeTerminal
       question={tab.question}
@@ -103,7 +103,7 @@ function JarvisAvatar({ className }: { className?: string }) {
 }
 
 function SlackWindow({ active }: { active: boolean }) {
-  const tab = TABS[1];
+  const tab = TABS.find((t) => t.id === "non-technical")!;
   const { count, done } = useTypedQuestion(tab.question, active);
   const { answerVisible, sourcesVisible } = useRevealPhases(done, active);
 
@@ -228,7 +228,7 @@ function SlackWindow({ active }: { active: boolean }) {
 /* ── Section ──────────────────────────────────────────────────── */
 
 export function StrugglesSection() {
-  const [tabId, setTabId] = React.useState<TabId>("technical");
+  const [tabId, setTabId] = React.useState<TabId>("non-technical");
   const ref = React.useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.35 });
   const tab = TABS.find((t) => t.id === tabId)!;
@@ -236,8 +236,19 @@ export function StrugglesSection() {
   return (
     <section id="problem" className="scroll-mt-24 bg-ledger-white">
       <div className="mx-auto w-full max-w-6xl px-6 py-24 sm:py-32">
+        {/* Heading */}
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-balance font-display text-3xl font-semibold leading-[1.15] tracking-[-0.64px] text-foreground sm:text-4xl">
+            Same struggle. Every role.
+          </h2>
+          <p className="mt-4 text-pretty text-lg leading-relaxed text-muted-foreground">
+            Whether you write the code or sell it, the answer already exists
+            somewhere in your tools — just not where you can find it.
+          </p>
+        </div>
+
         {/* Tabs — centered above everything, the section's primary control */}
-        <div role="tablist" aria-label="Team struggles" className="flex justify-center gap-2">
+        <div role="tablist" aria-label="Team struggles" className="mt-10 flex justify-center gap-2">
           {TABS.map((t) => {
             const selected = t.id === tabId;
             const Icon = t.id === "technical" ? LaptopIcon : MessageCircleIcon;

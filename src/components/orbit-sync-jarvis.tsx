@@ -369,7 +369,11 @@ export function OrbitSyncJarvis() {
   }, [on, reduce, demoIndex]);
 
   return (
-    <section id="product" className="relative flex min-h-dvh scroll-mt-24 flex-col justify-start overflow-hidden bg-ledger-white">
+    <section
+      id="product"
+      className="relative flex min-h-dvh scroll-mt-24 flex-col justify-start overflow-hidden"
+      style={{ backgroundColor: "#FBFEFD" }}
+    >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_55%_45%_at_50%_46%,rgba(119,126,255,0.055)_0%,transparent_100%)]"

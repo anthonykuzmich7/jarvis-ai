@@ -236,11 +236,11 @@ export default function Home() {
       {/* Desktop layout — hidden on mobile */}
       <main className="hidden md:flex flex-1 flex-col">
         <ScrubHero />
+        <OrbitSyncJarvis />
+        <JarvisOverlaySection />
         <StrugglesSection />
         <TrustSection />
-        <OrbitSyncJarvis />
         <InlineCta />
-        <JarvisOverlaySection />
         <FeatureShowcase />
         <InlineCta />
         <OutcomesSwitch />

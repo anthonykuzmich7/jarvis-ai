@@ -228,7 +228,10 @@ export function JarvisOverlaySection() {
   const live   = inView || !!reduce;
 
   return (
-    <section className="relative overflow-hidden bg-parchment">
+    <section
+      className="relative overflow-hidden"
+      style={{ background: "linear-gradient(180deg, #bdd8ff 0%, #ffead6 100%)" }}
+    >
       {/* Subtle violet glow — gives the panel something to float against */}
       <div
         aria-hidden
@@ -241,7 +244,7 @@ export function JarvisOverlaySection() {
 
       <div
         ref={ref}
-        className="relative mx-auto flex min-h-[88vh] max-w-5xl flex-col items-center justify-center px-6 py-24 sm:py-32"
+        className="relative mx-auto flex min-h-[100dvh] max-w-5xl flex-col items-center justify-center px-6 py-24 sm:py-32"
       >
         {/* ⌘J keyboard hint */}
         <motion.div
