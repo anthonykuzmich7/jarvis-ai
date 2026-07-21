@@ -6,23 +6,13 @@ import { motion, useInView, useReducedMotion } from "framer-motion";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { CheckIcon } from "@/components/icons";
 import { TrustSection } from "@/components/trust-section";
+import { ClaudeCodeTerminal } from "@/components/claude-code-terminal";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 /* ── Chat animation (Problem section) — shared primitives ──────── */
 
 type AiPhase = "hidden" | "thinking" | "full";
-
-const PAIRS = [
-  {
-    user: "What was decided about the product direction last month?",
-    ai:   "I don't have access to your internal meetings or strategic decisions. I only know what you share in this conversation.",
-  },
-  {
-    user: "Who should I talk to about the new backend architecture?",
-    ai:   "I don't know your team's org chart or who owns what internally. I have no access to your systems.",
-  },
-];
 
 const CHAT_CSS = `
   .thinking-dot { animation: dot-bounce 1.2s ease-in-out infinite; }
@@ -254,48 +244,61 @@ function MobileHero() {
 
 /* ── Problem ───────────────────────────────────────────────────── */
 
-function MobileProblem() {
-  const [u1, setU1]       = useState(false);
-  const [a1, setA1]       = useState<AiPhase>("hidden");
-  const [u2Vis, setU2Vis] = useState(false);
-  const [a2, setA2]       = useState<AiPhase>("hidden");
-  const [pair, setPair]   = useState(0);
+const RESOLUTION_QUESTION =
+  "@jarvis who owns the auth service — and what changed there last month?";
+const RESOLUTION_ANSWER = (
+  <>
+    Mark and Dasha own auth. On July 2 the team switched token refresh to
+    rotating keys — decided in the backend sync, shipped in PR #142. Staging
+    deploy steps are pinned in #eng-infra.
+  </>
+);
+const RESOLUTION_SOURCES = [
+  { icon: "💬", label: "#backend-sync thread" },
+  { icon: "📝", label: "meeting notes, Jul 2" },
+  { icon: "⌥", label: "auth-service PR #142" },
+];
 
-  const timers  = useRef<ReturnType<typeof setTimeout>[]>([]);
+function MobileProblem() {
+  const [u1, setU1] = useState(false);
+  const [a1, setA1] = useState<AiPhase>("hidden");
+  const [showResolution, setShowResolution] = useState(false);
+
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.3 });
+  const reduce = useReducedMotion();
+
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const mounted = useRef(true);
-  const pairRef = useRef(0);
-  const cycleTs = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
+    if (!inView) return;
     mounted.current = true;
+
+    if (reduce) {
+      setU1(true);
+      setA1("full");
+      setShowResolution(true);
+      return;
+    }
+
     const s = (ms: number, fn: () => void) => {
       const id = setTimeout(() => { if (mounted.current) fn(); }, ms);
       timers.current.push(id);
     };
 
-    s(300,  () => setU1(true));
+    // Pain: a generic assistant hits a wall on the same question Jarvis
+    // will go on to answer below — the arc has to resolve, not just stop.
+    s(300, () => setU1(true));
     s(1100, () => setA1("thinking"));
     s(2900, () => setA1("full"));
-    s(4200, () => { setPair(0); pairRef.current = 0; setU2Vis(true); });
-    s(5100, () => setA2("thinking"));
-    s(6900, () => setA2("full"));
-    s(10000, startCycle);
-
-    function startCycle() {
-      const next = (pairRef.current + 1) % PAIRS.length;
-      const t1 = setTimeout(() => { if (!mounted.current) return; setU2Vis(false); setA2("thinking"); }, 0);
-      const t2 = setTimeout(() => { if (!mounted.current) return; pairRef.current = next; setPair(next); setU2Vis(true); }, 450);
-      const t3 = setTimeout(() => { if (!mounted.current) return; setA2("full"); }, 2350);
-      const t4 = setTimeout(() => { if (!mounted.current) return; startCycle(); }, 5800);
-      cycleTs.current = [t1, t2, t3, t4];
-    }
+    s(4300, () => setShowResolution(true));
 
     return () => {
       mounted.current = false;
       timers.current.forEach(clearTimeout);
-      cycleTs.current.forEach(clearTimeout);
     };
-  }, []);
+  }, [inView, reduce]);
 
   return (
     <>
@@ -321,52 +324,68 @@ function MobileProblem() {
           Get early access
         </a>
 
-        {/* Chat panel — full-width, height grows with content */}
-        <div className="mt-8 rounded-[20px]" style={{
-          position: "relative",
-          /* contain:paint clips grain/bg to border-radius without overflow:hidden
-             so the expanding AI bubbles are never clipped */
-          contain: "paint",
-          padding: "32px 20px",
-          background: [
-            "radial-gradient(ellipse 75% 60% at 12% 8%,  #9dc5f5 0%, transparent 62%)",
-            "radial-gradient(ellipse 65% 55% at 88% 5%,  #c8b0ec 0%, transparent 58%)",
-            "radial-gradient(ellipse 85% 65% at 50% 105%,#f5c9a0 0%, transparent 62%)",
-            "radial-gradient(ellipse 55% 45% at 82% 68%, #eab8d4 0%, transparent 52%)",
-            "linear-gradient(155deg, #b5d2f8 0%, #d0b8f0 42%, #f0d0b5 100%)",
-          ].join(","),
-        }}>
-          {/* Grain overlay */}
-          <div aria-hidden style={{
-            position: "absolute", inset: 0, opacity: 0.22, pointerEvents: "none",
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
-            backgroundSize: "200px 200px",
-          }} />
+        <div ref={ref}>
+          {/* Pain — generic assistant, no company context */}
+          <div className="mt-8 rounded-[20px]" style={{
+            position: "relative",
+            /* contain:paint clips grain/bg to border-radius without overflow:hidden
+               so the expanding AI bubbles are never clipped */
+            contain: "paint",
+            padding: "28px 20px",
+            background: [
+              "radial-gradient(ellipse 75% 60% at 12% 8%,  #9dc5f5 0%, transparent 62%)",
+              "radial-gradient(ellipse 65% 55% at 88% 5%,  #c8b0ec 0%, transparent 58%)",
+              "radial-gradient(ellipse 85% 65% at 50% 105%,#f5c9a0 0%, transparent 62%)",
+              "radial-gradient(ellipse 55% 45% at 82% 68%, #eab8d4 0%, transparent 52%)",
+              "linear-gradient(155deg, #b5d2f8 0%, #d0b8f0 42%, #f0d0b5 100%)",
+            ].join(","),
+          }}>
+            {/* Grain overlay */}
+            <div aria-hidden style={{
+              position: "absolute", inset: 0, opacity: 0.22, pointerEvents: "none",
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
+              backgroundSize: "200px 200px",
+            }} />
 
-          <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", gap: 10 }}>
-            <UserBubble visible={u1}>
-              Who owns the auth service and what&apos;s the deploy process?
-            </UserBubble>
-            <AiBubble phase={a1}>
-              I don&apos;t have access to your company&apos;s internal systems. I can&apos;t tell you who owns your auth service or how your deploy process works.
-            </AiBubble>
-            <div style={{
-              display: "flex", justifyContent: "flex-end",
-              opacity: u2Vis ? 1 : 0,
-              transform: u2Vis ? "translateY(0)" : "translateY(8px)",
-              transition: "opacity 360ms ease, transform 360ms cubic-bezier(0.05,0.7,0.1,1)",
-            }}>
-              <div style={{
-                background: "rgba(255,255,255,0.16)",
-                border: "1px solid rgba(255,255,255,0.58)",
-                backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-                color: "#fff", fontSize: 14, fontWeight: 500, lineHeight: 1.45,
-                padding: "10px 18px", borderRadius: "20px 20px 4px 20px",
-                maxWidth: "80%", textShadow: "0 1px 3px rgba(0,0,0,0.14)",
-              }}>{PAIRS[pair].user}</div>
+            <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", gap: 10 }}>
+              <p style={{
+                margin: 0, fontSize: 11, fontWeight: 600, textTransform: "uppercase",
+                letterSpacing: "0.08em", color: "rgba(255,255,255,0.75)",
+                textShadow: "0 1px 3px rgba(0,0,0,0.14)",
+              }}>
+                Without Jarvis
+              </p>
+              <UserBubble visible={u1}>
+                Who owns the auth service and what&apos;s the deploy process?
+              </UserBubble>
+              <AiBubble phase={a1}>
+                I don&apos;t have access to your company&apos;s internal systems. I can&apos;t tell you who owns your auth service or how your deploy process works.
+              </AiBubble>
             </div>
-            <AiBubble phase={a2}>{PAIRS[pair].ai}</AiBubble>
           </div>
+
+          {/* Resolution — same question, answered with real context in Jarvis's
+              actual product UI (shared with desktop's ClaudeCodeTerminal). */}
+          <motion.div
+            className="mt-6"
+            initial={reduce ? false : { opacity: 0, y: 16 }}
+            animate={showResolution ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, ease: EASE }}
+          >
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-mint-pulse">
+              With Jarvis
+            </p>
+            <ClaudeCodeTerminal
+              question={RESOLUTION_QUESTION}
+              answer={RESOLUTION_ANSWER}
+              sources={RESOLUTION_SOURCES}
+              active={showResolution}
+              startDelay={400}
+              answerDelay={2600}
+              sourcesDelay={3250}
+              minHeight={220}
+            />
+          </motion.div>
         </div>
       </section>
     </>

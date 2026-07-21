@@ -242,6 +242,7 @@ export default function Home() {
         <InlineCta />
         <JarvisOverlaySection />
         <FeatureShowcase />
+        <InlineCta />
         <OutcomesSwitch />
         <WaitlistSection />
         <FaqSection />

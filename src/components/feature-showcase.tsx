@@ -248,6 +248,36 @@ function KnowledgeDemo({ reduce }: { reduce: boolean | null }) {
         <span className="font-semibold">#payments</span>.{" "}
         <span className="text-[12px] font-semibold text-signal-violet">[1][2]</span>
       </motion.div>
+
+      {/* Proposed action — Jarvis surfaces a next step, not just an answer */}
+      <motion.div
+        className="rounded-xl border border-ash bg-white px-4 py-3"
+        style={{ boxShadow: "0 1px 6px rgba(43,43,48,0.07)" }}
+        initial={reduce ? false : { opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: EASE, delay: reduce ? 0 : 3.05 }}
+      >
+        <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-signal-violet">
+          Proposed action
+        </span>
+        <p className="mt-1 text-[13px] font-semibold leading-snug text-coal-ink">
+          Draft an intro to Maria in #payments
+        </p>
+        <div className="mt-1.5 flex items-center gap-1.5">
+          <ConfluenceMark className="h-3.5 w-3.5 shrink-0" />
+          <span className="text-[11px] text-slate-mid">Confluence · Billing ownership doc</span>
+          <span className="text-[11px] font-bold text-signal-violet">[1]</span>
+        </div>
+        <div className="mt-2.5 flex items-center gap-2">
+          <span className="flex items-center gap-1 rounded-full bg-coal-ink px-3 py-1 text-[11px] font-semibold text-white">
+            <CheckIcon className="h-3 w-3" />
+            Approve
+          </span>
+          <span className="rounded-full border border-ash px-3 py-1 text-[11px] font-medium text-coal-ink/70">
+            Edit
+          </span>
+        </div>
+      </motion.div>
     </div>
   );
 }
@@ -343,7 +373,7 @@ const jobs = [
     icon: CompassIcon,
     lead: "Company knowledge",
     title: "Knows how your company works",
-    status: "Answering · Cited",
+    status: "Answering · Proposing action",
     body: "Wired into Confluence and your stack, he knows the product, the code, and who owns what — so he can point you straight to the person who built it.",
     Demo: KnowledgeDemo,
   },
