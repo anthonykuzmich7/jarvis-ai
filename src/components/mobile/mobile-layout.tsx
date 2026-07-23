@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { CheckIcon } from "@/components/icons";
-import { TrustSection } from "@/components/trust-section";
 import { ClaudeCodeTerminal } from "@/components/claude-code-terminal";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -719,7 +718,6 @@ export function MobileLayout() {
     <div className="flex flex-col bg-ledger-white">
       <MobileHero />
       <MobileProblem />
-      <TrustSection />
       <MobileContextLayer />
       <MobileInlineCta />
       <MobileFeatures />

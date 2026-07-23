@@ -1,6 +1,5 @@
 import { ScrubHero } from "@/components/scrub-hero";
 import { StrugglesSection } from "@/components/struggles-section";
-import { TrustSection } from "@/components/trust-section";
 import { OrbitSyncJarvis } from "@/components/orbit-sync-jarvis";
 import { JarvisOverlaySection } from "@/components/jarvis-overlay-section";
 import { FeatureShowcase } from "@/components/feature-showcase";
@@ -239,8 +238,6 @@ export default function Home() {
         <OrbitSyncJarvis />
         <JarvisOverlaySection />
         <StrugglesSection />
-        <TrustSection />
-        <InlineCta />
         <FeatureShowcase />
         <InlineCta />
         <OutcomesSwitch />
