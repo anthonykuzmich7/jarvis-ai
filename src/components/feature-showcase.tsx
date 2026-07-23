@@ -212,7 +212,7 @@ export function FeatureShowcase() {
 
   return (
     <section id="features" className="scroll-mt-24 bg-background">
-      <div className="mx-auto w-full max-w-6xl px-6 pt-32 pb-24 sm:pt-44 sm:pb-32">
+      <div className="mx-auto w-full max-w-6xl px-6 pt-32 pb-32 sm:pt-44 sm:pb-44">
         <div className="grid items-center gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16">
 
           {/* Left: heading + selectable job list */}
