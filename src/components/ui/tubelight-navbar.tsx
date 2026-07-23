@@ -120,7 +120,7 @@ export function NavBar({ items, className, cta }: NavBarProps) {
         {cta && CtaIcon && (
           <Link
             href={cta.url}
-            className="relative ml-0.5 cursor-pointer rounded-full bg-coal-ink px-5 py-2 text-sm font-semibold tracking-[-0.14px] text-white transition-colors hover:bg-graphite"
+            className="cta-shine relative ml-0.5 cursor-pointer overflow-hidden rounded-full bg-coal-ink px-5 py-2 text-sm font-semibold tracking-[-0.14px] text-white transition-colors hover:bg-graphite"
           >
             <span className="hidden md:inline">{cta.label}</span>
             <span className="md:hidden">
