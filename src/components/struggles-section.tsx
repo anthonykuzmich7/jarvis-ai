@@ -289,6 +289,12 @@ export function StrugglesSection() {
               <span className="font-semibold text-coal-ink">{tab.struggleLead}</span>
               {tab.struggleRest}
             </motion.p>
+            <a
+              href="#waitlist"
+              className="mt-6 inline-flex items-center rounded-full border border-black/10 px-4 py-2 text-[14px] font-medium leading-none text-coal-ink/70 transition-colors hover:text-coal-ink"
+            >
+              Get early access
+            </a>
           </div>
 
           {/* Right — product demo window */}
