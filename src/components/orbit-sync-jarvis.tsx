@@ -379,7 +379,7 @@ export function OrbitSyncJarvis() {
         className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_55%_45%_at_50%_46%,rgba(119,126,255,0.055)_0%,transparent_100%)]"
       />
 
-      <div ref={ref} className="relative mx-auto w-full max-w-6xl px-6 pt-14 pb-24 sm:pt-16 sm:pb-32">
+      <div ref={ref} className="relative mx-auto w-full max-w-6xl px-6 pt-24 pb-24 sm:pt-36 sm:pb-32">
 
         {/* Heading */}
         <div className="mx-auto max-w-2xl text-center">
