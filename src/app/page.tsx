@@ -60,20 +60,6 @@ function SectionHeading({
   );
 }
 
-function InlineCta() {
-  return (
-    <div className="flex justify-center bg-ledger-white py-10">
-      <a
-        href="#waitlist"
-        className="rounded-full border border-ash bg-white px-6 py-3 text-sm font-medium text-coal-ink transition-all hover:border-fossil hover:-translate-y-px"
-        style={{ boxShadow: "rgba(95,99,106,0.08) 0px 0px 0px 1px" }}
-      >
-        Get early access
-      </a>
-    </div>
-  );
-}
-
 function WaitlistSection() {
   return (
     <section id="waitlist" className="scroll-mt-24 bg-ledger-white">
@@ -239,7 +225,6 @@ export default function Home() {
         <JarvisOverlaySection />
         <StrugglesSection />
         <FeatureShowcase />
-        <InlineCta />
         <OutcomesSwitch />
         <WaitlistSection />
         <FaqSection />
