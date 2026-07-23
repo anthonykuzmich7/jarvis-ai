@@ -473,19 +473,14 @@ function MobileInlineCta() {
 
 const features = [
   {
-    eyebrow: "Personal context",
-    title: "Carries your context",
-    body: "Your Slack, meetings, and contacts travel with you. Connect your AI tools over MCP and they already know what you're working on.",
+    eyebrow: "Morning briefing",
+    title: "Starts your day already prioritized",
+    body: "Overnight, Jarvis reads what moved in Slack, your calendar, and your inbox — then hands you three things worth doing today. Not a summary of everything. Just what matters.",
   },
   {
-    eyebrow: "Company knowledge",
-    title: "Knows how your company works",
-    body: "Wired into Confluence and your stack, he knows the product, the code, and who owns what — so he can point you straight to the person who built it.",
-  },
-  {
-    eyebrow: "Onboarding",
-    title: "Productive from day one",
-    body: "Jarvis provisions your access, answers your how-do-I questions, and surfaces the right contacts before you even have to ask.",
+    eyebrow: "Meeting overlay",
+    title: "Listens in every call, so you don't have to",
+    body: "Turn it on before any Zoom, Meet, or call. Jarvis listens quietly in the background and hands you a clean summary and action items the moment you hang up.",
   },
 ];
 
@@ -501,10 +496,11 @@ function MobileFeatures() {
           Features
         </p>
         <h2 className="mt-3 font-display text-[28px] font-bold leading-[1.13] tracking-[-0.84px] text-coal-ink text-balance">
-          One teammate, three jobs
+          Everything becomes a to-do list.
         </h2>
         <p className="mt-4 text-[15px] leading-[1.6] tracking-[-0.12px] text-slate-mid">
-          He knows your company, carries your context, and gets you productive from day one.
+          Messages while you slept. Meetings while you&rsquo;re in them. Jarvis turns both into
+          three things worth doing — not fifty things worth reading.
         </p>
 
         <div className="mt-8 flex flex-col gap-4">

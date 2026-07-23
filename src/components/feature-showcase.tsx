@@ -6,17 +6,13 @@ import {
   AnimatePresence,
   useReducedMotion,
 } from "framer-motion";
-import {
-  KeyIcon,
-  CompassIcon,
-  BrainIcon,
-  CheckIcon,
-} from "@/components/icons";
+import { ChecklistIcon, MicIcon, ArrowRightIcon } from "@/components/icons";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const CYCLE_MS = 5200;
 
-/* ---- Brand marks ------------------------------------------------------- */
+/* ---- Brand marks --------------------------------------------------------
+   Source-app badges for the morning-briefing task rows. */
 
 function SlackMark({ className }: { className?: string }) {
   return (
@@ -39,319 +35,149 @@ function GitHubMark({ className }: { className?: string }) {
   );
 }
 
-/* Zoom — official blue "Z" block mark */
-function ZoomMark({ className }: { className?: string }) {
+/* Gmail — official icon asset, same as jarvis-overlay-section.tsx */
+function GmailMark({ className }: { className?: string }) {
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src="/Gmail_icon_(2020).svg.webp" className={`${className ?? ""} object-contain`} alt="" aria-hidden />;
+}
+
+/* Jarvis brand mark — exact circular logo used site-wide (page.tsx's JarvisFace) */
+function JarvisMark({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden className={className}>
-      <path
-        fill="#0B5CFF"
-        d="M204.032 207.872H75.008c-8.448 0-16.64-4.608-20.48-12.032-4.608-8.704-2.816-19.2 4.096-26.112l89.856-89.856H83.968c-17.664 0-32-14.336-32-32h118.784c8.448 0 16.64 4.608 20.48 12.032 4.608 8.704 2.816 19.2-4.096 26.112l-89.6 90.112h74.496c17.664 0 32 14.08 32 31.744Z"
-      />
+    <svg viewBox="0 0 48 48" fill="none" aria-hidden className={className}>
+      <circle cx="24" cy="24" r="24" fill="#0E1A43" />
+      <ellipse cx="17.9609" cy="20.895" rx="3" ry="7" fill="#C5F4FF" />
+      <ellipse cx="29.9609" cy="20.895" rx="3" ry="7" fill="#C5F4FF" />
     </svg>
   );
 }
 
-/* Confluence — double boomerang in Atlassian blue */
-function ConfluenceMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden>
-      <defs>
-        <linearGradient id="conf-g1" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#0052CC" />
-          <stop offset="100%" stopColor="#2684FF" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M3.5 20.5C3.1 21.2 2.6 22 2.3 22.5c-.3.5-.1 1.1.4 1.4l5.3 3c.5.3 1.1.1 1.4-.4.4-.7 1.1-1.9 1.8-3C12.5 21.4 14.2 21 16 21c1.8 0 3.5.4 5 2.8.3.5.9.6 1.4.4l5.3-3c.5-.3.6-.9.3-1.4-.7-1.1-2.3-3.7-5.8-5.4-1.8-.9-3.6-.7-5.4 0C14.5 15 9 17.3 3.5 20.5z"
-        fill="url(#conf-g1)"
-      />
-      <path
-        d="M28.5 11.5C28.9 10.8 29.4 10 29.7 9.5c.3-.5.1-1.1-.4-1.4l-5.3-3c-.5-.3-1.1-.1-1.4.4-.4.7-1.1 1.9-1.8 3C19.5 10.6 17.8 11 16 11c-1.8 0-3.5-.4-5-2.8-.3-.5-.9-.6-1.4-.4l-5.3 3c-.5.3-.6.9-.3 1.4.7 1.1 2.3 3.7 5.8 5.4 1.8.9 3.6.7 5.4 0C17.5 17 23 14.7 28.5 11.5z"
-        fill="url(#conf-g1)"
-      />
-    </svg>
-  );
-}
+/* ---- Feature 1: Morning briefing mockup ----------------------------------
+   Static light card — no fake window chrome. Task copy reuses the same
+   fictional world (Acme, Dmitri, PR #212, SSO/Okta) established in
+   struggles-section.tsx and orbit-sync-jarvis.tsx for continuity. */
 
-/* AWS — orange wordmark + smile arrow */
-function AWSMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 40 24" className={className} aria-hidden>
-      <text x="20" y="11" textAnchor="middle" dominantBaseline="middle"
-        fontSize="13" fontWeight="800" fontFamily="'Arial Black',Arial,sans-serif"
-        fill="#FF9900" letterSpacing="-0.5">aws</text>
-      <path d="M6 19 Q20 25 34 19" fill="none" stroke="#FF9900" strokeWidth="2.2" strokeLinecap="round"/>
-      <path d="M31 17 L34 19 L31 21" fill="none" stroke="#FF9900" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-}
+const BRIEFING_TASKS = [
+  {
+    Mark: SlackMark,
+    title: "Follow up with Acme before today's renewal call",
+    meta: "#sales · 8:14am",
+  },
+  {
+    Mark: GitHubMark,
+    title: "Review PR #212 — Dmitri flagged a schema conflict",
+    meta: "auth-service · this morning",
+  },
+  {
+    Mark: GmailMark,
+    title: "Confirm SSO timeline with Okta before the board update",
+    meta: "Inbox · yesterday, 6:42pm",
+  },
+] as const;
 
-/* Okta — blue circle with white ring */
-function OktaMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden>
-      <circle cx="16" cy="16" r="16" fill="#007DC1" />
-      <circle cx="16" cy="16" r="7.5" fill="none" stroke="white" strokeWidth="3.5" />
-    </svg>
-  );
-}
+const CARD_SHADOW = "rgba(95,99,106,0.10) 0px 0px 0px 1px, rgba(43,43,48,0.12) 0px 4px 20px 0px";
 
-/* GitLab — orange fox mark */
-function GitLabMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 380 380" className={className} aria-hidden>
-      <path
-        d="M282.83 170.73l-.27-.69-26.14-68.22a6.81 6.81 0 0 0-2.58-3.03 7 7 0 0 0-8.5.59 7 7 0 0 0-2.13 3.46l-17.65 54H154.43l-17.65-54a6.86 6.86 0 0 0-2.13-3.46 7 7 0 0 0-8.5-.59 6.81 6.81 0 0 0-2.58 3.03L97.44 170l-.27.69a48.34 48.34 0 0 0 16 55.89l.09.07.24.17 39.54 29.61 19.56 14.82 11.93 9a8.07 8.07 0 0 0 9.9 0l11.93-9 19.56-14.82 39.84-29.78.1-.08a48.35 48.35 0 0 0 16.07-55.87z"
-        fill="#FC6D26"
-      />
-    </svg>
-  );
-}
-
-/* ---- Logo badge wrapper ------------------------------------------------ */
-
-function LogoBadge({
-  Mark,
-  pad = "p-[5px]",
-  size = "h-8 w-8",
-}: {
-  Mark: (props: { className?: string }) => React.JSX.Element;
-  pad?: string;
-  size?: string;
-}) {
+function BriefingDemo() {
   return (
     <div
-      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-ash bg-white ${size} ${pad}`}
-      style={{ boxShadow: "0 1px 4px rgba(43,43,48,0.09), 0 0 0 1px rgba(95,99,106,0.06)" }}
+      className="flex h-full w-full flex-col overflow-hidden rounded-[20px] border border-ash bg-white"
+      style={{ boxShadow: CARD_SHADOW }}
     >
-      <Mark className="h-full w-full" />
-    </div>
-  );
-}
-
-/* ---- Context demo (01) ------------------------------------------------- */
-
-const CTX_SOURCES = [
-  { Mark: SlackMark, pad: "p-[5px]", label: "Slack messages",   meta: "138 threads · decisions" },
-  { Mark: ZoomMark,  pad: "p-[5px]", label: "Meetings",          meta: "This week · transcripts" },
-  { Mark: GitHubMark,pad: "p-[4px]", label: "Codebase activity", meta: "PRs · code reviews"      },
-] as const;
-
-function ContextDemo({ reduce }: { reduce: boolean | null }) {
-  return (
-    <div className="flex h-full flex-col justify-between">
-      <div className="space-y-2.5">
-        {CTX_SOURCES.map((s, i) => (
-          <motion.div
-            key={s.label}
-            className="flex items-center gap-3 rounded-xl border border-ash bg-white px-3.5 py-2.5"
-            style={{ boxShadow: "0 1px 4px rgba(43,43,48,0.06)" }}
-            initial={reduce ? false : { opacity: 0, x: -14 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.38, ease: EASE, delay: reduce ? 0 : 0.15 + i * 0.3 }}
-          >
-            <LogoBadge Mark={s.Mark} pad={s.pad} />
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-semibold text-coal-ink">{s.label}</p>
-              <p className="text-[11px] text-slate-mid">{s.meta}</p>
-            </div>
-            <motion.div
-              className="flex shrink-0 items-center gap-1 rounded-full bg-mint-pulse/10 px-2.5 py-1"
-              initial={reduce ? false : { opacity: 0, scale: 0.75 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.25, ease: EASE, delay: reduce ? 0 : 0.38 + i * 0.3 }}
-            >
-              <CheckIcon className="h-3 w-3 text-mint-pulse" />
-              <span className="text-[10px] font-semibold text-mint-pulse">Synced</span>
-            </motion.div>
-          </motion.div>
-        ))}
+      {/* Header */}
+      <div className="flex items-center gap-3 px-6 pt-6">
+        <JarvisMark className="h-9 w-9 shrink-0" />
+        <div>
+          <p className="text-[16px] font-semibold leading-tight text-coal-ink">
+            Here&rsquo;s your top 3 for today
+          </p>
+          <p className="text-[12px] text-slate-mid">Thursday, July 23</p>
+        </div>
       </div>
 
-      {/* Context synced — white bg, no green tint */}
-      <motion.div
-        className="mt-4 rounded-xl border border-ash bg-white px-4 py-3"
-        style={{ boxShadow: "0 1px 4px rgba(43,43,48,0.06)" }}
-        initial={reduce ? false : { opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: EASE, delay: reduce ? 0 : 0.15 + CTX_SOURCES.length * 0.3 + 0.2 }}
-      >
-        <div className="flex items-center gap-2">
-          <CheckIcon className="h-3.5 w-3.5 text-mint-pulse" />
-          <span className="text-[12px] font-semibold text-mint-pulse">Context synced</span>
-        </div>
-        <p className="mt-0.5 text-[11px] text-slate-mid">Ready in Claude Code before you ask</p>
-      </motion.div>
-    </div>
-  );
-}
-
-/* ---- Knowledge demo (02) ----------------------------------------------- */
-
-const KNOW_SOURCES = [
-  { Mark: ConfluenceMark, pad: "p-[3px]", label: "Confluence" },
-  { Mark: GitHubMark,     pad: "p-[4px]", label: "Codebase"   },
-] as const;
-
-function KnowledgeDemo({ reduce }: { reduce: boolean | null }) {
-  return (
-    <div className="space-y-4">
-      {/* User query */}
-      <motion.div
-        className="ml-auto w-fit max-w-[80%] rounded-2xl rounded-tr-sm bg-coal-ink px-4 py-3 text-[14px] font-medium text-white"
-        style={{ boxShadow: "0 2px 8px rgba(28,26,23,0.22)" }}
-        initial={reduce ? false : { opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: EASE, delay: reduce ? 0 : 0.1 }}
-      >
-        Who owns billing?
-      </motion.div>
-
-      {/* Source chips with logo + scan-fill */}
-      <motion.div
-        className="flex items-center gap-2.5 flex-wrap"
-        initial={reduce ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.2, delay: reduce ? 0 : 0.65 }}
-      >
-        <span className="text-[12px] text-slate-mid">Checking</span>
-        {KNOW_SOURCES.map((s, i) => (
+      {/* Task rows — arrow affordance signals these are clickable */}
+      <div className="mt-5 flex-1 space-y-2.5 px-6">
+        {BRIEFING_TASKS.map((t) => (
           <div
-            key={s.label}
-            className="relative flex items-center gap-2 overflow-hidden rounded-xl border border-ash bg-white px-3 py-2"
-            style={{ boxShadow: "0 1px 4px rgba(43,43,48,0.08)" }}
+            key={t.title}
+            className="flex items-center gap-3 rounded-xl border border-ash bg-white px-3.5 py-3"
+            style={{ boxShadow: "0 1px 4px rgba(43,43,48,0.06)" }}
           >
-            <motion.span
-              className="absolute inset-0 origin-left bg-signal-violet/6"
-              initial={reduce ? false : { scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.55, ease: "linear", delay: reduce ? 0 : 0.75 + i * 0.45 }}
-            />
-            <div className={`relative flex h-6 w-6 shrink-0 items-center justify-center ${s.pad}`}>
-              <s.Mark className="h-full w-full" />
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-md border border-ash bg-white p-[5px]">
+              <t.Mark className="h-full w-full" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] font-medium leading-snug text-coal-ink">{t.title}</p>
+              <p className="mt-0.5 text-[11px] text-slate-mid">{t.meta}</p>
             </div>
-            <span className="relative text-[13px] font-semibold text-graphite">{s.label}</span>
-            <span className="relative text-[11px] font-bold text-signal-violet">[{i + 1}]</span>
+            <ArrowRightIcon className="h-4 w-4 shrink-0 text-stone" />
           </div>
         ))}
-      </motion.div>
+      </div>
 
-      {/* Answer bubble */}
-      <motion.div
-        className="w-fit max-w-[92%] rounded-2xl rounded-tl-sm border border-ash bg-white px-4 py-3 text-[14px] leading-relaxed text-coal-ink"
-        style={{ boxShadow: "0 1px 8px rgba(43,43,48,0.07)" }}
-        initial={reduce ? false : { opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: EASE, delay: reduce ? 0 : 2.2 }}
-      >
-        Maria owns billing. She built that part, ping her in{" "}
-        <span className="font-semibold">#payments</span>.{" "}
-        <span className="text-[12px] font-semibold text-signal-violet">[1][2]</span>
-      </motion.div>
-
-      {/* Proposed action — Jarvis surfaces a next step, not just an answer */}
-      <motion.div
-        className="rounded-xl border border-ash bg-white px-4 py-3"
-        style={{ boxShadow: "0 1px 6px rgba(43,43,48,0.07)" }}
-        initial={reduce ? false : { opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: EASE, delay: reduce ? 0 : 3.05 }}
-      >
-        <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-signal-violet">
-          Proposed action
-        </span>
-        <p className="mt-1 text-[13px] font-semibold leading-snug text-coal-ink">
-          Draft an intro to Maria in #payments
+      {/* Footer stat */}
+      <div className="px-6 pb-6 pt-3">
+        <p className="text-[11px] font-medium text-slate-mid">
+          3 priorities from 47 messages, 2 meetings
         </p>
-        <div className="mt-1.5 flex items-center gap-1.5">
-          <ConfluenceMark className="h-3.5 w-3.5 shrink-0" />
-          <span className="text-[11px] text-slate-mid">Confluence · Billing ownership doc</span>
-          <span className="text-[11px] font-bold text-signal-violet">[1]</span>
-        </div>
-        <div className="mt-2.5 flex items-center gap-2">
-          <span className="flex items-center gap-1 rounded-full bg-coal-ink px-3 py-1 text-[11px] font-semibold text-white">
-            <CheckIcon className="h-3 w-3" />
-            Approve
-          </span>
-          <span className="rounded-full border border-ash px-3 py-1 text-[11px] font-medium text-coal-ink/70">
-            Edit
-          </span>
-        </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
 
-/* ---- Access demo (03) -------------------------------------------------- */
+/* ---- Feature 2: Meeting overlay mockup ------------------------------------
+   Static light card: an abstracted (non-branded) video-call surface with the
+   same "Jarvis · status" pill already used in jarvis-overlay-section.tsx's
+   OverlayPanel floating on top — same shape, relabeled for the
+   meeting-listening use case. Uses the dark circular logo (not the light
+   variant) since it now sits over a colored background rather than a plain
+   white card. */
 
-const ACCESS_SYSTEMS = [
-  { Mark: AWSMark,    pad: "p-[5px]", label: "AWS"    },
-  { Mark: GitHubMark, pad: "p-[4px]", label: "GitHub" },
-  { Mark: OktaMark,   pad: "p-[4px]", label: "Okta"   },
-  { Mark: SlackMark,  pad: "p-[5px]", label: "Slack"  },
-  { Mark: GitLabMark, pad: "p-[4px]", label: "GitLab" },
+const CALL_TILES = [
+  { initials: "A", bg: "#eef1fb", avatar: "#8b93d9" },
+  { initials: "D", bg: "#eaf3f6", avatar: "#5fa8bf" },
+  { initials: "M", bg: "#f6eef6", avatar: "#b98cc4" },
+  { initials: "S", bg: "#f2f2ef", avatar: "#9a9a95" },
 ] as const;
 
-function AccessDemo({ reduce }: { reduce: boolean | null }) {
+function OverlayDemo() {
   return (
-    <div className="flex h-full flex-col gap-3">
-      {/* Timeline strip */}
-      <motion.div
-        className="flex items-center gap-3 rounded-xl border border-ash bg-white px-3.5 py-2.5"
-        style={{ boxShadow: "0 1px 4px rgba(43,43,48,0.06)" }}
-        initial={reduce ? false : { opacity: 0, y: -6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: EASE, delay: reduce ? 0 : 0.1 }}
-      >
-        <span className="text-[11px] font-medium text-stone line-through">Typical: 1–3 weeks</span>
-        <span className="text-fossil">→</span>
-        <span className="flex items-center gap-1.5 text-[11px] font-semibold text-coal-ink">
-          <span className="h-1.5 w-1.5 rounded-full bg-smolder" />
-          Today
-        </span>
-      </motion.div>
-
-      {/* Access rows with logos */}
-      <div className="space-y-1.5">
-        {ACCESS_SYSTEMS.map((s, i) => {
-          const delay = 0.28 + i * 0.22;
-          return (
-            <motion.div
-              key={s.label}
-              className="flex items-center gap-3 rounded-xl border border-ash bg-white px-3.5 py-2"
-              style={{ boxShadow: "0 1px 3px rgba(43,43,48,0.05)" }}
-              initial={reduce ? false : { opacity: 0, x: -12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.35, ease: EASE, delay: reduce ? 0 : delay }}
+    <div
+      className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[20px] border border-ash"
+      style={{ boxShadow: CARD_SHADOW }}
+    >
+      {/* Abstracted call surface — generic tiles, not a literal Zoom recreation */}
+      <div className="absolute inset-0 grid grid-cols-2 gap-2 bg-white p-4" aria-hidden>
+        {CALL_TILES.map((t) => (
+          <div key={t.initials} className="flex items-center justify-center rounded-xl" style={{ background: t.bg }}>
+            <span
+              className="flex h-11 w-11 items-center justify-center rounded-full text-[13px] font-semibold text-white"
+              style={{ background: t.avatar }}
             >
-              <LogoBadge Mark={s.Mark} pad={s.pad} size="h-6 w-6" />
-              <span className="flex-1 text-[13px] font-medium text-coal-ink">{s.label}</span>
-              <motion.div
-                className="flex items-center gap-1 rounded-full bg-mint-pulse/10 px-2.5 py-0.5"
-                initial={reduce ? false : { opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.22, ease: EASE, delay: reduce ? 0 : delay + 0.18 }}
-              >
-                <CheckIcon className="h-3 w-3 text-mint-pulse" />
-                <span className="text-[10px] font-semibold text-mint-pulse">granted</span>
-              </motion.div>
-            </motion.div>
-          );
-        })}
+              {t.initials}
+            </span>
+          </div>
+        ))}
       </div>
 
-      {/* Stat line */}
-      <motion.p
-        className="mt-auto text-[12px] font-semibold text-coal-ink"
-        initial={reduce ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{
-          duration: 0.4,
-          delay: reduce ? 0 : 0.28 + ACCESS_SYSTEMS.length * 0.22 + 0.3,
-        }}
+      {/* Status pill — same design as the ⌘J overlay section, relabeled */}
+      <div
+        className="relative z-10 flex items-center overflow-hidden rounded-full border border-ash bg-white"
+        style={{ boxShadow: "0 8px 30px rgba(43,43,48,0.16)" }}
       >
-        5 systems · 0 tickets · 18 min
-      </motion.p>
+        <div className="flex shrink-0 items-center gap-2.5 border-r border-ash px-5 py-[11px]">
+          <JarvisMark className="h-5 w-5" />
+          <span className="text-[13px] font-semibold text-coal-ink">Jarvis</span>
+        </div>
+        <div className="flex h-[42px] items-center gap-2.5 px-5">
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-[5px] border border-ash bg-white p-[3px]">
+            <MicIcon className="h-full w-full text-graphite" />
+          </span>
+          <span className="whitespace-nowrap text-[13px] text-slate-mid">
+            Listening to your meeting&hellip;
+          </span>
+          <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-signal-violet" />
+        </div>
+      </div>
     </div>
   );
 }
@@ -361,34 +187,23 @@ function AccessDemo({ reduce }: { reduce: boolean | null }) {
 const jobs = [
   {
     n: "01",
-    icon: BrainIcon,
-    lead: "Personal context",
-    title: "Carries your context",
-    status: "MCP · Building context",
-    body: "Your Slack, meetings, and contacts travel with you. Connect your AI tools over MCP and they already know what you're working on.",
-    Demo: ContextDemo,
+    icon: ChecklistIcon,
+    lead: "Morning briefing",
+    title: "Starts your day already prioritized",
+    body: "Overnight, Jarvis reads what moved in Slack, your calendar, and your inbox — then hands you three things worth doing today. Not a summary of everything. Just what matters.",
+    Demo: BriefingDemo,
   },
   {
     n: "02",
-    icon: CompassIcon,
-    lead: "Company knowledge",
-    title: "Knows how your company works",
-    status: "Answering · Proposing action",
-    body: "Wired into Confluence and your stack, he knows the product, the code, and who owns what — so he can point you straight to the person who built it.",
-    Demo: KnowledgeDemo,
+    icon: MicIcon,
+    lead: "Meeting overlay",
+    title: "Listens in every call, so you don't have to",
+    body: "Turn it on before any Zoom, Meet, or call. Jarvis listens quietly in the background and hands you a clean summary and action items the moment you hang up.",
+    Demo: OverlayDemo,
   },
-  {
-    n: "03",
-    icon: KeyIcon,
-    lead: "Onboarding",
-    title: "Productive from day one",
-    status: "Onboarding @new-hire",
-    body: "Jarvis provisions your access, answers your how-do-I questions, and surfaces the right contacts before you even have to ask.",
-    Demo: AccessDemo,
-  },
-];
+] as const;
 
-/* ---- Section ----------------------------------------------------------- */
+/* ---- Section ---------------------------------------------------------- */
 
 export function FeatureShowcase() {
   const reduce = useReducedMotion();
@@ -403,10 +218,11 @@ export function FeatureShowcase() {
           {/* Left: heading + selectable job list */}
           <div>
             <h2 className="font-display text-3xl font-bold leading-[1.13] tracking-[-0.96px] text-coal-ink sm:text-4xl text-balance">
-              One teammate, three jobs
+              Everything becomes a to-do list.
             </h2>
             <p className="mt-4 max-w-md text-[15px] leading-relaxed tracking-[-0.15px] text-slate-mid text-pretty">
-              He knows your company, carries your context, and gets you productive from day one.
+              Messages while you slept. Meetings while you&rsquo;re in them. Jarvis turns both
+              into three things worth doing — not fifty things worth reading.
             </p>
 
             {/* Job list — border-b on every item, not just last */}
@@ -479,40 +295,22 @@ export function FeatureShowcase() {
             </div>
           </div>
 
-          {/* Right: live stage — gradient background */}
-          <div
-            className="relative flex h-[360px] flex-col overflow-hidden rounded-[20px] border border-white/60 sm:h-[420px]"
-            style={{
-              background: "linear-gradient(170deg, rgb(189, 216, 255) 0%, rgb(255, 234, 214) 100%)",
-              boxShadow: "rgba(95,99,106,0.10) 0px 0px 0px 1px, rgba(43,43,48,0.12) 0px 4px 20px 0px",
-            }}
-          >
-            {/* Static status bar — always mounted, text updates instantly */}
-            <div className="flex shrink-0 items-center gap-2 border-b border-white/50 bg-white px-5 py-3">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint-pulse/50" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-mint-pulse" />
-              </span>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-graphite">
-                {jobs[active].status}
-              </span>
-            </div>
-
-            {/* Animated demo content */}
-            <div className="relative flex-1 overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={active}
-                  className="absolute inset-0 px-5 py-5"
-                  initial={reduce ? false : { opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={reduce ? undefined : { opacity: 0, y: -10 }}
-                  transition={{ duration: 0.35, ease: EASE }}
-                >
-                  <ActiveDemo reduce={reduce} />
-                </motion.div>
-              </AnimatePresence>
-            </div>
+          {/* Right: static mockup — sits directly on the section background,
+              no outer gradient frame. Only the switch between the two
+              mockups crossfades; each mockup itself is a single static frame. */}
+          <div className="relative h-[360px] sm:h-[420px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={active}
+                className="absolute inset-0"
+                initial={reduce ? false : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduce ? undefined : { opacity: 0, y: -10 }}
+                transition={{ duration: 0.35, ease: EASE }}
+              >
+                <ActiveDemo />
+              </motion.div>
+            </AnimatePresence>
           </div>
 
         </div>

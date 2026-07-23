@@ -143,6 +143,30 @@ export function LaptopIcon({ className }: IconProps) {
   );
 }
 
+export function ChecklistIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="m4 6 1.5 1.5L8 4.5" />
+      <path d="M11 6h9" />
+      <path d="m4 12 1.5 1.5L8 10.5" />
+      <path d="M11 12h9" />
+      <path d="m4 18 1.5 1.5L8 16.5" />
+      <path d="M11 18h9" />
+    </svg>
+  );
+}
+
+export function MicIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="9" y="2" width="6" height="11" rx="3" />
+      <path d="M5 10a7 7 0 0 0 14 0" />
+      <path d="M12 19v3" />
+      <path d="M8 22h8" />
+    </svg>
+  );
+}
+
 export function MessageCircleIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>
