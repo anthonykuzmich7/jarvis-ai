@@ -291,7 +291,7 @@ export function StrugglesSection() {
             </motion.p>
             <a
               href="#waitlist"
-              className="mt-6 inline-flex items-center rounded-full border border-black/10 px-4 py-2 text-[14px] font-medium leading-none text-coal-ink/70 transition-colors hover:text-coal-ink"
+              className="mt-6 inline-flex items-center rounded-full border border-black/10 px-4 py-2 text-[14px] font-medium leading-none text-coal-ink transition-colors hover:border-black/20"
             >
               Get early access
             </a>
