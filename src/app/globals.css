@@ -119,27 +119,27 @@ body {
 }
 
 /* Nav CTA shine sweep — same mechanic as glean.com's animated nav button
-   (a clipped, periodically-sweeping gradient band), recolored with our own
-   cyan/violet brand accents instead of their asset. Idle most of the cycle,
-   then a quick diagonal glint passes through. */
+   (an oversized soft-edged glow panned across, cropped by the button's own
+   rounded/clipped bounds), recolored with our own cyan/violet brand accents.
+   Idle most of the cycle, then a slow glide drifts through — no hard edges
+   anywhere in the shape, so it can't read as a moving bar/shard. */
 @keyframes cta-shine-sweep {
-  0%, 75% { transform: translateX(-160%) skewX(-14deg); }
-  100%    { transform: translateX(260%) skewX(-14deg); }
+  0%, 82% { transform: translateX(-90%); }
+  100%    { transform: translateX(190%); }
 }
 .cta-shine::before {
   content: "";
   position: absolute;
-  top: -30%;
+  top: -60%;
   left: 0;
-  width: 30%;
-  height: 160%;
-  background: linear-gradient(
-    115deg,
-    transparent 0%,
-    rgba(197, 244, 255, 0.5) 45%,
-    rgba(119, 126, 255, 0.55) 60%,
-    transparent 100%
+  width: 60%;
+  height: 220%;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    rgba(119, 126, 255, 0.5) 0%,
+    rgba(197, 244, 255, 0.32) 35%,
+    transparent 68%
   );
-  animation: cta-shine-sweep 5s ease-in-out infinite;
+  animation: cta-shine-sweep 6.5s ease-in-out infinite;
   pointer-events: none;
 }
