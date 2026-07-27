@@ -167,6 +167,8 @@ Full-bleed background #000000, centered Inter 400 14px white body text, orange (
 
 Background #ffffff, border-bottom 1px solid #f1f1f1, height ~60px. Left: Mona Sans wordmark 'panxo' + Inter 500 11px 'AI' label. Center: Inter 500 14px nav links at #5a5957 with chevron dropdowns. Right: 'Sign In' ghost text, 'Get Started' pill #1c1a17 48px radius. 'Early Access' badge uses #10b981 green with Inter 600 10px uppercase tracking.
 
+**Nav link active/current-page state:** text color #1c1a17 at semibold weight (vs #5a5957 regular for inactive links), plus a 2px #1c1a17 underline positioned under the label. No background fill, no pill, no glow — this state must stay visually lighter than any filled CTA pill in the same bar, since a dark filled pill on a nav link reads as a second competing CTA next to the real one.
+
 ### Product Demo UI Card
 **Role:** Hero section interactive visualization of AI traffic classification
 

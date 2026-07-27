@@ -84,10 +84,10 @@ export function NavBar({ items, className, cta }: NavBarProps) {
               href={item.url}
               onClick={() => setActiveTab(item.name)}
               className={cn(
-                "relative cursor-pointer text-sm font-medium px-5 py-2 rounded-full transition-colors tracking-[-0.14px]",
+                "relative cursor-pointer text-sm px-5 py-2 rounded-full transition-colors tracking-[-0.14px]",
                 isActive
-                  ? "text-white hover:text-white/90"
-                  : "text-graphite hover:text-coal-ink",
+                  ? "font-semibold text-coal-ink"
+                  : "font-medium text-graphite hover:text-coal-ink",
               )}
             >
               <span className="hidden md:inline">{item.name}</span>
@@ -96,21 +96,15 @@ export function NavBar({ items, className, cta }: NavBarProps) {
               </span>
               {isActive && (
                 <motion.div
-                  layoutId="lamp"
-                  className="absolute inset-0 w-full bg-coal-ink rounded-full -z-10"
+                  layoutId="nav-underline"
+                  className="absolute inset-x-5 bottom-[2px] h-[2px] rounded-full bg-coal-ink"
                   initial={false}
                   transition={{
                     type: "spring",
                     stiffness: 300,
                     damping: 30,
                   }}
-                >
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-coal-ink/60 rounded-t-full">
-                    <div className="absolute w-12 h-6 bg-coal-ink/12 rounded-full blur-md -top-2 -left-2" />
-                    <div className="absolute w-8 h-6 bg-coal-ink/12 rounded-full blur-md -top-1" />
-                    <div className="absolute w-4 h-4 bg-coal-ink/8 rounded-full blur-sm top-0 left-2" />
-                  </div>
-                </motion.div>
+                />
               )}
             </Link>
           );
