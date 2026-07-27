@@ -4,9 +4,9 @@ import { Home, Clock, Box, Layers, MessageSquare, Mail } from "lucide-react";
 import { NavBar } from "@/components/ui/tubelight-navbar";
 
 const navItems = [
-  { name: "Home",     url: "#",         icon: Home },
-  { name: "Problem",  url: "#problem",  icon: Clock },
+  { name: "Home",     url: "#home",     icon: Home },
   { name: "Product",  url: "#product",  icon: Box },
+  { name: "Problem",  url: "#problem",  icon: Clock },
   { name: "Features", url: "#features", icon: Layers },
   { name: "FAQ",      url: "#faq",      icon: MessageSquare },
 ];

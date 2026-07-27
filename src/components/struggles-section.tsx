@@ -27,7 +27,7 @@ const TABS: {
 }[] = [
   {
     id: "non-technical",
-    label: "Non-technical",
+    label: "Non-technical users",
     struggleLead: "Your product ships faster than your pitch deck.",
     struggleRest:
       " On the call, a technical buyer asks about the API — and the real answer lives in an engineering Slack channel, written in dev-speak, three releases ahead of your battle card.",
@@ -46,7 +46,7 @@ const TABS: {
   },
   {
     id: "technical",
-    label: "Technical",
+    label: "Technical users",
     struggleLead: "Day 3.",
     struggleRest:
       " Fourteen Confluence tabs, a deploy process nobody wrote down — and the one person who knows it is in another timezone. Your question waits until their morning. So do you.",

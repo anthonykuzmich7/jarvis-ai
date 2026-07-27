@@ -212,10 +212,11 @@ export function ScrubHero() {
 
   return (
     <section
+      id="home"
       onMouseMove={(e) => setTargetFromX(e.clientX)}
       onTouchMove={(e) => e.touches.length && setTargetFromX(e.touches[0].clientX)}
       style={{ cursor: "ew-resize", backgroundColor: "#FBFEFD" }}
-      className="relative min-h-[100dvh] w-screen overflow-hidden"
+      className="relative min-h-[100dvh] w-screen scroll-mt-24 overflow-hidden"
     >
       {/* Video — robot scrub */}
       <video

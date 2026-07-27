@@ -22,12 +22,24 @@ export function NavBar({ items, className, cta }: NavBarProps) {
   const [activeTab, setActiveTab] = useState(items[0].name);
   const CtaIcon = cta?.icon;
 
+  // Next's Link hash-scroll can misfire while the tubelight/underline layout
+  // animation is running (wrong target, or no scroll at all), so we drive
+  // the scroll ourselves and just use the href for the URL/history update.
+  const goToSection = (e: React.MouseEvent, url: string) => {
+    if (!url.startsWith("#") || url.length < 2) return;
+    const el = document.getElementById(url.slice(1));
+    if (!el) return;
+    e.preventDefault();
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    history.pushState(null, "", url);
+  };
+
   // Scroll-spy: light up (and spring the tubelight to) the section in view.
   useEffect(() => {
     const sectionItems = items.filter(
       (item) => item.url.startsWith("#") && item.url.length > 1,
     );
-    const homeItem = items.find((item) => item.url === "#");
+    const homeItem = items[0];
 
     const elements = sectionItems
       .map((item) => {
@@ -82,7 +94,10 @@ export function NavBar({ items, className, cta }: NavBarProps) {
             <Link
               key={item.name}
               href={item.url}
-              onClick={() => setActiveTab(item.name)}
+              onClick={(e) => {
+                setActiveTab(item.name);
+                goToSection(e, item.url);
+              }}
               className={cn(
                 "relative cursor-pointer text-sm px-5 py-2 rounded-full transition-colors tracking-[-0.14px]",
                 isActive
@@ -114,6 +129,7 @@ export function NavBar({ items, className, cta }: NavBarProps) {
         {cta && CtaIcon && (
           <Link
             href={cta.url}
+            onClick={(e) => goToSection(e, cta.url)}
             className="cta-shine relative ml-0.5 cursor-pointer overflow-hidden rounded-full bg-coal-ink px-5 py-2 text-sm font-semibold tracking-[-0.14px] text-white transition-colors hover:bg-graphite"
           >
             <span className="hidden md:inline">{cta.label}</span>
