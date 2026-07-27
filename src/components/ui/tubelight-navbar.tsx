@@ -18,6 +18,42 @@ interface NavBarProps {
   cta?: { label: string; url: string; icon: LucideIcon };
 }
 
+// Matches every section's `scroll-mt-24` — the fixed nav's clearance.
+const NAV_CLEARANCE = 96;
+
+// A plain `scrollIntoView({ behavior: "smooth" })` computes its target once
+// and animates toward that fixed pixel value. Sections above the target
+// (OrbitSyncJarvis, JarvisOverlaySection) run entrance animations that can
+// still be shifting layout while the scroll is mid-flight, so the browser's
+// one-shot target goes stale and we land short or long of the section.
+// Recomputing the target every step makes the scroll self-correcting.
+// setTimeout (not requestAnimationFrame) so the scroll can't stall if the
+// tab loses visibility mid-click. Each step jumps instantly to its computed
+// position — letting the ambient CSS `scroll-behavior: smooth` (globals.css)
+// also animate each micro-step would fight this loop and stall the scroll.
+function smoothScrollToId(id: string) {
+  let steps = 0;
+  function step() {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const before = window.scrollY;
+    const targetY = before + el.getBoundingClientRect().top - NAV_CLEARANCE;
+    const diff = targetY - before;
+    if (Math.abs(diff) < 1) {
+      window.scrollTo({ top: targetY, behavior: "instant" });
+      return;
+    }
+    window.scrollTo({ top: before + diff * 0.18, behavior: "instant" });
+    steps += 1;
+    // Stop once the page can't scroll any further (target sits past the
+    // document's bottom, e.g. FAQ) — otherwise diff never reaches <1 and
+    // this would loop forever. The step cap is just a hard safety net.
+    if (window.scrollY === before || steps > 120) return;
+    setTimeout(step, 16);
+  }
+  step();
+}
+
 export function NavBar({ items, className, cta }: NavBarProps) {
   const [activeTab, setActiveTab] = useState(items[0].name);
   const CtaIcon = cta?.icon;
@@ -27,10 +63,10 @@ export function NavBar({ items, className, cta }: NavBarProps) {
   // the scroll ourselves and just use the href for the URL/history update.
   const goToSection = (e: React.MouseEvent, url: string) => {
     if (!url.startsWith("#") || url.length < 2) return;
-    const el = document.getElementById(url.slice(1));
-    if (!el) return;
+    const id = url.slice(1);
+    if (!document.getElementById(id)) return;
     e.preventDefault();
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    smoothScrollToId(id);
     history.pushState(null, "", url);
   };
 
