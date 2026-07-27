@@ -120,13 +120,17 @@ export function NavBar({ items, className, cta }: NavBarProps) {
           with no shared boundary color (e.g. JarvisOverlaySection's peach
           gradient tail against the next section's white), and the pill
           itself only covers its own width, so without this the nav-mt
-          clearance strip shows a raw seam of whatever section is behind it. */}
+          clearance strip shows a raw seam of whatever section is behind it.
+          Fully opaque through NAV_CLEARANCE (96px = 60% of this 160px block)
+          so nothing can show through there at all, then fades out below —
+          by that point we're already inside the target section's own
+          matching background, so the fade never exposes a seam either. */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-x-0 top-0 z-40 hidden h-28 sm:block"
+        className="pointer-events-none fixed inset-x-0 top-0 z-40 hidden h-40 sm:block"
         style={{
           background:
-            "linear-gradient(180deg, var(--color-ledger-white) 0%, color-mix(in srgb, var(--color-ledger-white) 70%, transparent) 55%, transparent 100%)",
+            "linear-gradient(180deg, var(--color-ledger-white) 0%, var(--color-ledger-white) 60%, transparent 100%)",
         }}
       />
       <div
