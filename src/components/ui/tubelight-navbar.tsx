@@ -115,66 +115,81 @@ export function NavBar({ items, className, cta }: NavBarProps) {
   }, [items]);
 
   return (
-    <div
-      className={cn(
-        "fixed bottom-0 sm:bottom-auto sm:top-0 left-1/2 -translate-x-1/2 z-50 mb-6 sm:pt-5",
-        className,
-      )}
-    >
-      <div className="flex items-center gap-1 bg-white/90 border border-ash backdrop-blur-lg py-1 px-1 rounded-full shadow-[rgba(95,99,106,0.10)_0px_0px_0px_1px,rgba(43,43,48,0.08)_0px_4px_16px_0px]">
-        {items.map((item) => {
-          const Icon = item.icon;
-          const isActive = activeTab === item.name;
-
-          return (
-            <Link
-              key={item.name}
-              href={item.url}
-              onClick={(e) => {
-                setActiveTab(item.name);
-                goToSection(e, item.url);
-              }}
-              className={cn(
-                "relative shrink-0 cursor-pointer whitespace-nowrap text-sm px-5 py-2 rounded-full transition-colors tracking-[-0.14px]",
-                isActive
-                  ? "font-semibold text-coal-ink"
-                  : "font-medium text-graphite hover:text-coal-ink",
-              )}
-            >
-              <span className="hidden md:inline">{item.name}</span>
-              <span className="md:hidden">
-                <Icon size={18} strokeWidth={2} />
-              </span>
-              {isActive && (
-                <motion.div
-                  layoutId="nav-underline"
-                  className="absolute inset-x-5 bottom-[2px] h-[2px] rounded-full bg-coal-ink"
-                  initial={false}
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 30,
-                  }}
-                />
-              )}
-            </Link>
-          );
-        })}
-
-        {/* Panxo-style filled CTA pill — always visible, no tubelight */}
-        {cta && CtaIcon && (
-          <Link
-            href={cta.url}
-            onClick={(e) => goToSection(e, cta.url)}
-            className="cta-shine relative ml-0.5 shrink-0 cursor-pointer overflow-hidden whitespace-nowrap rounded-full bg-coal-ink px-5 py-2 text-sm font-semibold tracking-[-0.14px] text-white transition-colors hover:bg-graphite"
-          >
-            <span className="hidden md:inline">{cta.label}</span>
-            <span className="md:hidden">
-              <CtaIcon size={18} strokeWidth={2} />
-            </span>
-          </Link>
+    <>
+      {/* Scrim behind the nav pill — sections butt up against each other
+          with no shared boundary color (e.g. JarvisOverlaySection's peach
+          gradient tail against the next section's white), and the pill
+          itself only covers its own width, so without this the nav-mt
+          clearance strip shows a raw seam of whatever section is behind it. */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 top-0 z-40 hidden h-28 sm:block"
+        style={{
+          background:
+            "linear-gradient(180deg, var(--color-ledger-white) 0%, color-mix(in srgb, var(--color-ledger-white) 70%, transparent) 55%, transparent 100%)",
+        }}
+      />
+      <div
+        className={cn(
+          "fixed bottom-0 sm:bottom-auto sm:top-0 left-1/2 -translate-x-1/2 z-50 mb-6 sm:pt-5",
+          className,
         )}
+      >
+        <div className="flex items-center gap-1 bg-white/90 border border-ash backdrop-blur-lg py-1 px-1 rounded-full shadow-[rgba(95,99,106,0.10)_0px_0px_0px_1px,rgba(43,43,48,0.08)_0px_4px_16px_0px]">
+          {items.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.name;
+
+            return (
+              <Link
+                key={item.name}
+                href={item.url}
+                onClick={(e) => {
+                  setActiveTab(item.name);
+                  goToSection(e, item.url);
+                }}
+                className={cn(
+                  "relative shrink-0 cursor-pointer whitespace-nowrap text-sm px-5 py-2 rounded-full transition-colors tracking-[-0.14px]",
+                  isActive
+                    ? "font-semibold text-coal-ink"
+                    : "font-medium text-graphite hover:text-coal-ink",
+                )}
+              >
+                <span className="hidden md:inline">{item.name}</span>
+                <span className="md:hidden">
+                  <Icon size={18} strokeWidth={2} />
+                </span>
+                {isActive && (
+                  <motion.div
+                    layoutId="nav-underline"
+                    className="absolute inset-x-5 bottom-[2px] h-[2px] rounded-full bg-coal-ink"
+                    initial={false}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
+                    }}
+                  />
+                )}
+              </Link>
+            );
+          })}
+
+          {/* Panxo-style filled CTA pill — always visible, no tubelight */}
+          {cta && CtaIcon && (
+            <Link
+              href={cta.url}
+              onClick={(e) => goToSection(e, cta.url)}
+              className="cta-shine relative ml-0.5 shrink-0 cursor-pointer overflow-hidden whitespace-nowrap rounded-full bg-coal-ink px-5 py-2 text-sm font-semibold tracking-[-0.14px] text-white transition-colors hover:bg-graphite"
+            >
+              <span className="hidden md:inline">{cta.label}</span>
+              <span className="md:hidden">
+                <CtaIcon size={18} strokeWidth={2} />
+              </span>
+            </Link>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
