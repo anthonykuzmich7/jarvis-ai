@@ -212,11 +212,12 @@ function SiteFooter() {
 export default function Home() {
   return (
     <>
-      {/* Brand mark fixed top-left; tubelight nav floats top-center / bottom on mobile. */}
-      <div className="fixed left-6 top-5 z-50 sm:left-8 sm:top-6">
+      {/* Mobile only: brand mark fixed top-left, independent of the bottom-fixed pill nav. */}
+      <div className="fixed left-6 top-5 z-50 sm:hidden">
         <Wordmark />
       </div>
-      <SiteNav />
+      {/* Desktop: brand mark lives inside the sticky nav bar's left slot. */}
+      <SiteNav brand={<Wordmark />} />
 
       {/* Desktop layout — hidden on mobile */}
       <main className="hidden md:flex flex-1 flex-col">

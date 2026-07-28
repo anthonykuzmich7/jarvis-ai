@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Home, Clock, Box, Layers, MessageSquare, Mail } from "lucide-react";
 import { NavBar } from "@/components/ui/tubelight-navbar";
 
@@ -11,11 +12,12 @@ const navItems = [
   { name: "FAQ",      url: "#faq",      icon: MessageSquare },
 ];
 
-export function SiteNav() {
+export function SiteNav({ brand }: { brand?: ReactNode }) {
   return (
     <NavBar
       items={navItems}
       cta={{ label: "Get early access", url: "#waitlist", icon: Mail }}
+      brand={brand}
     />
   );
 }
