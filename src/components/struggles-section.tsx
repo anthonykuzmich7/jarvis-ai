@@ -234,7 +234,7 @@ export function StrugglesSection() {
   const tab = TABS.find((t) => t.id === tabId)!;
 
   return (
-    <section id="problem" className="scroll-mt-24 bg-ledger-white">
+    <section id="problem" className="scroll-mt-16 bg-ledger-white">
       <div className="mx-auto w-full max-w-6xl px-6 py-24 sm:py-32">
         {/* Heading */}
         <div className="mx-auto max-w-2xl text-center">

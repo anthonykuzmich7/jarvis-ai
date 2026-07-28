@@ -62,7 +62,7 @@ function SectionHeading({
 
 function WaitlistSection() {
   return (
-    <section id="waitlist" className="scroll-mt-24 bg-ledger-white">
+    <section id="waitlist" className="scroll-mt-16 bg-ledger-white">
       <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
         {/* Contained card with Panxo video background */}
         <div
@@ -139,7 +139,7 @@ function FaqSection() {
   ];
 
   return (
-    <section id="faq" className="scroll-mt-24 bg-ledger-white">
+    <section id="faq" className="scroll-mt-16 bg-ledger-white">
       <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
         <div className="grid gap-16 lg:grid-cols-[2fr_3fr] lg:gap-24">
 

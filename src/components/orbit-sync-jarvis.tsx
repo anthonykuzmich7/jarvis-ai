@@ -371,7 +371,7 @@ export function OrbitSyncJarvis() {
   return (
     <section
       id="product"
-      className="relative flex min-h-dvh scroll-mt-24 flex-col justify-start overflow-hidden"
+      className="relative flex min-h-dvh scroll-mt-16 flex-col justify-start overflow-hidden"
       style={{ backgroundColor: "#FBFEFD" }}
     >
       <div

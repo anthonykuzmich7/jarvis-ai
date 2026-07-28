@@ -211,7 +211,7 @@ export function FeatureShowcase() {
   const ActiveDemo = jobs[active].Demo;
 
   return (
-    <section id="features" className="scroll-mt-24 bg-background">
+    <section id="features" className="scroll-mt-16 bg-background">
       <div className="mx-auto w-full max-w-6xl px-6 pt-32 pb-32 sm:pt-44 sm:pb-44">
         <div className="grid items-center gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16">
 
