@@ -16,10 +16,12 @@ interface NavBarProps {
   items: NavItem[];
   className?: string;
   cta?: { label: string; url: string; icon: LucideIcon };
+  brand?: React.ReactNode;
 }
 
-// Matches every section's `scroll-mt-24` — the fixed nav's clearance.
-const NAV_CLEARANCE = 96;
+// Matches every section's `scroll-mt-16` and the sticky bar's own height
+// (h-16 = 64px) — keeps anchor-jump targets landing just below the bar.
+const NAV_CLEARANCE = 64;
 
 // A plain `scrollIntoView({ behavior: "smooth" })` computes its target once
 // and animates toward that fixed pixel value. Sections above the target
@@ -54,9 +56,8 @@ function smoothScrollToId(id: string) {
   step();
 }
 
-export function NavBar({ items, className, cta }: NavBarProps) {
+export function NavBar({ items, className, cta, brand }: NavBarProps) {
   const [activeTab, setActiveTab] = useState(items[0].name);
-  const CtaIcon = cta?.icon;
 
   // Next's Link hash-scroll can misfire while the tubelight/underline layout
   // animation is running (wrong target, or no scroll at all), so we drive
@@ -116,26 +117,10 @@ export function NavBar({ items, className, cta }: NavBarProps) {
 
   return (
     <>
-      {/* Scrim behind the nav pill — sections butt up against each other
-          with no shared boundary color (e.g. JarvisOverlaySection's peach
-          gradient tail against the next section's white), and the pill
-          itself only covers its own width, so without this the nav-mt
-          clearance strip shows a raw seam of whatever section is behind it.
-          Fully opaque through NAV_CLEARANCE (96px = 60% of this 160px block)
-          so nothing can show through there at all, then fades out below —
-          by that point we're already inside the target section's own
-          matching background, so the fade never exposes a seam either. */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-x-0 top-0 z-40 hidden h-40 sm:block"
-        style={{
-          background:
-            "linear-gradient(180deg, var(--color-ledger-white) 0%, var(--color-ledger-white) 60%, transparent 100%)",
-        }}
-      />
+      {/* Mobile: bottom-fixed floating pill — unchanged, out of scope for the sticky-bar redesign */}
       <div
         className={cn(
-          "fixed bottom-0 sm:bottom-auto sm:top-0 left-1/2 -translate-x-1/2 z-50 mb-6 sm:pt-5",
+          "fixed bottom-0 left-1/2 z-50 mb-6 -translate-x-1/2 sm:hidden",
           className,
         )}
       >
@@ -165,7 +150,7 @@ export function NavBar({ items, className, cta }: NavBarProps) {
                 </span>
                 {isActive && (
                   <motion.div
-                    layoutId="nav-underline"
+                    layoutId="nav-underline-mobile"
                     className="absolute inset-x-5 bottom-[2px] h-[2px] rounded-full bg-coal-ink"
                     initial={false}
                     transition={{
@@ -179,8 +164,7 @@ export function NavBar({ items, className, cta }: NavBarProps) {
             );
           })}
 
-          {/* Panxo-style filled CTA pill — always visible, no tubelight */}
-          {cta && CtaIcon && (
+          {cta && cta.icon && (
             <Link
               href={cta.url}
               onClick={(e) => goToSection(e, cta.url)}
@@ -188,8 +172,67 @@ export function NavBar({ items, className, cta }: NavBarProps) {
             >
               <span className="hidden md:inline">{cta.label}</span>
               <span className="md:hidden">
-                <CtaIcon size={18} strokeWidth={2} />
+                <cta.icon size={18} strokeWidth={2} />
               </span>
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Desktop: sticky, opaque, full-width bar — reserves real layout height so content can never start behind it */}
+      <div
+        className={cn(
+          "sticky top-0 z-50 hidden w-full border-b border-ash bg-white sm:block",
+          className,
+        )}
+      >
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 sm:px-8">
+          <div className="flex items-center">{brand}</div>
+
+          <div className="flex items-center gap-1">
+            {items.map((item) => {
+              const isActive = activeTab === item.name;
+
+              return (
+                <Link
+                  key={item.name}
+                  href={item.url}
+                  onClick={(e) => {
+                    setActiveTab(item.name);
+                    goToSection(e, item.url);
+                  }}
+                  className={cn(
+                    "relative shrink-0 cursor-pointer whitespace-nowrap text-sm px-4 py-2 tracking-[-0.14px] transition-colors",
+                    isActive
+                      ? "font-semibold text-coal-ink"
+                      : "font-medium text-graphite hover:text-coal-ink",
+                  )}
+                >
+                  {item.name}
+                  {isActive && (
+                    <motion.div
+                      layoutId="nav-underline-desktop"
+                      className="absolute inset-x-4 bottom-0 h-[2px] rounded-full bg-coal-ink"
+                      initial={false}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+
+          {cta && (
+            <Link
+              href={cta.url}
+              onClick={(e) => goToSection(e, cta.url)}
+              className="cta-shine relative shrink-0 cursor-pointer overflow-hidden whitespace-nowrap rounded-full bg-coal-ink px-5 py-2 text-sm font-semibold tracking-[-0.14px] text-white transition-colors hover:bg-graphite"
+            >
+              {cta.label}
             </Link>
           )}
         </div>
