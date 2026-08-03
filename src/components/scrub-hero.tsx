@@ -234,7 +234,7 @@ export function ScrubHero() {
       {TOOLS.map((t) => <ToolIcon key={t.name} {...t} />)}
 
       {/* Hero copy — sits in the upper third, clear of the robot */}
-      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center pb-[44vh] px-6">
+      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center pb-[52vh] px-6">
         <h1 className="font-display text-balance text-center text-[44px] font-semibold leading-[1.12] tracking-[-0.88px] text-coal-ink sm:text-[56px] sm:tracking-[-1.12px]">
           Stop repeating yourself.<br />To your AI — and to your team.
         </h1>
