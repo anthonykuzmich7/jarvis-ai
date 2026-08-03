@@ -160,7 +160,7 @@ const DEMOS: Demo[] = [
 const DEMO_START_DELAY   = 700;
 const DEMO_ANSWER_DELAY  = 2200;
 const DEMO_SOURCES_DELAY = 2700;
-const DEMO_READ_HOLD     = 3800; // time to read the answer before advancing
+const DEMO_READ_HOLD     = 5200; // time to read the answer before advancing
 
 function demoDurationMs(question: string) {
   return DEMO_START_DELAY + question.length * TYPE_SPEED_MS + DEMO_SOURCES_DELAY + DEMO_READ_HOLD;
