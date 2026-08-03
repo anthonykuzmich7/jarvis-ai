@@ -220,7 +220,7 @@ export default function Home() {
       <SiteNav brand={<Wordmark />} />
 
       {/* Desktop layout — hidden on mobile */}
-      <main className="hidden md:flex flex-1 flex-col">
+      <main className="hidden md:flex flex-1 flex-col" style={{ backgroundColor: "#FBFEFD" }}>
         <ScrubHero />
         <OrbitSyncJarvis />
         <JarvisOverlaySection />
