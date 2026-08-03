@@ -227,8 +227,8 @@ export default function Home() {
         <StrugglesSection />
         <FeatureShowcase />
         <OutcomesSwitch />
-        <WaitlistSection />
         <FaqSection />
+        <WaitlistSection />
       </main>
       <div className="hidden md:block"><SiteFooter /></div>
 

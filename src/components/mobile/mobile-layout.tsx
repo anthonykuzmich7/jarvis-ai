@@ -718,8 +718,8 @@ export function MobileLayout() {
       <MobileInlineCta />
       <MobileFeatures />
       <MobileOutcomes />
-      <MobileWaitlist />
       <MobileFaq />
+      <MobileWaitlist />
       <MobileFooter />
     </div>
   );
