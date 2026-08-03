@@ -371,7 +371,7 @@ export function OrbitSyncJarvis() {
   return (
     <section
       id="product"
-      className="relative flex min-h-dvh scroll-mt-16 flex-col justify-center overflow-hidden"
+      className="relative flex min-h-[calc(100dvh-4rem)] scroll-mt-16 flex-col justify-center overflow-hidden"
       style={{ backgroundColor: "#FBFEFD" }}
     >
       <div
@@ -379,7 +379,7 @@ export function OrbitSyncJarvis() {
         className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_55%_45%_at_50%_46%,rgba(119,126,255,0.055)_0%,transparent_100%)]"
       />
 
-      <div ref={ref} className="relative mx-auto w-full max-w-6xl px-6 py-28 sm:py-40">
+      <div ref={ref} className="relative mx-auto w-full max-w-6xl px-6 py-8 sm:py-10">
 
         {/* Heading */}
         <div className="mx-auto max-w-2xl text-center">
