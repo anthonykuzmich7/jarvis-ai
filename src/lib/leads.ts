@@ -1,25 +1,57 @@
 /*
   Lead storage seam.
 
-  Right now this just logs the signup so the waitlist form works end to end.
-  To actually persist leads for validation, wire one of these up inside
-  `saveLead` (all work on Vercel):
-
-    - Upstash Redis or Neon Postgres via the Vercel Marketplace
-    - A form service (Formspree, Resend audience, Loops, ConvertKit)
-    - A Google Sheet via an API route
+  Leads land in a Google Sheet (see docs/google-sheets-setup.md). When the
+  credentials aren't set — local dev, preview deploys — this logs the signup
+  instead so the form still works end to end.
 
   Keep the signature stable so the form and server action don't change.
 */
+
+import { appendRow, readSheetsConfig } from "@/lib/google-sheets";
+import { roleLabel } from "@/lib/roles";
 
 export type Lead = {
   email: string;
   role?: string;
   source: string;
   createdAt: string;
+  /** Path the signup happened on, e.g. "/" or "/compare". */
+  page?: string;
+  /** External referrer, blank for direct traffic and same-site navigation. */
+  referrer?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  /** Two-letter country from Vercel's edge geo header. */
+  country?: string;
 };
 
+/** Builds the row in SHEET_COLUMNS order. */
+function toRow(lead: Lead): string[] {
+  return [
+    lead.createdAt,
+    lead.email,
+    roleLabel(lead.role),
+    lead.source,
+    lead.page ?? "",
+    lead.referrer ?? "",
+    lead.utmSource ?? "",
+    lead.utmMedium ?? "",
+    lead.utmCampaign ?? "",
+    lead.country ?? "",
+  ];
+}
+
 export async function saveLead(lead: Lead): Promise<void> {
-  // TODO: replace with a real datastore. See note above.
-  console.log("[waitlist] new signup:", JSON.stringify(lead));
+  const config = readSheetsConfig();
+
+  if (!config) {
+    console.log("[waitlist] no Sheets config, logging only:", JSON.stringify(lead));
+    return;
+  }
+
+  // Let this throw: a dropped lead should surface as a retryable error in the
+  // form rather than a silent success.
+  await appendRow(config, toRow(lead));
 }

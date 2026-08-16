@@ -1,6 +1,8 @@
 "use server";
 
+import { headers } from "next/headers";
 import { saveLead } from "@/lib/leads";
+import { ROLE_OPTIONS } from "@/lib/roles";
 
 export type WaitlistState = {
   status: "idle" | "success" | "error";
@@ -8,6 +10,18 @@ export type WaitlistState = {
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Attribution fields come from the browser, so cap them before they reach the
+// sheet. Long enough for a real referrer or campaign name, short enough that a
+// junk submission can't bloat a row.
+const MAX_ATTRIBUTION_LEN = 300;
+
+function attribution(formData: FormData, field: string): string {
+  return String(formData.get(field) ?? "")
+    .replace(/[\r\n\t]+/g, " ")
+    .trim()
+    .slice(0, MAX_ATTRIBUTION_LEN);
+}
 
 export async function joinWaitlist(
   _prev: WaitlistState,
@@ -19,7 +33,10 @@ export async function joinWaitlist(
   }
 
   const email = String(formData.get("email") ?? "").trim();
-  const role = String(formData.get("role") ?? "").trim() || undefined;
+  const submittedRole = String(formData.get("role") ?? "").trim();
+  const role = ROLE_OPTIONS.some((option) => option.value === submittedRole)
+    ? submittedRole
+    : undefined;
 
   if (!EMAIL_RE.test(email)) {
     return {
@@ -28,14 +45,25 @@ export async function joinWaitlist(
     };
   }
 
+  // Vercel sets this at the edge; absent locally.
+  const country = (await headers()).get("x-vercel-ip-country") ?? "";
+
   try {
     await saveLead({
       email,
       role,
       source: "landing-waitlist",
       createdAt: new Date().toISOString(),
+      page: attribution(formData, "page"),
+      referrer: attribution(formData, "referrer"),
+      utmSource: attribution(formData, "utm_source"),
+      utmMedium: attribution(formData, "utm_medium"),
+      utmCampaign: attribution(formData, "utm_campaign"),
+      country,
     });
-  } catch {
+  } catch (error) {
+    // Log the cause — the visitor only ever sees the generic message.
+    console.error("[waitlist] failed to save lead:", error);
     return {
       status: "error",
       message: "Something went wrong. Please try again.",

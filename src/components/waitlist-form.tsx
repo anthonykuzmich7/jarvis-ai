@@ -2,18 +2,39 @@
 
 import { useActionState, useRef, useState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
+import { track } from "@vercel/analytics/react";
 import { joinWaitlist, type WaitlistState } from "@/app/actions";
 import { ArrowRightIcon, CheckIcon } from "@/components/icons";
+import { ROLE_OPTIONS } from "@/lib/roles";
 
 const initialState: WaitlistState = { status: "idle", message: "" };
 
-const ROLE_OPTIONS = [
-  { value: "c-level",      label: "C-Level / Executive" },
-  { value: "it-devops",    label: "IT / DevOps" },
-  { value: "engineering",  label: "Engineering" },
-  { value: "people-hr",    label: "People / HR" },
-  { value: "other",        label: "Other" },
-];
+/**
+ * Where this visitor came from. Read at submit time — `document` and
+ * `location` don't exist during a server render.
+ */
+function attributionFields(): Record<string, string> {
+  const params = new URLSearchParams(window.location.search);
+
+  // Same-origin referrers are internal navigation, not where they came from.
+  let referrer = "";
+  if (document.referrer) {
+    try {
+      const url = new URL(document.referrer);
+      if (url.hostname !== window.location.hostname) referrer = document.referrer;
+    } catch {
+      // Malformed referrer: treat as direct traffic.
+    }
+  }
+
+  return {
+    page: window.location.pathname,
+    referrer,
+    utm_source: params.get("utm_source") ?? "",
+    utm_medium: params.get("utm_medium") ?? "",
+    utm_campaign: params.get("utm_campaign") ?? "",
+  };
+}
 
 function ChevronDown({ className }: { className?: string }) {
   return (
@@ -49,7 +70,7 @@ function RoleSelect({ name }: { name: string }) {
         className="flex h-[52px] w-full cursor-pointer items-center justify-between rounded-[12px] border border-ash bg-white px-4 text-[14px] outline-none transition-[border-color,box-shadow] focus-visible:border-coal-ink focus-visible:ring-2 focus-visible:ring-coal-ink/10"
       >
         <span className={selected ? "text-coal-ink" : "text-stone"}>
-          {selected?.label ?? "I'm in…"}
+          {selected?.label ?? "Who are you?"}
         </span>
         <ChevronDown
           className={`h-4 w-4 shrink-0 text-graphite transition-transform duration-200 ${open ? "rotate-180" : ""}`}
@@ -103,6 +124,17 @@ function SubmitButton() {
 export function WaitlistForm() {
   const [state, formAction] = useActionState(joinWaitlist, initialState);
 
+  useEffect(() => {
+    if (state.status === "success") track("waitlist_signup");
+  }, [state.status]);
+
+  const submit = (formData: FormData) => {
+    for (const [name, value] of Object.entries(attributionFields())) {
+      formData.set(name, value);
+    }
+    formAction(formData);
+  };
+
   if (state.status === "success") {
     return (
       <div
@@ -122,7 +154,7 @@ export function WaitlistForm() {
   }
 
   return (
-    <form action={formAction} noValidate>
+    <form action={submit} noValidate>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         {/* Email */}
         <div className="flex-1">
