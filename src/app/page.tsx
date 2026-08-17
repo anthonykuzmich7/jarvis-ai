@@ -5,7 +5,6 @@ import { JarvisOverlaySection } from "@/components/jarvis-overlay-section";
 import { FeatureShowcase } from "@/components/feature-showcase";
 import { OutcomesSwitch } from "@/components/outcomes-switch";
 import { WaitlistForm } from "@/components/waitlist-form";
-import { WaitlistSteps } from "@/components/waitlist-steps";
 import { SiteNav } from "@/components/site-nav";
 import { ShieldIcon } from "@/components/icons";
 import { MobileLayout } from "@/components/mobile/mobile-layout";
@@ -89,7 +88,6 @@ function WaitlistSection() {
             <h2 className="font-display text-[40px] font-bold leading-[1.1] tracking-[-1.44px] text-coal-ink text-balance sm:text-[52px] sm:tracking-[-2px]">
               Get Jarvis for your team
             </h2>
-            <WaitlistSteps />
 
             {/* Frosted glass form card */}
             <div

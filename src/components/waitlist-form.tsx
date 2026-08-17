@@ -4,7 +4,7 @@ import { useActionState, useRef, useState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { track } from "@vercel/analytics/react";
 import { joinWaitlist, type WaitlistState } from "@/app/actions";
-import { ArrowRightIcon, CheckIcon } from "@/components/icons";
+import { ArrowRightIcon } from "@/components/icons";
 import { ROLE_OPTIONS } from "@/lib/roles";
 
 const initialState: WaitlistState = { status: "idle", message: "" };
@@ -137,18 +137,27 @@ export function WaitlistForm() {
 
   if (state.status === "success") {
     return (
-      <div
-        role="status"
-        aria-live="polite"
-        className="mx-auto flex max-w-md items-center gap-3 rounded-xl border border-mint-pulse/30 bg-mint-pulse/8 px-5 py-4 text-left"
-      >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-mint-pulse text-white">
-          <CheckIcon className="h-5 w-5" />
-        </span>
-        <div>
-          <p className="font-semibold text-coal-ink">You&apos;re on the list</p>
-          <p className="text-[13px] text-slate-mid">{state.message}</p>
-        </div>
+      <div role="status" aria-live="polite" className="py-2 text-center">
+        {/* Live status indicator — Panxo reserves Mint Pulse for signal states, not fills */}
+        <p className="flex items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-graphite">
+          <span aria-hidden className="relative flex h-1.5 w-1.5">
+            <span className="signal-pulse absolute inline-flex h-full w-full rounded-full bg-mint-pulse" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-mint-pulse" />
+          </span>
+          On the list
+        </p>
+
+        <p className="mx-auto mt-4 max-w-sm text-[15px] leading-[1.55] tracking-[-0.16px] text-slate-mid text-pretty">
+          {state.email ? (
+            <>
+              We&apos;ll email{" "}
+              <span className="font-semibold text-coal-ink">{state.email}</span>{" "}
+              as we open spots.
+            </>
+          ) : (
+            "We'll email you as we open spots."
+          )}
+        </p>
       </div>
     );
   }

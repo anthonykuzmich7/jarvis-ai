@@ -7,6 +7,8 @@ import { ROLE_OPTIONS } from "@/lib/roles";
 export type WaitlistState = {
   status: "idle" | "success" | "error";
   message: string;
+  /** Echoed back on success so the confirmation can name the address we captured. */
+  email?: string;
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -72,6 +74,7 @@ export async function joinWaitlist(
 
   return {
     status: "success",
-    message: "You're on the list. We'll be in touch soon.",
+    message: "",
+    email,
   };
 }

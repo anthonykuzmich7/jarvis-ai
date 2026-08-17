@@ -4,7 +4,6 @@ import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { WaitlistForm } from "@/components/waitlist-form";
-import { WaitlistSteps } from "@/components/waitlist-steps";
 import { CheckIcon } from "@/components/icons";
 import { ClaudeCodeTerminal } from "@/components/claude-code-terminal";
 
@@ -619,7 +618,6 @@ function MobileWaitlist() {
           <h2 className="font-display text-[30px] font-bold leading-[1.1] tracking-[-0.9px] text-coal-ink text-balance">
             Get Jarvis for your team
           </h2>
-          <WaitlistSteps compact />
           <div
             className="mt-8 rounded-2xl bg-white/85 px-5 py-6 backdrop-blur-md"
             style={{ boxShadow: "rgba(255,255,255,0.35) 0px 0px 0px 1px, rgba(43,43,48,0.1) 0px 4px 24px 0px" }}
