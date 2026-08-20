@@ -50,11 +50,17 @@ export async function joinWaitlist(
   // Vercel sets this at the edge; absent locally.
   const country = (await headers()).get("x-vercel-ip-country") ?? "";
 
+  // Local and preview signups hit the same sheet as production. Label them so a
+  // test row is never mistaken for a real lead.
+  const env = process.env.VERCEL_ENV ?? "local";
+  const source =
+    env === "production" ? "landing-waitlist" : `landing-waitlist:${env}`;
+
   try {
     await saveLead({
       email,
       role,
-      source: "landing-waitlist",
+      source,
       createdAt: new Date().toISOString(),
       page: attribution(formData, "page"),
       referrer: attribution(formData, "referrer"),

@@ -6,35 +6,10 @@ import { track } from "@vercel/analytics/react";
 import { joinWaitlist, type WaitlistState } from "@/app/actions";
 import { ArrowRightIcon } from "@/components/icons";
 import { ROLE_OPTIONS } from "@/lib/roles";
+import { attributionFields } from "@/lib/attribution";
 
 const initialState: WaitlistState = { status: "idle", message: "" };
 
-/**
- * Where this visitor came from. Read at submit time — `document` and
- * `location` don't exist during a server render.
- */
-function attributionFields(): Record<string, string> {
-  const params = new URLSearchParams(window.location.search);
-
-  // Same-origin referrers are internal navigation, not where they came from.
-  let referrer = "";
-  if (document.referrer) {
-    try {
-      const url = new URL(document.referrer);
-      if (url.hostname !== window.location.hostname) referrer = document.referrer;
-    } catch {
-      // Malformed referrer: treat as direct traffic.
-    }
-  }
-
-  return {
-    page: window.location.pathname,
-    referrer,
-    utm_source: params.get("utm_source") ?? "",
-    utm_medium: params.get("utm_medium") ?? "",
-    utm_campaign: params.get("utm_campaign") ?? "",
-  };
-}
 
 function ChevronDown({ className }: { className?: string }) {
   return (
