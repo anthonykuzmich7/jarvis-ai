@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!--
+    The Jarvis pause-disc, canonical proportions from jarvis-ai-core
+    (MarkGeometry.swift): bars 0.12 wide, 0.24 tall, 0.12 gap, 0.06 corner,
+    centred on the disc. Drawn on a 100-unit disc so every number is a
+    percentage of D.
+
+    A browser tab can be light or dark, and a solid disc would vanish into one
+    of them. So the tab icon follows the tab: the core spec's canonical
+    colouring (white disc, #0A0A0B bars) on dark, inverted on light.
+  -->
+  <style>
+    .disc { fill: #0A0A0B; }
+    .bars { fill: #FFFFFF; }
+    @media (prefers-color-scheme: dark) {
+      .disc { fill: #FFFFFF; }
+      .bars { fill: #0A0A0B; }
+    }
+  </style>
+  <circle class="disc" cx="50" cy="50" r="50" />
+  <rect class="bars" x="32" y="38" width="12" height="24" rx="6" />
+  <rect class="bars" x="56" y="38" width="12" height="24" rx="6" />
+</svg>

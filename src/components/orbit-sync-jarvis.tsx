@@ -3,6 +3,7 @@
 import * as React from "react";
 import { motion, useAnimationFrame, useInView, useReducedMotion } from "framer-motion";
 import { ClaudeCodeTerminal, TYPE_SPEED_MS } from "@/components/claude-code-terminal";
+import { MARK, MARK_INK, MARK_PAPER } from "@/components/jarvis-mark";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -95,10 +96,14 @@ const TRUNK_Y2 = H;        // 300
 /* Animated dash period (dash 3 + gap 8 = 11) */
 const DASH_PERIOD = 11;
 
-/* Eye constants (48-unit SVG viewBox) */
-const EYE_L_CX    = 17.9609;
-const EYE_R_CX    = 29.9609;
-const EYE_CY      = 20.895;
+/* Pause-bar constants, canonical proportions on the 48-unit viewBox (D = 48).
+   See jarvis-mark.tsx / MarkGeometry.swift: 0.12 wide, 0.24 tall, 0.12 gap. */
+const BAR_W       = MARK.barW * 48;      // 5.76
+const BAR_H       = MARK.barH * 48;      // 11.52
+const BAR_CORNER  = MARK.corner * 48;    // 2.88
+const BAR_L_X     = 24 - MARK.outer * 48; // left bar x at rest
+const BAR_R_X     = 24 + MARK.inner * 48; // right bar x at rest
+const BAR_CY      = 24;                   // bars are centred on the disc
 const EYE_MAX_SHIFT = 7.0;
 
 /* ─── Demo copy — the payoff after "connect once, tag anywhere" ──
@@ -198,8 +203,8 @@ function OrbitScene({ live }: { live: boolean }) {
 
   const iconRefs    = React.useRef<(HTMLDivElement | null)[]>([]);
   const lineRefs    = React.useRef<(SVGLineElement | null)[]>([]);
-  const leftEyeRef  = React.useRef<SVGEllipseElement>(null);
-  const rightEyeRef = React.useRef<SVGEllipseElement>(null);
+  const leftEyeRef  = React.useRef<SVGRectElement>(null);
+  const rightEyeRef = React.useRef<SVGRectElement>(null);
   const eyeShift    = React.useRef(0);
 
   /* Blink state */
@@ -243,21 +248,26 @@ function OrbitScene({ live }: { live: boolean }) {
       blinkStartRef.current = elapsed;
       nextBlinkRef.current  = elapsed + 3000 + Math.random() * 3500;
     }
-    let eyeRy = 7;
+    let openness = 1;
     if (blinkStartRef.current !== null) {
       const t = elapsed - blinkStartRef.current;
-      if (t < 90)        eyeRy = 7 * (1 - t / 90);
-      else if (t < 220)  eyeRy = 7 * ((t - 90) / 130);
+      if (t < 90)        openness = 1 - t / 90;
+      else if (t < 220)  openness = (t - 90) / 130;
       else               blinkStartRef.current = null;
     }
+    // Collapse the bar about its own centre so the blink reads as a lid.
+    const barH = Math.max(0.01, BAR_H * openness);
+    const barY = BAR_CY - barH / 2;
 
     if (leftEyeRef.current) {
-      leftEyeRef.current.setAttribute("cx", (EYE_L_CX + s).toFixed(3));
-      leftEyeRef.current.setAttribute("ry", eyeRy.toFixed(2));
+      leftEyeRef.current.setAttribute("x", (BAR_L_X + s).toFixed(3));
+      leftEyeRef.current.setAttribute("y", barY.toFixed(2));
+      leftEyeRef.current.setAttribute("height", barH.toFixed(2));
     }
     if (rightEyeRef.current) {
-      rightEyeRef.current.setAttribute("cx", (EYE_R_CX + s).toFixed(3));
-      rightEyeRef.current.setAttribute("ry", eyeRy.toFixed(2));
+      rightEyeRef.current.setAttribute("x", (BAR_R_X + s).toFixed(3));
+      rightEyeRef.current.setAttribute("y", barY.toFixed(2));
+      rightEyeRef.current.setAttribute("height", barH.toFixed(2));
     }
   });
 
@@ -335,13 +345,13 @@ function OrbitScene({ live }: { live: boolean }) {
         <div
           className="relative flex h-[68px] w-[68px] items-center justify-center rounded-full"
           style={{
-            backgroundColor: "#0E1A43",
-            boxShadow: "0 0 0 5px rgba(119,126,255,0.18), 0 8px 28px rgba(14,26,67,0.28)",
+            backgroundColor: MARK_INK,
+            boxShadow: "0 0 0 5px rgba(119,126,255,0.18), 0 8px 28px rgba(10,10,11,0.28)",
           }}
         >
           <svg viewBox="0 0 48 48" fill="none" className="h-full w-full" aria-hidden>
-            <ellipse ref={leftEyeRef}  cx={EYE_L_CX} cy={EYE_CY} rx="3" ry="7" fill="#C5F4FF"/>
-            <ellipse ref={rightEyeRef} cx={EYE_R_CX} cy={EYE_CY} rx="3" ry="7" fill="#C5F4FF"/>
+            <rect ref={leftEyeRef}  x={BAR_L_X} y={BAR_CY - BAR_H / 2} width={BAR_W} height={BAR_H} rx={BAR_CORNER} fill={MARK_PAPER}/>
+            <rect ref={rightEyeRef} x={BAR_R_X} y={BAR_CY - BAR_H / 2} width={BAR_W} height={BAR_H} rx={BAR_CORNER} fill={MARK_PAPER}/>
           </svg>
         </div>
       </div>
