@@ -95,9 +95,9 @@ const SLACK_BORDER = "#E2E1E0";
 function JarvisAvatar({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 36 36" fill="none" aria-hidden className={className}>
-      <rect width="36" height="36" rx="8" fill="#0E1A43" />
-      <ellipse cx="13.5" cy="16" rx="2.4" ry="5.4" fill="#C5F4FF" />
-      <ellipse cx="22.5" cy="16" rx="2.4" ry="5.4" fill="#C5F4FF" />
+      <rect width="36" height="36" rx="8" fill="#0A0A0B" />
+      <rect x="11.52" y="13.68" width="4.32" height="8.64" rx="2.16" fill="#FFFFFF" />
+      <rect x="20.16" y="13.68" width="4.32" height="8.64" rx="2.16" fill="#FFFFFF" />
     </svg>
   );
 }

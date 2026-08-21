@@ -77,9 +77,9 @@ const SYNC_STATES = [
 function JarvisFaceLight({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 48 48" fill="none" className={className} aria-hidden>
-      <circle cx="24" cy="24" r="24" fill="#C5F4FF"/>
-      <ellipse cx="18.5" cy="19.2" rx="2.95" ry="5.26" fill="#0E1A43"/>
-      <ellipse cx="30.3" cy="19.2" rx="2.95" ry="5.26" fill="#0E1A43"/>
+      <circle cx="24" cy="24" r="24" fill="#FFFFFF"/>
+      <rect x="15.36" y="18.24" width="5.76" height="11.52" rx="2.88" fill="#0A0A0B"/>
+      <rect x="26.88" y="18.24" width="5.76" height="11.52" rx="2.88" fill="#0A0A0B"/>
     </svg>
   );
 }

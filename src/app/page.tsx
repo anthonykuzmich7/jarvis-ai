@@ -1,4 +1,4 @@
-import { ScrubHero } from "@/components/scrub-hero";
+import { TypeHero } from "@/components/type-hero";
 import { StrugglesSection } from "@/components/struggles-section";
 import { OrbitSyncJarvis } from "@/components/orbit-sync-jarvis";
 import { JarvisOverlaySection } from "@/components/jarvis-overlay-section";
@@ -8,17 +8,10 @@ import { WaitlistForm } from "@/components/waitlist-form";
 import { SiteNav } from "@/components/site-nav";
 import { ShieldIcon } from "@/components/icons";
 import { MobileLayout } from "@/components/mobile/mobile-layout";
+import { JarvisMark } from "@/components/jarvis-mark";
 
 
-function JarvisFace({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 48 48" fill="none" aria-hidden className={className}>
-      <circle cx="24" cy="24" r="24" fill="#0E1A43" />
-      <ellipse cx="29.9609" cy="20.895" rx="3" ry="7" fill="#C5F4FF" />
-      <ellipse cx="17.9609" cy="20.895" rx="3" ry="7" fill="#C5F4FF" />
-    </svg>
-  );
-}
+
 
 function Wordmark({ className }: { className?: string }) {
   return (
@@ -27,7 +20,7 @@ function Wordmark({ className }: { className?: string }) {
       aria-label="jarvis"
       className={"flex items-center gap-2.5 " + (className ?? "")}
     >
-      <JarvisFace className="h-[32px] w-[32px] shrink-0" />
+      <JarvisMark className="h-[32px] w-[32px] shrink-0" />
       <span className="wordmark text-xl text-foreground leading-none">
         jarvis<span className="cursor-blink select-none" aria-hidden="true">_</span>
       </span>
@@ -192,7 +185,7 @@ function SiteFooter() {
     <footer className="border-t border-ash bg-ledger-white">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-10 sm:flex-row">
         <div className="flex items-center gap-3 text-foreground">
-          <JarvisFace className="h-[22px] w-[22px]" />
+          <JarvisMark className="h-[22px] w-[22px]" />
           <span className="wordmark text-sm">jarvis</span>
           <span className="text-xs text-stone">working title</span>
         </div>
@@ -217,7 +210,7 @@ export default function Home() {
 
       {/* Desktop layout — hidden on mobile */}
       <main className="hidden md:flex flex-1 flex-col" style={{ backgroundColor: "#FBFEFD" }}>
-        <ScrubHero />
+        <TypeHero />
         <OrbitSyncJarvis />
         <JarvisOverlaySection />
         <StrugglesSection />

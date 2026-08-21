@@ -1,5 +1,7 @@
 "use client";
 
+import { JarvisMark } from "@/components/jarvis-mark";
+
 import * as React from "react";
 import {
   motion,
@@ -41,16 +43,6 @@ function GmailMark({ className }: { className?: string }) {
   return <img src="/Gmail_icon_(2020).svg.webp" className={`${className ?? ""} object-contain`} alt="" aria-hidden />;
 }
 
-/* Jarvis brand mark — exact circular logo used site-wide (page.tsx's JarvisFace) */
-function JarvisMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 48 48" fill="none" aria-hidden className={className}>
-      <circle cx="24" cy="24" r="24" fill="#0E1A43" />
-      <ellipse cx="17.9609" cy="20.895" rx="3" ry="7" fill="#C5F4FF" />
-      <ellipse cx="29.9609" cy="20.895" rx="3" ry="7" fill="#C5F4FF" />
-    </svg>
-  );
-}
 
 /* ---- Feature 1: Morning briefing mockup ----------------------------------
    Static light card — no fake window chrome. Task copy reuses the same

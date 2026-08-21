@@ -6,6 +6,7 @@ import { motion, useInView, useReducedMotion } from "framer-motion";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { CheckIcon } from "@/components/icons";
 import { ClaudeCodeTerminal } from "@/components/claude-code-terminal";
+import { JarvisMark } from "@/components/jarvis-mark";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -157,15 +158,7 @@ function UserBubble({ visible, children }: { visible: boolean; children: React.R
 
 /* ── Shared wordmark/face ──────────────────────────────────────── */
 
-function JarvisFace({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 48 48" fill="none" aria-hidden className={className}>
-      <circle cx="24" cy="24" r="24" fill="#0E1A43" />
-      <ellipse cx="29.9609" cy="20.895" rx="3" ry="7" fill="#C5F4FF" />
-      <ellipse cx="17.9609" cy="20.895" rx="3" ry="7" fill="#C5F4FF" />
-    </svg>
-  );
-}
+
 
 /* ── Hero ──────────────────────────────────────────────────────── */
 
@@ -694,7 +687,7 @@ function MobileFooter() {
     <footer className="border-t border-ash bg-ledger-white px-6 py-8">
       <div className="flex flex-col items-center gap-3 text-center">
         <div className="flex items-center gap-2.5">
-          <JarvisFace className="h-[22px] w-[22px]" />
+          <JarvisMark className="h-[22px] w-[22px]" />
           <span className="wordmark text-sm text-foreground">jarvis</span>
           <span className="text-xs text-stone">working title</span>
         </div>
