@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { KineticHeadline } from "@/components/hero/kinetic-headline";
 import { FilmModal } from "@/components/hero/film-modal";
+import { MeetingAssistStage } from "@/components/hero/meeting-assist-stage";
 import {
   ClaudeCodeTerminal,
   type ClaudeCodeSource,
@@ -47,13 +48,29 @@ import {
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
+/* Body height shared by both tabs, so the tab row below never moves.
+   A compromise: the terminal alone wanted 286 (its content plus a little
+   dark room, which is what a terminal looks like) and the meeting stage
+   wanted 380 to have somewhere to burst into. 320 keeps the stage legible
+   without turning the terminal into a mostly-empty box. */
+const CARD_BODY = 320;
+
 type Ask = {
-  chip: string;
   question: string;
   tool: ClaudeCodeTool;
   answer: React.ReactNode;
   sources: ClaudeCodeSource[];
 };
+
+/* The tabs switch capability, not example. They used to hold three
+   variations of the same trick (three questions, one terminal), which
+   sold the hero short: retrieval is one of two things Jarvis does, and
+   the other one has no terminal in it at all.
+
+   Both labels are verb-first. "Assist on the call" is also the wording
+   of the app's own menu item, and the second tab stages what that menu
+   item actually opens. */
+const TABS = ["Pull context", "Assist on the call"] as const;
 
 /* Demo fixtures, consistent with the ones StrugglesSection and the film
    already use (#eng, PR #142, David Park, the payments bug). Do not invent a
@@ -68,79 +85,34 @@ type Ask = {
    StrugglesSection. It is what makes `TypedMention` tint the handle violet as
    it types, and it names who is being asked in a window titled Claude Code.
 
-   Every answer cites several tools on purpose. One citation reads as a search
+   The answer cites several tools on purpose. One citation reads as a search
    box; four, spanning chat, tickets, code and meetings, is the actual product
    argument: the answer was assembled from places no single tool can see at
    once. That is the whole reason the film opens on five apps overflowing. */
-const ASKS: Ask[] = [
-  {
-    chip: "What did I miss?",
-    question: "@jarvis what did I miss on the payments bug?",
-    tool: {
-      name: "jarvis - search_context",
-      args: 'query: "payments bug"',
-      result: "12 messages across 4 sources",
-    },
-    answer: (
-      <>
-        Tom&rsquo;s fix is in review, not shipped. It double-charged 3
-        customers.
-      </>
-    ),
-    sources: [
-      { mark: "slack", label: "#eng · 3d" },
-      { mark: "linear", label: "ENG-2481" },
-      { mark: "github", label: "PR #142" },
-      { mark: "meetings", label: "Eng sync, Aug 19" },
-    ],
+const ASK: Ask = {
+  question: "@jarvis what did I miss on the payments bug?",
+  tool: {
+    name: "jarvis - search_context",
+    args: 'query: "payments bug"',
+    result: "12 messages across 4 sources",
   },
-  {
-    chip: "Who owns this?",
-    question: "@jarvis who owns the auth service, and what changed last month?",
-    tool: {
-      name: "jarvis - search_context",
-      args: 'query: "auth service owner"',
-      result: "9 messages across 3 sources",
-    },
-    answer: (
-      <>
-        Mark and Dasha own auth. On July 2 the team switched token refresh to
-        rotating keys, decided in the backend sync and shipped in PR #142.
-      </>
-    ),
-    sources: [
-      { mark: "slack", label: "#eng-infra · Jul 2" },
-      { mark: "meetings", label: "Backend sync, Jul 2" },
-      { mark: "github", label: "PR #142" },
-    ],
-  },
-  {
-    chip: "Before my 1:1",
-    question: "@jarvis what should I clarify with David before our 1:1?",
-    tool: {
-      name: "jarvis - search_context",
-      args: 'query: "David Park 1:1"',
-      result: "7 messages across 3 sources",
-    },
-    answer: (
-      <>
-        Three things: whether the payments bug is fixed, the real launch date,
-        and whether the team stayed unblocked while you were out.
-      </>
-    ),
-    sources: [
-      { mark: "meetings", label: "1:1 David Park" },
-      { mark: "slack", label: "#eng · today" },
-      { mark: "linear", label: "ENG-2481" },
-    ],
-  },
-];
+  answer: (
+    <>
+      Tom&rsquo;s fix is in review, not shipped. It double-charged 3 customers.
+    </>
+  ),
+  sources: [
+    { mark: "slack", label: "#eng · 3d" },
+    { mark: "linear", label: "ENG-2481" },
+    { mark: "github", label: "PR #142" },
+    { mark: "meetings", label: "Eng sync, Aug 19" },
+  ],
+};
 
 export function HeroAsk() {
   const reduce = useReducedMotion();
-  const [i, setI] = React.useState(0);
+  const [tab, setTab] = React.useState(0);
   const [filmOpen, setFilmOpen] = React.useState(false);
-  const ask = ASKS[i];
 
   return (
     <section
@@ -207,37 +179,47 @@ export function HeroAsk() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.3, ease: EASE }}
         >
-          {/* `height` rather than `minHeight`: the card must not resize when
-              you switch questions, or the whole page jumps under the cursor
-              that just clicked. 220 is the tallest of the three answers at the
-              narrowest column this grid produces (three wrapped lines plus two
-              source chips); at wide widths it leaves a little dark room below
-              the prompt, which is what a terminal is supposed to look like. */}
-          <ClaudeCodeTerminal
-            question={ask.question}
-            answer={ask.answer}
-            sources={ask.sources}
-            tool={ask.tool}
-            active
-            toolDelay={700}
-            toolResultDelay={1500}
-            height={286}
-            contentKey={i}
-          />
+          {/* `height` rather than `minHeight`, and the same number on both
+              tabs: the card must not resize when you switch, or the whole
+              page jumps under the cursor that just clicked. The meeting
+              stage needs the taller box to choreograph in, so the terminal
+              takes the same one and spends the extra as dark room below the
+              prompt, which is what a terminal is supposed to look like. */}
+          {/* Swapped outright, not crossfaded. Both tabs are the same dark
+              window at the same size, so a fade between them reads as a
+              flicker rather than a transition, and `mode="wait"` would hold
+              the new card back until the old one finished leaving: press a
+              tab, watch nothing happen. The motion that matters is inside
+              each card, and it starts on mount. */}
+          {tab === 0 ? (
+            <ClaudeCodeTerminal
+              question={ASK.question}
+              answer={ASK.answer}
+              sources={ASK.sources}
+              tool={ASK.tool}
+              active
+              toolDelay={700}
+              toolResultDelay={1500}
+              height={CARD_BODY}
+            />
+          ) : (
+            <MeetingAssistStage active height={CARD_BODY + 40} />
+          )}
 
           <div
-            role="group"
-            aria-label="Ask Jarvis a different question"
+            role="tablist"
+            aria-label="What Jarvis does"
             className="mt-4 flex flex-wrap gap-2"
           >
-            {ASKS.map((a, n) => {
-              const selected = n === i;
+            {TABS.map((label, n) => {
+              const selected = n === tab;
               return (
                 <button
-                  key={a.chip}
+                  key={label}
                   type="button"
-                  aria-pressed={selected}
-                  onClick={() => setI(n)}
+                  role="tab"
+                  aria-selected={selected}
+                  onClick={() => setTab(n)}
                   className={
                     "cursor-pointer rounded-full px-4 py-2 text-[13px] font-medium leading-none tracking-[-0.13px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coal-ink " +
                     (selected
@@ -245,7 +227,7 @@ export function HeroAsk() {
                       : "border border-black/10 text-coal-ink/70 hover:border-black/20 hover:text-coal-ink")
                   }
                 >
-                  {a.chip}
+                  {label}
                 </button>
               );
             })}
