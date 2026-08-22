@@ -6,7 +6,7 @@ import { motion, AnimatePresence, useInView, useReducedMotion } from "framer-mot
 const EASE = [0.16, 1, 0.3, 1] as const;
 const CYCLE_MS = 2600;
 
-/* ─── Brand marks (same SVGs as orbit-sync-jarvis) ───────────────── */
+/* ─── Brand marks (full colour, local to this section) ───────────── */
 
 function SlackMark({ className }: { className?: string }) {
   return (
@@ -27,7 +27,7 @@ function GmailMark({ className }: { className?: string }) {
   return <img src="/Gmail_icon_(2020).svg.webp" className={`${className ?? ""} object-contain`} alt="" aria-hidden />;
 }
 
-/* Granola: dark "G" shape on white — exact mark from orbit-sync-jarvis */
+/* Granola: dark "G" shape on white */
 function GranolaMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 1308.2438965 1350" xmlns="http://www.w3.org/2000/svg" aria-hidden className={className}>

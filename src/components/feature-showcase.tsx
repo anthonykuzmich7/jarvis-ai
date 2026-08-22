@@ -47,7 +47,7 @@ function GmailMark({ className }: { className?: string }) {
 /* ---- Feature 1: Morning briefing mockup ----------------------------------
    Static light card — no fake window chrome. Task copy reuses the same
    fictional world (Acme, Dmitri, PR #212, SSO/Okta) established in
-   struggles-section.tsx and orbit-sync-jarvis.tsx for continuity. */
+   struggles-section.tsx and connect-anywhere.tsx for continuity. */
 
 const BRIEFING_TASKS = [
   {

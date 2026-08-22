@@ -64,7 +64,7 @@ type Ask = {
    `server - tool`. Each tool result's source count matches the number of
    citation chips that follow it, so the two halves of the beat agree.
 
-   Each question opens with the @jarvis mention, matching OrbitSyncJarvis and
+   Each question opens with the @jarvis mention, matching ConnectAnywhere and
    StrugglesSection. It is what makes `TypedMention` tint the handle violet as
    it types, and it names who is being asked in a window titled Claude Code.
 
@@ -138,7 +138,6 @@ const ASKS: Ask[] = [
 
 export function HeroAsk() {
   const reduce = useReducedMotion();
-  const glowRef = React.useRef<HTMLDivElement | null>(null);
   const [i, setI] = React.useState(0);
   const [filmOpen, setFilmOpen] = React.useState(false);
   const ask = ASKS[i];
@@ -146,20 +145,13 @@ export function HeroAsk() {
   return (
     <section
       id="home"
-      className="relative flex min-h-[100dvh] w-full items-center overflow-hidden scroll-mt-16 bg-ledger-white"
+      /* No ground of its own: the wrapper in page.tsx carries the paper
+         and the shared PaperGlow. The light used to live in here, where
+         this section's `overflow-hidden` sliced it flat at the bottom
+         edge and drew a rule between the hero and the section below. */
+      className="relative flex min-h-[100dvh] w-full items-center overflow-hidden scroll-mt-16"
     >
-      {/* Paper catching light, tracking the cursor. */}
-      <div
-        ref={glowRef}
-        aria-hidden
-        className="pointer-events-none absolute left-0 top-0 h-[920px] w-[920px] will-change-transform"
-        style={{
-          background:
-            "radial-gradient(circle at center, rgba(247,243,235,0.85) 0%, rgba(189,216,255,0.16) 38%, rgba(250,250,250,0) 66%)",
-        }}
-      />
-
-      <div className="relative mx-auto grid w-full max-w-[1400px] items-center gap-14 px-6 pb-16 pt-[92px] xl:grid-cols-[0.92fr_1.08fr] xl:gap-16 xl:pb-16">
+      <div className="relative mx-auto grid w-full max-w-[1400px] items-center gap-14 px-6 pb-8 pt-[92px] xl:grid-cols-[0.92fr_1.08fr] xl:gap-16 xl:pb-8">
         {/* Left — the claim */}
         <div>
           <motion.div
@@ -168,7 +160,6 @@ export function HeroAsk() {
             transition={{ duration: 0.9, ease: EASE }}
           >
             <KineticHeadline
-              glowRef={glowRef}
               className="text-coal-ink"
               style={{ fontSize: "clamp(44px, 5vw, 84px)" }}
             />

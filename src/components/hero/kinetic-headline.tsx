@@ -40,13 +40,10 @@ const smoothstep = (v: number) => v * v * (3 - 2 * v);
 export function KineticHeadline({
   className,
   style,
-  glowRef,
   strokeColor = "rgba(28,26,23,0.55)",
 }: {
   className?: string;
   style?: React.CSSProperties;
-  /** Optional paper-glow element for this component's rAF to drive. */
-  glowRef?: React.RefObject<HTMLDivElement | null>;
   /** Echo outline colour. Explicit rather than `currentColor`, because the
       ghosts set `color: transparent` to hollow themselves out and
       `currentColor` would resolve to that same transparent. Pass a light
@@ -152,11 +149,6 @@ export function KineticHeadline({
         ruleRef.current.style.transform = `scaleX(${draw})`;
       }
 
-      // A warm light that follows the cursor, for depth on flat paper.
-      if (glowRef?.current && hasPointerRef.current) {
-        glowRef.current.style.transform = `translate3d(${pointerRef.current.x - 460}px, ${pointerRef.current.y - 460}px, 0)`;
-      }
-
       rafRef.current = requestAnimationFrame(frame);
     };
     rafRef.current = requestAnimationFrame(frame);
@@ -169,7 +161,7 @@ export function KineticHeadline({
       document.removeEventListener("pointerleave", onPointerLeave);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [applySpread, measure, reduce, glowRef]);
+  }, [applySpread, measure, reduce]);
 
   return (
     <h1
