@@ -1,28 +1,27 @@
 "use client";
 
+import * as React from "react";
 import { useCallback, useEffect, useRef } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 
 /*
-  Type Hero — the headline performs its own sentence.
+  "Stop repeating yourself." The headline performs its own sentence.
 
   "repeating" carries a fan of outlined echoes of itself. They arrive spread
   apart and collapse into the one solid word, and a smolder rule strikes
   through underneath at the moment they land. Bring the cursor near and the
-  repetition returns: the echoes fan back out, proportional to how close you
-  are. Move away and they resolve again.
+  repetition returns, proportional to how close you are.
 
   Outlines, not filled duplicates. Overlapping solid copies of the same word at
   display size read as a smear rather than as repetition; a hairline outline
   stays legible however far it overlaps.
 
-  Deliberately typographic and not a diagram: OrbitSyncJarvis below already owns
-  the radial "tools around Jarvis" composition, and this page has no other big
-  type moment. Zero image bytes; one rAF writing transform and opacity to refs,
-  so nothing re-renders React on pointer move.
+  Lives apart from the hero that uses it so the composition can change without
+  rebuilding the mechanic. Pointer listeners are on `window`, not on a parent
+  section, so this drops into any layout. One rAF writes transform and opacity
+  to refs, so nothing re-renders React on pointer move.
 */
 
-const EASE = [0.16, 1, 0.3, 1] as const;
 const GHOSTS = 5;
 const SETTLE_S = 1.15; // echoes converge over this long on load
 const REACH = 420; // px of cursor influence around the word
@@ -32,21 +31,33 @@ const SPREAD_Y = -0.02;
 // visible to someone who never moves their cursor near the word.
 const IDLE_SPREAD = 0.42;
 // The cursor drives the fan well past its idle width, so approaching the word
-// is a real event rather than a nudge. Without this the idle floor swallows
-// most of the range and the interaction reads as dead.
+// is a real event rather than a nudge.
 const MAX_SPREAD = 1.75;
 
 const easeOutCubic = (v: number) => 1 - Math.pow(1 - v, 3);
 const smoothstep = (v: number) => v * v * (3 - 2 * v);
 
-export function TypeHero() {
+export function KineticHeadline({
+  className,
+  style,
+  glowRef,
+  strokeColor = "rgba(28,26,23,0.55)",
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+  /** Optional paper-glow element for this component's rAF to drive. */
+  glowRef?: React.RefObject<HTMLDivElement | null>;
+  /** Echo outline colour. Explicit rather than `currentColor`, because the
+      ghosts set `color: transparent` to hollow themselves out and
+      `currentColor` would resolve to that same transparent. Pass a light
+      value on a dark ground. */
+  strokeColor?: string;
+}) {
   const reduce = useReducedMotion();
 
-  const sectionRef = useRef<HTMLElement | null>(null);
   const wordRef = useRef<HTMLSpanElement | null>(null);
   const ghostRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const ruleRef = useRef<HTMLSpanElement | null>(null);
-  const glowRef = useRef<HTMLDivElement | null>(null);
 
   const pointerRef = useRef({ x: 0, y: 0 });
   const hasPointerRef = useRef(false);
@@ -87,6 +98,7 @@ export function TypeHero() {
     const ro = new ResizeObserver(measure);
     if (wordRef.current) ro.observe(wordRef.current);
     window.addEventListener("resize", measure);
+    window.addEventListener("scroll", measure, { passive: true });
 
     // Reduced motion: the resolved state, no fan and no cursor response.
     if (reduce) {
@@ -95,6 +107,7 @@ export function TypeHero() {
       return () => {
         ro.disconnect();
         window.removeEventListener("resize", measure);
+        window.removeEventListener("scroll", measure);
       };
     }
 
@@ -105,9 +118,8 @@ export function TypeHero() {
     const onPointerLeave = () => {
       hasPointerRef.current = false;
     };
-    const section = sectionRef.current;
-    section?.addEventListener("pointermove", onPointerMove);
-    section?.addEventListener("pointerleave", onPointerLeave);
+    window.addEventListener("pointermove", onPointerMove);
+    document.addEventListener("pointerleave", onPointerLeave);
 
     const start = performance.now();
     let last = start;
@@ -141,7 +153,7 @@ export function TypeHero() {
       }
 
       // A warm light that follows the cursor, for depth on flat paper.
-      if (glowRef.current && hasPointerRef.current) {
+      if (glowRef?.current && hasPointerRef.current) {
         glowRef.current.style.transform = `translate3d(${pointerRef.current.x - 460}px, ${pointerRef.current.y - 460}px, 0)`;
       }
 
@@ -152,94 +164,52 @@ export function TypeHero() {
     return () => {
       ro.disconnect();
       window.removeEventListener("resize", measure);
-      section?.removeEventListener("pointermove", onPointerMove);
-      section?.removeEventListener("pointerleave", onPointerLeave);
+      window.removeEventListener("scroll", measure);
+      window.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerleave", onPointerLeave);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [applySpread, measure, reduce]);
+  }, [applySpread, measure, reduce, glowRef]);
 
   return (
-    <section
-      id="home"
-      ref={sectionRef}
-      className="relative min-h-[100dvh] w-full overflow-hidden scroll-mt-16 bg-ledger-white"
+    <h1
+      className={
+        "font-display font-semibold leading-[0.95] tracking-[-0.045em] " +
+        (className ?? "")
+      }
+      style={style}
     >
-      {/* Paper catching light, tracking the cursor. */}
-      <div
-        ref={glowRef}
-        aria-hidden
-        className="pointer-events-none absolute left-0 top-0 h-[920px] w-[920px] will-change-transform"
-        style={{
-          background:
-            "radial-gradient(circle at center, rgba(247,243,235,0.85) 0%, rgba(189,216,255,0.16) 38%, rgba(250,250,250,0) 66%)",
-        }}
-      />
-
-      <div className="relative mx-auto flex min-h-[100dvh] max-w-[1400px] flex-col justify-center px-6 pt-24 pb-16">
-        <motion.h1
-          initial={reduce ? false : { opacity: 0, y: 26 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: EASE }}
-          className="font-display font-semibold leading-[0.92] tracking-[-0.045em] text-coal-ink"
-          style={{ fontSize: "clamp(52px, 9.6vw, 164px)" }}
-        >
-          <span className="block">
-            Stop{" "}
-            <span ref={wordRef} className="relative inline-block align-baseline">
-              {Array.from({ length: GHOSTS }).map((_, i) => (
-                <span
-                  key={i}
-                  ref={(el) => {
-                    ghostRefs.current[i] = el;
-                  }}
-                  aria-hidden
-                  className="pointer-events-none absolute left-0 top-0 whitespace-nowrap will-change-transform"
-                  style={{
-                    opacity: 0,
-                    color: "transparent",
-                    WebkitTextStroke: "1.5px rgba(28,26,23,0.55)",
-                  }}
-                >
-                  repeating
-                </span>
-              ))}
-              <span className="relative">repeating</span>
-              {/* Struck through as the echoes resolve into one. */}
-              <span
-                ref={ruleRef}
-                aria-hidden
-                className="absolute bottom-[-0.115em] left-0 block w-full origin-left bg-smolder will-change-transform"
-                style={{ height: "0.045em", transform: "scaleX(0)" }}
-              />
+      <span className="block">
+        Stop{" "}
+        <span ref={wordRef} className="relative inline-block align-baseline">
+          {Array.from({ length: GHOSTS }).map((_, i) => (
+            <span
+              key={i}
+              ref={(el) => {
+                ghostRefs.current[i] = el;
+              }}
+              aria-hidden
+              className="pointer-events-none absolute left-0 top-0 whitespace-nowrap will-change-transform"
+              style={{
+                opacity: 0,
+                color: "transparent",
+                WebkitTextStroke: `1.5px ${strokeColor}`,
+              }}
+            >
+              repeating
             </span>
-          </span>
-          <span className="block">yourself.</span>
-        </motion.h1>
-
-        <motion.p
-          initial={reduce ? false : { opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.14, ease: EASE }}
-          className="mt-10 max-w-[44ch] text-[18px] leading-[1.55] tracking-[-0.17px] text-slate-mid text-pretty"
-        >
-          To your AI, and to your team. Jarvis holds your context and hands it to
-          whoever asks.
-        </motion.p>
-
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.24, ease: EASE }}
-          className="mt-10"
-        >
-          <a
-            href="#waitlist"
-            className="cta-shine relative inline-flex cursor-pointer items-center overflow-hidden whitespace-nowrap rounded-full bg-coal-ink px-8 py-4 text-sm font-semibold leading-none tracking-[-0.14px] text-white transition-colors hover:bg-graphite active:scale-[0.98]"
-          >
-            Get early access
-          </a>
-        </motion.div>
-      </div>
-    </section>
+          ))}
+          <span className="relative">repeating</span>
+          {/* Struck through as the echoes resolve into one. */}
+          <span
+            ref={ruleRef}
+            aria-hidden
+            className="absolute bottom-[-0.115em] left-0 block w-full origin-left bg-smolder will-change-transform"
+            style={{ height: "0.045em", transform: "scaleX(0)" }}
+          />
+        </span>
+      </span>
+      <span className="block">yourself.</span>
+    </h1>
   );
 }
