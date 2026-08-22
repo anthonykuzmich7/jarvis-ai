@@ -1,4 +1,4 @@
-import { TypeHero } from "@/components/type-hero";
+import { HeroAsk } from "@/components/hero/hero-ask";
 import { StrugglesSection } from "@/components/struggles-section";
 import { OrbitSyncJarvis } from "@/components/orbit-sync-jarvis";
 import { JarvisOverlaySection } from "@/components/jarvis-overlay-section";
@@ -210,7 +210,7 @@ export default function Home() {
 
       {/* Desktop layout — hidden on mobile */}
       <main className="hidden md:flex flex-1 flex-col" style={{ backgroundColor: "#FBFEFD" }}>
-        <TypeHero />
+        <HeroAsk />
         <OrbitSyncJarvis />
         <JarvisOverlaySection />
         <StrugglesSection />

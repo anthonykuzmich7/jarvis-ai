@@ -253,7 +253,10 @@ ${css}
   left: 0;
   width: 1920px;
   height: 1080px;
-  transform: scale(calc(100cqw / 1920));
+  /* Divide by a LENGTH, not a number: \`100cqw / 1920\` is itself a length and
+     scale() takes a <number>, so that form is invalid and the whole declaration
+     is dropped — the film then renders at 1:1 and overflows its box. */
+  transform: scale(calc(100cqw / 1920px));
   transform-origin: top left;
 }
 

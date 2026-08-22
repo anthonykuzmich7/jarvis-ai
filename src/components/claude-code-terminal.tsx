@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { BrandMark, type BrandName } from "@/components/brand-marks";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -46,7 +47,14 @@ export function useTypedQuestion(text: string, active: boolean, startDelay = 600
   return { count, done };
 }
 
-/** Renders the typed question with the leading @mention colored. */
+/** Renders the typed question with the leading @mention colored.
+
+    Only colors when the text actually opens with the mention. It used to
+    color the first `mention.length` characters unconditionally, which is
+    invisible for the Slack demos (their questions all start with "@jarvis")
+    but wrong everywhere else: a terminal prompt reading "what should I
+    clarify with David before our 1:1?" came out with "what sh" — its first
+    seven characters, the length of "@jarvis" — tinted accent. */
 export function TypedMention({
   text,
   count,
@@ -58,44 +66,67 @@ export function TypedMention({
   mentionClass: string;
   mention?: string;
 }) {
-  const mentionLen = mention.length;
+  const mentionLen = text.startsWith(mention) ? mention.length : 0;
   const typedMention = text.slice(0, Math.min(count, mentionLen));
   const typedRest = count > mentionLen ? text.slice(mentionLen, count) : "";
   return (
     <>
-      <span className={mentionClass}>{typedMention}</span>
+      {typedMention ? <span className={mentionClass}>{typedMention}</span> : null}
       {typedRest}
     </>
   );
 }
 
-/** Reveal phases (answer, then sources) shared by every demo window. */
+/** Reveal phases shared by every demo window: the MCP tool call, its result,
+    then the answer and its sources.
+
+    `toolDelay` and `toolResultDelay` are optional and default to off, so a
+    caller that passes no tool descriptor behaves exactly as before. */
 export function useRevealPhases(
   questionDone: boolean,
   active: boolean,
   answerDelay = 650,
   sourcesDelay = 1250,
+  toolDelay?: number,
+  toolResultDelay?: number,
 ) {
   const reduce = useReducedMotion();
   const [answerVisible, setAnswerVisible] = React.useState(false);
   const [sourcesVisible, setSourcesVisible] = React.useState(false);
+  const [toolVisible, setToolVisible] = React.useState(false);
+  const [toolResultVisible, setToolResultVisible] = React.useState(false);
 
   React.useEffect(() => {
     if (!active || !questionDone) return;
     if (reduce) {
+      setToolVisible(true);
+      setToolResultVisible(true);
       setAnswerVisible(true);
       setSourcesVisible(true);
       return;
     }
-    const t1 = setTimeout(() => setAnswerVisible(true), answerDelay);
-    const t2 = setTimeout(() => setSourcesVisible(true), sourcesDelay);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, [questionDone, active, reduce, answerDelay, sourcesDelay]);
+    const timers = [
+      setTimeout(() => setAnswerVisible(true), answerDelay),
+      setTimeout(() => setSourcesVisible(true), sourcesDelay),
+    ];
+    if (toolDelay != null) {
+      timers.push(setTimeout(() => setToolVisible(true), toolDelay));
+    }
+    if (toolResultDelay != null) {
+      timers.push(setTimeout(() => setToolResultVisible(true), toolResultDelay));
+    }
+    return () => timers.forEach(clearTimeout);
+  }, [
+    questionDone,
+    active,
+    reduce,
+    answerDelay,
+    sourcesDelay,
+    toolDelay,
+    toolResultDelay,
+  ]);
 
-  return { answerVisible, sourcesVisible };
+  return { answerVisible, sourcesVisible, toolVisible, toolResultVisible };
 }
 
 /* ─── Claude spark — Claude.com's own sprite animation (60ms/frame),
@@ -141,7 +172,25 @@ export function ClaudeSpark({ size = 28, className }: { size?: number; className
    thinking spinner, answer, source chips. Drive it with any
    question/answer/sources to tell a different story per section. */
 
-export type ClaudeCodeSource = { icon: string; label: string };
+/** One MCP tool call, rendered the way Claude Code renders any other tool.
+    Jarvis reaches Claude over MCP, so the retrieval step is a tool call and
+    showing it is what makes the wiring legible rather than magical. */
+export type ClaudeCodeTool = {
+  /** Displayed as Claude Code displays an MCP tool: `server - tool`. */
+  name: string;
+  /** The call's arguments, rendered dim inside parentheses. */
+  args: string;
+  /** The `⎿` result line under the call. */
+  result: string;
+};
+
+export type ClaudeCodeSource = {
+  label: string;
+  /** Real source mark. Preferred. */
+  mark?: BrandName;
+  /** Legacy emoji, for callers that predate `mark`. */
+  icon?: string;
+};
 
 /** Just the prompt/thinking/answer/sources — no chrome. Safe to remount
     (via a `key` on the caller) without touching the terminal window
@@ -150,21 +199,28 @@ function ClaudeCodeContent({
   question,
   answer,
   sources,
+  tool,
   active,
   startDelay,
   answerDelay,
   sourcesDelay,
+  toolDelay,
+  toolResultDelay,
 }: {
   question: string;
   answer: React.ReactNode;
   sources: ClaudeCodeSource[];
+  tool?: ClaudeCodeTool;
   active: boolean;
   startDelay: number;
   answerDelay: number;
   sourcesDelay: number;
+  toolDelay?: number;
+  toolResultDelay?: number;
 }) {
   const { count, done } = useTypedQuestion(question, active, startDelay);
-  const { answerVisible, sourcesVisible } = useRevealPhases(done, active, answerDelay, sourcesDelay);
+  const { answerVisible, sourcesVisible, toolVisible, toolResultVisible } =
+    useRevealPhases(done, active, answerDelay, sourcesDelay, toolDelay, toolResultDelay);
 
   return (
     <>
@@ -176,13 +232,89 @@ function ClaudeCodeContent({
         )}
       </div>
 
-      {/* Claude Code thinking spinner — the Claude spark */}
-      {done && !answerVisible && (
+      {/* Jarvis, not Claude, and not a bare "Thinking…".
+
+          Claude is the surface you typed into, but the work in this beat is
+          Jarvis searching the local store over MCP, which is the whole claim
+          the page is making. Showing the Claude spark here credited the wrong
+          party for the one thing Jarvis does.
+
+          Three words, not a description of the mechanism. "Jarvis is searching
+          your context" was tried and is worse: the sentence takes longer to
+          read than the beat lasts, and the mark plus the name already say who
+          is working. The source chips explain what it searched, a moment
+          later, with evidence.
+
+          The mark is `paper` tone because this is the terminal, the one dark
+          surface on the page — the film inverts the mark inside `.hw-term` for
+          exactly the same reason. */}
+      {/* Claude Code thinking spinner — the Claude spark. It yields to the
+          tool call the moment that lands, the way the real client does: you
+          think, then you call something. */}
+      {done && !toolVisible && !answerVisible && (
         <div className="mt-5 flex items-center gap-3 text-white/50" aria-hidden>
           <ClaudeSpark size={28} />
           <span>Thinking…</span>
         </div>
       )}
+
+      {/* The MCP call. Same glyphs Claude Code uses for any tool: a filled
+          dot for the call, `⎿` for what came back. */}
+      {tool ? (
+        <>
+        <style>{`
+          @keyframes cc-tool-pulse {
+            0%, 100% { opacity: 1; }
+            50%      { opacity: 0.28; }
+          }
+          .cc-tool-pulse { animation: cc-tool-pulse 1s ease-in-out infinite; }
+          @media (prefers-reduced-motion: reduce) {
+            .cc-tool-pulse { animation: none; opacity: 0.6; }
+          }
+        `}</style>
+        <div
+          className="mt-5"
+          style={{
+            opacity: toolVisible ? 1 : 0,
+            transform: toolVisible ? "translateY(0)" : "translateY(6px)",
+            transition:
+              "opacity 380ms cubic-bezier(0.16,1,0.3,1), transform 380ms cubic-bezier(0.16,1,0.3,1)",
+          }}
+        >
+          <div className="flex gap-2.5">
+            {/* Grey, not mint. Mint is the marker on Claude's own reply below;
+                a tool call is not the assistant speaking, and colouring both
+                the same made the retrieval look like a second answer. It
+                pulses only while the call is in flight, and settles the moment
+                the `⎿` result lands, so the motion means "waiting on this"
+                rather than decorating a finished line. */}
+            <span
+              className={
+                "select-none text-white/45" +
+                (toolResultVisible ? "" : " cc-tool-pulse")
+              }
+              aria-hidden
+            >
+              ⏺
+            </span>
+            <p className="text-white/85">
+              {tool.name}
+              <span className="text-white/40">({tool.args})</span>
+            </p>
+          </div>
+          <div
+            className="mt-1 flex gap-2 pl-[22px] text-white/40"
+            style={{
+              opacity: toolResultVisible ? 1 : 0,
+              transition: "opacity 320ms cubic-bezier(0.16,1,0.3,1)",
+            }}
+          >
+            <span className="select-none" aria-hidden>⎿</span>
+            <span>{tool.result}</span>
+          </div>
+        </div>
+        </>
+      ) : null}
 
       <div
         className="mt-5 flex gap-2.5 text-white/85"
@@ -209,7 +341,11 @@ function ClaudeCodeContent({
             key={s.label}
             className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[11px] tracking-[-0.1px] text-white/65"
           >
-            <span aria-hidden>{s.icon}</span>
+            {s.mark ? (
+              <BrandMark name={s.mark} size={12} />
+            ) : s.icon ? (
+              <span aria-hidden>{s.icon}</span>
+            ) : null}
             {s.label}
           </span>
         ))}
@@ -222,10 +358,13 @@ export function ClaudeCodeTerminal({
   question,
   answer,
   sources,
+  tool,
   active,
   startDelay = 600,
   answerDelay = 2800,
   sourcesDelay = 3450,
+  toolDelay,
+  toolResultDelay,
   minHeight = 248,
   height,
   contentKey,
@@ -233,10 +372,15 @@ export function ClaudeCodeTerminal({
   question: string;
   answer: React.ReactNode;
   sources: ClaudeCodeSource[];
+  /** Omit for the plain question/answer shape. Supplying it adds the MCP
+      tool-call beat between the spinner and the answer. */
+  tool?: ClaudeCodeTool;
   active: boolean;
   startDelay?: number;
   answerDelay?: number;
   sourcesDelay?: number;
+  toolDelay?: number;
+  toolResultDelay?: number;
   /** Body min-height — lets short content sit in a tall card. */
   minHeight?: number;
   /** Body fixed height — use when swapping content in place (e.g. a
@@ -285,10 +429,13 @@ export function ClaudeCodeTerminal({
               question={question}
               answer={answer}
               sources={sources}
+              tool={tool}
               active={active}
               startDelay={startDelay}
               answerDelay={answerDelay}
               sourcesDelay={sourcesDelay}
+              toolDelay={toolDelay}
+              toolResultDelay={toolResultDelay}
             />
           </motion.div>
         </AnimatePresence>
