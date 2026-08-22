@@ -1,0 +1,1152 @@
+<!doctype html>
+<html
+  lang="en"
+  data-resolution="landscape"
+  data-composition-variables='[{"id":"theme","type":"enum","label":"Theme","default":"paper","options":[{"value":"paper","label":"Paper (white)"},{"value":"ink","label":"Ink (black)"}]}]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>How Jarvis works</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="assets/music/audio-data.js"></script>
+    <style>
+      /* ============================================================
+         HOW JARVIS WORKS — 31.6s, landscape.
+
+         ONE composition, TWO themes. `#root` carries `.paper` or `.ink`,
+         chosen once at init from the `theme` variable. Every colour below is
+         a token; no scene hardcodes a colour. The token pair is copied from
+         jarvis-ai/src/components/context-demo.tsx (260-298) so this film and
+         the film already on the site are the same object.
+         ============================================================ */
+
+      #root.ink {
+        --ground: #0a0a0b;         /* Theme.bg */
+        --text-1: #f4f4f5;
+        --text-2: #a1a1aa;
+        --text-3: #71717a;
+        --surface: #141416;        /* Theme.surface */
+        --elevated: #1a1a1e;
+        --hairline: rgba(255, 255, 255, 0.09);
+        --hairline-strong: rgba(255, 255, 255, 0.16);
+        --bar: #34343c;
+        --bar-dim: #292930;
+        --dot: #3f3f46;
+        --accent: #6366f1;         /* Theme.accent */
+        --accent-text: #818cf8;
+        --accent-tint: rgba(99, 102, 241, 0.16);
+        --tile: #141416;
+        --win: #141416;            /* windows are surface-coloured */
+        --win-line: rgba(255, 255, 255, 0.09);
+        --win-text: #f4f4f5;
+        --win-text-2: #a1a1aa;
+        --win-row: #1a1a1e;
+        --term: #141416;           /* the terminal IS the surface here */
+        --disc: #ffffff;
+        --eye: #0a0a0b;
+        --sp-a: #93a6e8;           /* David — lifted for AA on the ink ground */
+        --sp-b: #79bcbc;           /* You */
+        --shell: #1f1f23;          /* the MacBook body */
+        --shell-hi: #2e2e35;       /* light catches the top edge */
+        --shell-lo: #131317;
+        --screen: #0d0d10;         /* the display is NOT the page ground */
+        --screen-line: rgba(255, 255, 255, 0.08);
+        --sheen: rgba(129, 140, 248, 0.13);
+        --shell-line: rgba(255, 255, 255, 0.14);
+        --shell-shadow: none;
+        --frag-shadow: none;
+        --grain: 0.055;
+        --vig: 0.3;
+      }
+
+      #root.paper {
+        --ground: #fafafa;         /* Ledger White */
+        --text-1: #1c1a17;         /* Coal Ink */
+        --text-2: #5a5957;         /* Graphite */
+        --text-3: #6f6e6c;         /* Slate Mid, darkened for AA on Ledger White */
+        --surface: #ffffff;
+        --elevated: #f7f3eb;       /* Parchment */
+        --hairline: #f1f1f1;       /* Ash */
+        --hairline-strong: rgba(28, 26, 23, 0.16);
+        --bar: rgba(28, 26, 23, 0.28);
+        --bar-dim: rgba(28, 26, 23, 0.15);
+        --dot: rgba(28, 26, 23, 0.22);
+        --accent: #777eff;         /* Signal Violet — graphics only */
+        --accent-text: #4f55d6;    /* darkened for AA on Ledger White */
+        --accent-tint: rgba(119, 126, 255, 0.14);
+        --tile: #ffffff;
+        --win: #ffffff;
+        --win-line: #f1f1f1;
+        --win-text: #1c1a17;
+        --win-text-2: #5a5957;
+        --win-row: #fafafa;
+        --term: #1c1a17;           /* only the terminal is dark on paper */
+        --disc: #1c1a17;
+        --eye: #fafafa;
+        --sp-a: #4e63b0;           /* David — MeetingAssistContent.davidColor */
+        --sp-b: #3e7c7c;           /* You — MeetingAssistContent.youColor */
+        --shell: #e4e3e0;          /* aluminium on ledger white */
+        --shell-hi: #f3f2f0;       /* light catches the top edge */
+        --shell-lo: #d2d1ce;
+        --screen: #f4f5f7;         /* a cool display, not the warm page */
+        --screen-line: rgba(28, 26, 23, 0.09);
+        --sheen: rgba(119, 126, 255, 0.16);
+        --shell-line: rgba(28, 26, 23, 0.16);
+        --shell-shadow: 0 26px 60px rgba(28, 26, 23, 0.1);
+        --frag-shadow: 0 8px 22px rgba(28, 26, 23, 0.09);
+        --grain: 0;
+        --vig: 0;
+      }
+
+      /* On paper the terminal stays dark, so its own text flips back. */
+      #root.paper .term {
+        --disc: #fafafa;
+        --eye: #1c1a17;
+        --win-line: rgba(255, 255, 255, 0.1);
+        --win-text: rgba(255, 255, 255, 0.92);
+        --win-text-2: rgba(255, 255, 255, 0.5);
+        --win-row: rgba(255, 255, 255, 0.05);
+        --bar: rgba(255, 255, 255, 0.18);
+        --bar-dim: rgba(255, 255, 255, 0.09);
+        --dot: rgba(255, 255, 255, 0.16);
+        --accent-text: #9ba0ff;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: #0a0a0b;
+        font-family: "SF Pro Display", -apple-system, system-ui, "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+
+      .clip { position: absolute; inset: 0; }
+      .scene { width: 100%; height: 100%; }
+
+      /* Opaque stage ground — the white-flash guard at every seam. */
+      #stage { background: var(--ground); }
+
+      /* ---------------- windows ---------------- */
+      .win {
+        position: absolute;
+        background: var(--win);
+        border: 1px solid var(--win-line);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .win__bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 34px;
+        padding: 0 14px;
+        border-bottom: 1px solid var(--win-line);
+      }
+      .win__dot { width: 9px; height: 9px; border-radius: 50%; background: var(--dot); }
+      .win__logo { width: 19px; height: 19px; border-radius: 4px; object-fit: contain; flex: none; margin-left: 7px; }
+      .win__title {
+        margin-left: 7px;
+        font-size: 15px;
+        letter-spacing: 0.01em;
+        color: var(--win-text-2);
+      }
+      /* Unread piles up while you are not there. Red, not the brand accent —
+         the accent drought runs until 8.74. */
+      .win__badge {
+        min-width: 26px; height: 21px; padding: 0 7px;
+        border-radius: 11px;
+        background: #ef4444; color: #ffffff;
+        font-size: 13px; font-weight: 600;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0;
+      }
+      .win__spacer { flex: 1; }
+      .win__body { padding: 16px 18px; display: flex; flex-direction: column; gap: 13px; }
+
+      /* Contrast collapse — you cannot read the window you are not looking at. */
+      .tier-front { opacity: 1; }
+      .tier-back { opacity: 0.72; }
+
+      /* Ink keeps the 2px-keyline depth model; paper needs a shadow to
+         separate a white card from a white ground. */
+      #root.paper .win { box-shadow: 0 10px 34px rgba(28, 26, 23, 0.07); }
+
+      /* ---------------- message rows ---------------- */
+      .row { display: flex; align-items: center; gap: 11px; opacity: 0; }
+      .row__avatar {
+        width: 26px; height: 26px; border-radius: 50%;
+        background: var(--bar-dim); flex: none;
+      }
+      .row__stack { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+      .bar { height: 8px; border-radius: 4px; background: var(--bar); }
+      .bar--dim { background: var(--bar-dim); }
+
+      /* calendar-ish rows */
+      .evt { display: flex; align-items: center; gap: 11px; opacity: 0; }
+      .evt__spine { width: 4px; height: 34px; border-radius: 2px; background: var(--bar); flex: none; }
+
+      /* ---------------- captions ---------------- */
+      .caption {
+        position: absolute;
+        left: 0; right: 0;
+        text-align: center;
+        font-size: 54px;
+        font-weight: 600;
+        letter-spacing: -0.022em;
+        color: var(--text-1);
+        opacity: 0;
+      }
+      .caption--quiet { font-size: 36px; font-weight: 500; color: var(--text-2); letter-spacing: -0.012em; }
+
+      /* Context falling out of the stack. Not decorative particles — these
+         are message chips, tinted by the tool they fell out of, and they drop
+         through the GUTTERS so they never cross the headline. */
+      .frag {
+        position: absolute; width: 196px; height: 40px;
+        display: flex; align-items: center; gap: 12px; padding: 0 14px;
+        background: var(--win);
+        border: 1px solid var(--win-line);
+        border-radius: 9px;
+        box-shadow: var(--frag-shadow);
+        opacity: 0;
+      }
+      .frag__dot { width: 17px; height: 17px; border-radius: 50%; flex: none; }
+      .frag__bar { height: 7px; border-radius: 4px; background: var(--bar); flex: 1; }
+
+      /* The headline lands a word at a time. */
+      .caption--words { opacity: 1; }
+      .caption .w { display: inline-block; opacity: 0; }
+
+      /* ---------------- scene 1 chrome ---------------- */
+      #s1-date {
+        position: absolute;
+        top: 62px; right: 200px;
+        width: 220px; text-align: right;
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 26px;
+        letter-spacing: 0.06em;
+        color: var(--text-3);
+      }
+      .datestep { position: absolute; top: 0; right: 0; opacity: 0; }
+
+      /* ---------------- scene 2 ---------------- */
+      /* The machine reads as a MacBook or the "nothing leaves your Mac" line is
+         just a caption over a rectangle. Shell + inset display + the notch. */
+      #s2-boundary {
+        position: absolute;
+        left: 244px; top: 146px; width: 1432px; height: 648px;
+        border-radius: 26px;
+        background: linear-gradient(180deg, var(--shell-hi) 0%, var(--shell) 38%, var(--shell-lo) 100%);
+        border: 1px solid var(--shell-line);
+        box-shadow: var(--shell-shadow);
+        opacity: 0;
+      }
+      /* The hairline light runs along the top of a milled edge. */
+      #s2-edge {
+        position: absolute; left: 26px; right: 26px; top: 1px; height: 1px;
+        background: var(--shell-hi); opacity: 0.9;
+      }
+      #s2-screen {
+        position: absolute;
+        left: 15px; top: 15px; right: 15px; bottom: 23px;
+        border-radius: 14px;
+        background: var(--screen);
+        border: 1px solid var(--screen-line);
+        overflow: hidden;
+      }
+      /* One pass of light across the glass, on the ignite. Performed, not idle. */
+      #s2-sheen {
+        position: absolute; top: -30%; left: 0; width: 30%; height: 160%;
+        background: linear-gradient(100deg, rgba(0, 0, 0, 0) 0%, var(--sheen) 50%, rgba(0, 0, 0, 0) 100%);
+        opacity: 0;
+      }
+      /* The notch. This is the single detail that says "MacBook". */
+      #s2-notch {
+        position: absolute;
+        left: 50%; top: 15px; width: 208px; height: 28px;
+        margin-left: -104px;
+        background: var(--shell);
+        border: 1px solid var(--shell-line);
+        border-top: none;
+        border-radius: 0 0 14px 14px;
+      }
+      /* The hinge seam along the bottom of the lid. */
+      #s2-hinge {
+        position: absolute;
+        left: 50%; bottom: 8px; width: 132px; height: 5px;
+        margin-left: -66px;
+        border-radius: 3px;
+        background: var(--shell-line);
+      }
+      #s2-base {
+        position: absolute;
+        left: 186px; top: 794px; width: 1548px; height: 22px;
+        border-radius: 2px 2px 12px 12px;
+        background: linear-gradient(180deg, var(--shell-hi) 0%, var(--shell) 55%, var(--shell-lo) 100%);
+        border: 1px solid var(--shell-line);
+        border-top: none;
+        box-shadow: var(--shell-shadow);
+        /* A real front-on deck tapers: wider at the front than at the hinge. */
+        clip-path: polygon(1.5% 0%, 98.5% 0%, 100% 100%, 0% 100%);
+        overflow: hidden;
+        opacity: 0;
+      }
+      /* The finger groove on the front edge of the deck. */
+      #s2-groove {
+        position: absolute;
+        left: 50%; bottom: 0; width: 196px; height: 12px;
+        margin-left: -98px;
+        border-radius: 0 0 12px 12px;
+        background: var(--ground);
+      }
+      .tile {
+        position: absolute;
+        left: 330px; width: 250px; height: 66px;
+        display: flex; align-items: center; gap: 14px;
+        padding: 0 18px;
+        background: var(--tile);
+        border: 1px solid var(--hairline);
+        border-radius: 14px;
+        box-shadow: var(--frag-shadow);
+        opacity: 0;
+      }
+      .tile__logo { width: 32px; height: 32px; border-radius: 7px; flex: none; object-fit: contain; }
+      .tile__label { font-size: 22px; font-weight: 500; color: var(--text-2); letter-spacing: -0.01em; }
+      .thread { position: absolute; border-radius: 1.5px; background: var(--bar); }
+
+      #s2-mark { position: absolute; left: 825px; top: 341px; width: 190px; height: 190px; opacity: 0; }
+      #s2-halo {
+        position: absolute; left: 730px; top: 246px; width: 380px; height: 380px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--accent-tint) 0%, rgba(0, 0, 0, 0) 66%);
+        opacity: 0;
+      }
+
+      #s2-claude { position: absolute; left: 1424px; top: 380px; width: 112px; height: 112px; opacity: 0; }
+      #s2-claude img { width: 112px; height: 112px; display: block; }
+      #s2-claude-label {
+        position: absolute; left: 1330px; top: 512px; width: 300px; text-align: center;
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 21px; letter-spacing: 0.04em; color: var(--text-2);
+        opacity: 0;
+      }
+
+      /* ---------------- scene 3 — the terminal ---------------- */
+      #s3-term { left: 430px; top: 210px; width: 1060px; height: 520px; background: var(--term); }
+      #s3-term .win__body { padding: 34px 38px; gap: 0; }
+      .term__q {
+        display: flex; align-items: baseline; gap: 14px;
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 34px; color: var(--win-text); letter-spacing: -0.005em;
+      }
+      .term__prefix { color: var(--win-text-2); }
+      .type-wrap { position: relative; display: inline-block; width: 36ch; white-space: pre; }
+      .type-mask {
+        position: absolute; top: -6px; bottom: -8px; left: 0; right: 0;
+        background: var(--term);
+        display: flex; align-items: center;
+      }
+      .type-caret { width: 16px; height: 38px; background: var(--win-text-2); }
+
+      .status { display: flex; align-items: center; gap: 16px; margin-top: 40px; }
+      /* It goes and looks. This fills the hole between "you hit enter" and
+         "the answer lands", which was 1.2s of nothing. */
+      #s3-mark { width: 58px; height: 58px; flex: none; opacity: 0; }
+      #s3-live { display: flex; align-items: center; gap: 13px; opacity: 0; }
+      .status__dot { position: relative; width: 15px; height: 15px; border-radius: 50%; background: var(--accent); flex: none; }
+      .status__halo {
+        position: absolute; left: -18px; top: -18px; width: 51px; height: 51px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--accent-tint) 0%, rgba(0, 0, 0, 0) 70%);
+      }
+      .status__label {
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 24px; letter-spacing: 0.05em; color: var(--accent-text);
+      }
+      #s3-answer {
+        margin-top: 26px;
+        max-width: 900px;
+        font-size: 39px; line-height: 1.4; font-weight: 500;
+        color: var(--win-text); letter-spacing: -0.012em;
+        opacity: 0;
+      }
+      #s3-chip {
+        margin-top: 30px;
+        align-self: flex-start;
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 11px 20px;
+        border-radius: 10px;
+        background: var(--accent-tint);
+        border: 1px solid var(--accent);
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 25px; color: var(--accent-text);
+        opacity: 0;
+      }
+
+      /* ---------------- scene 4 — the call ---------------- */
+      #s4-call { left: 150px; top: 130px; width: 1000px; height: 730px; }
+      #s4-call .win__body { padding: 22px; gap: 18px; flex-direction: column; }
+      #s4-seats { display: flex; gap: 18px; height: 480px; }
+      /* The live transcript. Jarvis is not just briefing you, it is taking the
+         minutes — these are MeetingAssistContent.transcript lines. */
+      #s4-tr { display: flex; flex-direction: column; gap: 14px; padding-top: 4px; }
+      .tr { display: flex; align-items: baseline; gap: 16px; opacity: 0; }
+      .tr__t {
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 17px; color: var(--win-text-2); flex: none; width: 54px;
+      }
+      .tr__s { font-size: 19px; font-weight: 600; flex: none; width: 132px; }
+      .tr__x { font-size: 19px; line-height: 1.35; color: var(--win-text-2); }
+      #s4-clock {
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 19px; letter-spacing: 0.06em; color: var(--win-text-2);
+      }
+      .seat {
+        flex: 1;
+        border-radius: 14px;
+        background: var(--win-row);
+        border: 1px solid var(--win-line);
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+      }
+      .seat__disc {
+        width: 128px; height: 128px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 38px; font-weight: 600; color: #ffffff;
+        letter-spacing: 0.02em;
+      }
+      .seat__name { font-size: 26px; font-weight: 500; color: var(--win-text); }
+      .seat__role { font-size: 20px; color: var(--win-text-2); }
+
+      #s4-rec {
+        display: flex; align-items: center; gap: 9px;
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 15px; letter-spacing: 0.04em; color: var(--win-text-2);
+      }
+      #s4-rec-dot { width: 9px; height: 9px; border-radius: 50%; background: #ef4444; flex: none; }
+      #s4-rec-t { position: relative; width: 48px; height: 19px; }
+      #s4-rec-t span { position: absolute; left: 0; top: 0; opacity: 0; }
+
+      .island__label {
+        position: absolute; left: 30px;
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 17px; letter-spacing: 0.12em; text-transform: uppercase;
+        color: var(--text-2);
+        opacity: 0;
+      }
+      #s4-div {
+        position: absolute; left: 33px; right: 33px; top: 396px; height: 1px;
+        background: var(--hairline-strong);
+        opacity: 0;
+      }
+      /* What you have to walk out of the call having settled. Straight from
+         MeetingAssistContent.blockers — priority order, high one in accent. */
+      .clar {
+        position: absolute; left: 33px; width: 500px;
+        display: flex; align-items: flex-start; gap: 18px;
+        opacity: 0;
+      }
+      .clar__box {
+        width: 26px; height: 26px; border-radius: 8px;
+        border: 2px solid var(--hairline-strong);
+        flex: none; margin-top: 1px;
+      }
+      .clar__box--hi { border-color: var(--accent); background: var(--accent-tint); }
+      .clar__t { font-size: 23px; font-weight: 500; line-height: 1.3; color: var(--text-1); letter-spacing: -0.008em; }
+      .clar__t--hi { color: var(--accent-text); font-weight: 600; }
+
+      #s4-island {
+        position: absolute;
+        left: 1210px; top: 130px; width: 560px; height: 730px;
+        background: var(--surface);
+        border: 1px solid var(--hairline-strong);
+        border-radius: 22px;
+        padding: 32px 34px;
+        opacity: 0;
+      }
+      #s4-island-head { display: flex; align-items: center; gap: 12px; }
+      #s4-island-head .mark-svg { width: 38px; height: 38px; }
+      .island__title { font-size: 30px; font-weight: 600; color: var(--text-1); letter-spacing: -0.01em; }
+      #s4-rail {
+        position: absolute; left: 41px; top: 150px; width: 2px; height: 214px;
+        background: var(--hairline-strong);
+        opacity: 0;
+      }
+      .mark-row { position: absolute; left: 33px; width: 500px; display: flex; gap: 24px; opacity: 0; }
+      .mark-row__node { width: 16px; height: 16px; border-radius: 50%; margin-top: 7px; flex: none; }
+      .mark-row__date {
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 17px; letter-spacing: 0.05em; color: var(--text-2);
+      }
+      .mark-row__head { font-size: 22px; font-weight: 500; line-height: 1.35; color: var(--text-1); letter-spacing: -0.008em; }
+
+
+      /* ---------------- scene 5 ---------------- */
+      #s5-mark { position: absolute; left: 845px; top: 274px; width: 230px; height: 230px; opacity: 0; }
+      #s5-halo {
+        position: absolute; left: 730px; top: 159px; width: 460px; height: 460px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--accent-tint) 0%, rgba(0, 0, 0, 0) 62%);
+        opacity: 0;
+      }
+      #s5-wordmark {
+        position: absolute; left: 0; right: 0; top: 826px;
+        text-align: center;
+        font-size: 34px; font-weight: 700; letter-spacing: -0.035em;
+        color: var(--text-2);
+        opacity: 0;
+      }
+
+      /* ---------------- grain + vignette (ink only) ---------------- */
+      #grain {
+        pointer-events: none;
+        opacity: var(--grain);
+        mix-blend-mode: overlay;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch' seed='7'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      #vignette {
+        pointer-events: none;
+        opacity: var(--vig);
+        background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 42%, rgba(0, 0, 0, 0.75) 100%);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="33.3"
+      data-width="1920"
+      data-height="1080"
+      data-fps="30"
+    >
+      <!-- Opaque stage ground. Guards every seam against a white flash. -->
+      <div id="stage" class="clip scene" data-start="0" data-duration="33.3" data-track-index="0"></div>
+
+      <!-- ================= SCENE 1 — the week you missed (0.00 → 5.45) ================= -->
+      <section id="s1" class="clip scene" data-start="0" data-duration="5.45" data-track-index="1">
+        <div id="s1-stack">
+        <!-- Back row -->
+        <div id="s1-w1" class="win tier-back" style="left: 200px; top: 128px; width: 520px; height: 356px">
+          <div class="win__bar">
+            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
+            <img id="img-01" class="win__logo" src="assets/logos/slack.png" alt="" />
+            <div class="win__title">Slack — #eng</div>
+            <div class="win__spacer"></div>
+            <div class="win__badge" id="s1-b1">24</div>
+          </div>
+          <div class="win__body">
+            <div class="row" id="s1-r1"><div class="row__avatar" style="background: #36c5f0"></div><div class="row__stack"><div class="bar" style="width: 42%"></div><div class="bar bar--dim" style="width: 78%"></div></div></div>
+            <div class="row" id="s1-r2"><div class="row__avatar" style="background: #2eb67d"></div><div class="row__stack"><div class="bar" style="width: 58%"></div><div class="bar bar--dim" style="width: 66%"></div></div></div>
+            <div class="row" id="s1-r3"><div class="row__avatar" style="background: #ecb22e"></div><div class="row__stack"><div class="bar" style="width: 35%"></div><div class="bar bar--dim" style="width: 88%"></div></div></div>
+          </div>
+        </div>
+
+        <div id="s1-w2" class="win tier-back" style="left: 700px; top: 100px; width: 520px; height: 356px">
+          <div class="win__bar">
+            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
+            <img id="img-02" class="win__logo" src="assets/logos/gmail.png" alt="" />
+            <div class="win__title">Inbox</div>
+            <div class="win__spacer"></div>
+            <div class="win__badge" id="s1-b2">18</div>
+          </div>
+          <div class="win__body">
+            <div class="row" id="s1-r4"><div class="row__avatar" style="background: #ea4335"></div><div class="row__stack"><div class="bar" style="width: 66%"></div><div class="bar bar--dim" style="width: 84%"></div></div></div>
+            <div class="row" id="s1-r5"><div class="row__avatar" style="background: #4285f4"></div><div class="row__stack"><div class="bar" style="width: 48%"></div><div class="bar bar--dim" style="width: 72%"></div></div></div>
+            <div class="row" id="s1-r6"><div class="row__avatar" style="background: #fbbc04"></div><div class="row__stack"><div class="bar" style="width: 61%"></div><div class="bar bar--dim" style="width: 55%"></div></div></div>
+          </div>
+        </div>
+
+        <div id="s1-w3" class="win tier-back" style="left: 1200px; top: 128px; width: 520px; height: 356px">
+          <div class="win__bar">
+            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
+            <svg class="win__logo" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="3.4" fill="#4285f4" /><rect x="3" y="5" width="18" height="5.4" rx="3.4" fill="#1a73e8" /><rect x="7" y="2.4" width="2.4" height="5" rx="1.2" fill="#9aa0a6" /><rect x="14.6" y="2.4" width="2.4" height="5" rx="1.2" fill="#9aa0a6" /><rect x="6.6" y="12.6" width="4.2" height="4.2" rx="1.1" fill="#ffffff" /></svg>
+            <div class="win__title">Calendar</div>
+            <div class="win__spacer"></div>
+            <div class="win__badge" id="s1-b3">3</div>
+          </div>
+          <div class="win__body">
+            <div class="evt" id="s1-r7"><div class="evt__spine" style="background: #4285f4"></div><div class="row__stack"><div class="bar" style="width: 52%"></div><div class="bar bar--dim" style="width: 70%"></div></div></div>
+            <div class="evt" id="s1-r8"><div class="evt__spine" style="background: #34a853"></div><div class="row__stack"><div class="bar" style="width: 44%"></div><div class="bar bar--dim" style="width: 62%"></div></div></div>
+          </div>
+        </div>
+
+        <!-- Front row -->
+        <div id="s1-w4" class="win tier-front" style="left: 448px; top: 262px; width: 520px; height: 262px">
+          <div class="win__bar">
+            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
+            <svg class="win__logo" viewBox="0 0 24 24" fill="none"><rect x="4" y="2.5" width="16" height="19" rx="3" fill="#94a3b8" /><rect x="7.2" y="7" width="9.6" height="1.8" rx="0.9" fill="#ffffff" /><rect x="7.2" y="11" width="9.6" height="1.8" rx="0.9" fill="#ffffff" opacity="0.75" /><rect x="7.2" y="15" width="6" height="1.8" rx="0.9" fill="#ffffff" opacity="0.5" /></svg>
+            <div class="win__title">Team status</div>
+            <div class="win__spacer"></div>
+            <div class="win__badge" id="s1-b4">7</div>
+          </div>
+          <div class="win__body">
+            <div class="row" id="s1-r9"><div class="row__avatar" style="background: #0ea5e9"></div><div class="row__stack"><div class="bar" style="width: 70%"></div><div class="bar bar--dim" style="width: 90%"></div></div></div>
+            <div class="row" id="s1-r10"><div class="row__avatar" style="background: #14b8a6"></div><div class="row__stack"><div class="bar" style="width: 40%"></div><div class="bar bar--dim" style="width: 64%"></div></div></div>
+          </div>
+        </div>
+
+        <div id="s1-w5" class="win tier-front" style="left: 952px; top: 262px; width: 520px; height: 262px">
+          <div class="win__bar">
+            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
+            <img id="img-03" class="win__logo" src="assets/logos/slack.png" alt="" />
+            <div class="win__title">Slack — DMs</div>
+            <div class="win__spacer"></div>
+            <div class="win__badge" id="s1-b5">12</div>
+          </div>
+          <div class="win__body">
+            <div class="row" id="s1-r11"><div class="row__avatar" style="background: #e01e5a"></div><div class="row__stack"><div class="bar" style="width: 55%"></div><div class="bar bar--dim" style="width: 76%"></div></div></div>
+            <div class="row" id="s1-r12"><div class="row__avatar" style="background: #2eb67d"></div><div class="row__stack"><div class="bar" style="width: 63%"></div><div class="bar bar--dim" style="width: 58%"></div></div></div>
+          </div>
+        </div>
+
+        </div>
+
+        <!-- Context falling out of the pile, down the gutters. -->
+        <div class="frag" id="s1-g1" style="left: 96px; top: 512px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #36c5f0"></span><span class="frag__bar"></span></div>
+        <div class="frag" id="s1-g2" style="left: 1672px; top: 486px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #ea4335"></span><span class="frag__bar"></span></div>
+        <div class="frag" id="s1-g3" style="left: 268px; top: 560px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #2eb67d"></span><span class="frag__bar"></span></div>
+        <div class="frag" id="s1-g4" style="left: 1500px; top: 544px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #4285f4"></span><span class="frag__bar"></span></div>
+        <div class="frag" id="s1-g5" style="left: 60px; top: 636px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #ecb22e"></span><span class="frag__bar"></span></div>
+        <div class="frag" id="s1-g6" style="left: 1744px; top: 620px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #e01e5a"></span><span class="frag__bar"></span></div>
+        <div class="frag" id="s1-g7" style="left: 320px; top: 700px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #0ea5e9"></span><span class="frag__bar"></span></div>
+        <div class="frag" id="s1-g8" style="left: 1560px; top: 704px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #fbbc04"></span><span class="frag__bar"></span></div>
+
+        <!-- The week ticking past. -->
+        <div id="s1-date">
+          <span class="datestep" id="s1-d1">Aug 14</span>
+          <span class="datestep" id="s1-d2">Aug 16</span>
+          <span class="datestep" id="s1-d3">Aug 18</span>
+          <span class="datestep" id="s1-d4">Aug 20</span>
+          <span class="datestep" id="s1-d5">Aug 21</span>
+        </div>
+
+        <div id="s1-l1" class="caption caption--words" style="top: 706px"><span class="w" id="s1-wa">You</span> <span class="w" id="s1-wb">can&rsquo;t</span> <span class="w" id="s1-wc">remember</span> <span class="w" id="s1-wd">everything.</span></div>
+        <div id="s1-l2" class="caption caption--quiet" style="top: 804px">It&rsquo;s spread across every tool.</div>
+      </section>
+
+      <!-- ============ SCENE 2 — it was all being read (5.06 → 12.40) ============ -->
+      <section id="s2" class="clip scene" data-start="5.06" data-duration="7.34" data-track-index="2">
+        <div id="s2-boundary">
+          <div id="s2-screen"><div id="s2-sheen"></div></div>
+          <div id="s2-edge"></div>
+          <div id="s2-notch"></div>
+          <div id="s2-hinge"></div>
+        </div>
+        <div id="s2-base"><div id="s2-groove"></div></div>
+
+        <div class="tile" id="s2-t1" style="top: 268px"><img class="tile__logo" src="assets/logos/slack.png" alt="Slack" /><div class="tile__label">Slack</div></div>
+        <div class="tile" id="s2-t2" style="top: 358px"><img class="tile__logo" src="assets/logos/gmail.png" alt="Gmail" /><div class="tile__label">Gmail</div></div>
+        <div class="tile" id="s2-t3" style="top: 448px"><img class="tile__logo" src="assets/logos/telegram.png" alt="Telegram" /><div class="tile__label">Telegram</div></div>
+        <div class="tile" id="s2-t4" style="top: 538px"><img class="tile__logo" src="assets/logos/meetings.png" alt="Meetings" /><div class="tile__label">Meetings</div></div>
+
+        <!-- Four feeds → one spine → the mark. -->
+        <div class="thread" id="s2-h1" style="left: 580px; top: 299px; width: 122px; height: 3px"></div>
+        <div class="thread" id="s2-h2" style="left: 580px; top: 389px; width: 122px; height: 3px"></div>
+        <div class="thread" id="s2-h3" style="left: 580px; top: 479px; width: 122px; height: 3px"></div>
+        <div class="thread" id="s2-h4" style="left: 580px; top: 569px; width: 122px; height: 3px"></div>
+        <div class="thread" id="s2-v" style="left: 700px; top: 299px; width: 3px; height: 273px"></div>
+        <div class="thread" id="s2-h5" style="left: 700px; top: 434px; width: 128px; height: 3px"></div>
+
+        <div id="s2-halo"></div>
+        <div id="s2-mark">
+          <svg class="mark-svg" viewBox="0 0 100 100" style="width: 190px; height: 190px">
+            <circle cx="50" cy="50" r="50" fill="var(--disc)" />
+            <rect class="s2-eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+            <rect class="s2-eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+          </svg>
+        </div>
+
+        <!-- Out of the mark and into the agent. Still inside the machine. -->
+        <div class="thread" id="s2-h6" style="left: 1015px; top: 434px; width: 409px; height: 3px"></div>
+        <div id="s2-claude"><img src="assets/logos/claude.png" alt="Claude" /></div>
+        <div id="s2-claude-label">Claude Code</div>
+
+        <div id="s2-l1" class="caption" style="top: 856px">Jarvis remembers all of it.</div>
+        <div id="s2-l2" class="caption caption--quiet" style="top: 940px">Nothing leaves your Mac.</div>
+      </section>
+
+      <!-- ================= SCENE 3 — one question (12.15 → 20.75) ================= -->
+      <section id="s3" class="clip scene" data-start="12.3" data-duration="8.45" data-track-index="3">
+        <div id="s3-term" class="win term">
+          <div class="win__bar">
+            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
+            <div class="win__title">Claude Code</div>
+          </div>
+          <div class="win__body">
+            <div class="term__q">
+              <span class="term__prefix">&gt;</span>
+              <span class="type-wrap">what did I miss on the payments bug?<span id="s3-mask" class="type-mask" data-layout-allow-overflow=""><span id="s3-caret" class="type-caret"></span></span></span>
+            </div>
+
+            <div id="s3-status" class="status">
+              <div id="s3-mark">
+                <svg class="mark-svg" viewBox="0 0 100 100" style="width: 58px; height: 58px">
+                  <circle cx="50" cy="50" r="50" fill="var(--disc)" />
+                  <rect class="s3-eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+                  <rect class="s3-eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+                </svg>
+              </div>
+              <div id="s3-live">
+                <div class="status__dot"><div id="s3-halo" class="status__halo" data-layout-allow-overflow=""></div></div>
+                <div class="status__label">Jarvis &middot; local</div>
+              </div>
+            </div>
+
+            <div id="s3-answer">Tom&rsquo;s fix is in review &mdash; not shipped. It double-charged 3 customers.</div>
+
+            <div id="s3-chip">&#8627; #eng &middot; 3 days ago</div>
+          </div>
+        </div>
+
+        <div id="s3-l1" class="caption" style="top: 812px">You didn&rsquo;t read the week. It did.</div>
+      </section>
+
+      <!-- ================= SCENE 4 — 11:00 (20.65 → 30.47) ================= -->
+      <section id="s4" class="clip scene" data-start="20.65" data-duration="9.82" data-track-index="4">
+        <div id="s4-call" class="win">
+          <div class="win__bar">
+            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
+            <div class="win__title">1:1 &middot; David Park</div>
+            <div class="win__spacer"></div>
+            <div id="s4-rec">
+              <span id="s4-rec-dot"></span>Recording
+              <span id="s4-rec-t"><span id="s4-rt1">02:41</span><span id="s4-rt2">07:18</span></span>
+            </div>
+          </div>
+          <div class="win__body">
+            <div id="s4-seats">
+              <div class="seat">
+                <div class="seat__disc" style="background: #4e63b0">DP</div>
+                <div class="seat__name">David Park</div>
+                <div class="seat__role">Your manager</div>
+              </div>
+              <div class="seat">
+                <div class="seat__disc" style="background: #3e7c7c">YOU</div>
+                <div class="seat__name">You</div>
+                <div class="seat__role">Team lead</div>
+              </div>
+            </div>
+            <div id="s4-tr">
+              <div class="tr" id="s4-tr1">
+                <span class="tr__t">11:01</span>
+                <span class="tr__s" style="color: var(--sp-a)">David Park</span>
+                <span class="tr__x">Are we still good on the launch date?</span>
+              </div>
+              <div class="tr" id="s4-tr2">
+                <span class="tr__t">11:02</span>
+                <span class="tr__s" style="color: var(--sp-b)">You</span>
+                <span class="tr__x">Contained. I&rsquo;ll get you a firm date today.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="s4-island">
+          <div id="s4-island-head">
+            <svg class="mark-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="50" fill="var(--disc)" />
+              <rect class="s4-eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+              <rect class="s4-eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+            </svg>
+            <div class="island__title">Jarvis on the call</div>
+          </div>
+          <div class="island__label" id="s4-lbl-a" style="top: 104px">While you were out</div>
+          <div id="s4-rail"></div>
+
+          <div class="mark-row" id="s4-m1" style="top: 144px">
+            <div class="mark-row__node" style="background: #f59e0b"></div>
+            <div>
+              <div class="mark-row__date">AUG 18</div>
+              <div class="mark-row__head">Checkout bug halted the release</div>
+            </div>
+          </div>
+          <div class="mark-row" id="s4-m2" style="top: 216px">
+            <div class="mark-row__node" style="background: #34d399"></div>
+            <div>
+              <div class="mark-row__date">AUG 20</div>
+              <div class="mark-row__head">Signup redesign is on staging</div>
+            </div>
+          </div>
+          <div class="mark-row" id="s4-m3" style="top: 288px">
+            <div class="mark-row__node" style="background: var(--accent)"></div>
+            <div>
+              <div class="mark-row__date">TODAY</div>
+              <div class="mark-row__head">Launch date owed this week</div>
+            </div>
+          </div>
+
+          <div id="s4-div"></div>
+          <div class="island__label" id="s4-lbl-b" style="top: 428px">What to clarify</div>
+
+          <div class="clar" id="s4-c1" style="top: 480px">
+            <div class="clar__box clar__box--hi"></div>
+            <div class="clar__t clar__t--hi">Is the payments bug fixed?</div>
+          </div>
+          <div class="clar" id="s4-c2" style="top: 560px">
+            <div class="clar__box"></div>
+            <div class="clar__t">What&rsquo;s the real launch date?</div>
+          </div>
+          <div class="clar" id="s4-c3" style="top: 640px">
+            <div class="clar__box"></div>
+            <div class="clar__t">Did the team stay unblocked?</div>
+          </div>
+        </div>
+
+        <div id="s4-l1" class="caption caption--quiet" style="top: 922px">You know nothing.</div>
+        <div id="s4-l2" class="caption" style="top: 916px">Now you do.</div>
+      </section>
+
+      <!-- ================= SCENE 5 — outro (30.20 → 33.30) ================= -->
+      <section id="s5" class="clip scene" data-start="30.2" data-duration="3.1" data-track-index="5">
+        <div id="s5-halo"></div>
+        <div id="s5-mark">
+          <svg class="mark-svg" viewBox="0 0 100 100" style="width: 230px; height: 230px">
+            <circle cx="50" cy="50" r="50" fill="var(--disc)" />
+            <rect id="s5-eye-l" class="eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+            <rect id="s5-eye-r" class="eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+          </svg>
+        </div>
+        <div id="s5-l1" class="caption" style="top: 582px">You walked in cold.</div>
+        <div id="s5-l2" class="caption" style="top: 678px">Jarvis didn&rsquo;t.</div>
+        <div id="s5-wordmark">jarvis_</div>
+      </section>
+
+      <!-- Grain + vignette sit above every scene. Ink only — both are 0 on paper. -->
+      <div id="grain" class="clip" data-start="0" data-duration="33.3" data-track-index="8"></div>
+      <div id="vignette" class="clip" data-start="0" data-duration="33.3" data-track-index="9"></div>
+    </div>
+
+    <!-- ===================== AUDIO ===================== -->
+    <audio id="bgm" src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3" data-start="0" data-duration="33.3" data-track-index="10" data-volume="1"></audio>
+
+    <!-- S1 — the pile-up, accelerating -->
+    <audio id="sfx-01" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="1.09" data-duration="0.19" data-track-index="11" data-volume="0.1"></audio>
+    <audio id="sfx-02" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="2.19" data-duration="0.19" data-track-index="12" data-volume="0.11"></audio>
+    <audio id="sfx-03" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="3.27" data-duration="0.19" data-track-index="13" data-volume="0.12"></audio>
+    <audio id="sfx-04" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="4.1" data-duration="0.19" data-track-index="14" data-volume="0.14"></audio>
+    <audio id="sfx-05" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="4.66" data-duration="0.19" data-track-index="15" data-volume="0.16"></audio>
+
+    <!-- S2 — the chrome collapses, four tiles land, the mark ignites -->
+    <audio id="sfx-06" class="sfx" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="5.2" data-duration="0.23" data-track-index="16" data-volume="0.2"></audio>
+    <audio id="sfx-07" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="6" data-duration="0.16" data-track-index="17" data-volume="0.15"></audio>
+    <audio id="sfx-08" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="6.56" data-duration="0.16" data-track-index="18" data-volume="0.15"></audio>
+    <audio id="sfx-09" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="7.09" data-duration="0.16" data-track-index="19" data-volume="0.15"></audio>
+    <audio id="sfx-10" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="7.64" data-duration="0.16" data-track-index="20" data-volume="0.15"></audio>
+    <audio id="sfx-11" class="sfx" src="assets/sfx/impact/impactSoft_medium_003.ogg" data-start="8.74" data-duration="0.19" data-track-index="21" data-volume="0.28"></audio>
+
+    <!-- S3 — the query types, the citation rings -->
+    <audio id="sfx-12" class="sfx" src="assets/sfx/keyboard/keypress-003.wav" data-start="13.11" data-duration="0.3" data-track-index="22" data-volume="0.16"></audio>
+    <audio id="sfx-13" class="sfx" src="assets/sfx/keyboard/keypress-011.wav" data-start="13.29" data-duration="0.3" data-track-index="23" data-volume="0.15"></audio>
+    <audio id="sfx-14" class="sfx" src="assets/sfx/keyboard/keypress-007.wav" data-start="13.47" data-duration="0.3" data-track-index="24" data-volume="0.16"></audio>
+    <audio id="sfx-15" class="sfx" src="assets/sfx/keyboard/keypress-022.wav" data-start="13.65" data-duration="0.3" data-track-index="25" data-volume="0.15"></audio>
+    <audio id="sfx-16" class="sfx" src="assets/sfx/keyboard/keypress-014.wav" data-start="13.83" data-duration="0.3" data-track-index="26" data-volume="0.16"></audio>
+    <audio id="sfx-17" class="sfx" src="assets/sfx/keyboard/keypress-031.wav" data-start="14.01" data-duration="0.3" data-track-index="27" data-volume="0.15"></audio>
+    <audio id="sfx-18" class="sfx" src="assets/sfx/keyboard/keypress-019.wav" data-start="14.19" data-duration="0.3" data-track-index="28" data-volume="0.16"></audio>
+    <audio id="sfx-19" class="sfx" src="assets/sfx/keyboard/keypress-027.wav" data-start="14.37" data-duration="0.3" data-track-index="29" data-volume="0.14"></audio>
+    <audio id="sfx-20" class="sfx" src="assets/sfx/impact/impactBell_heavy_000.ogg" data-start="17.47" data-duration="1.53" data-track-index="30" data-volume="0.26"></audio>
+
+    <!-- S4 — the briefing arrives, the week lands, the question hits -->
+    <audio id="sfx-21" class="sfx" src="assets/sfx/casino/card-slide-3.ogg" data-start="22.93" data-duration="0.65" data-track-index="31" data-volume="0.22"></audio>
+    <audio id="sfx-22" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="23.46" data-duration="0.06" data-track-index="32" data-volume="0.11"></audio>
+    <audio id="sfx-23" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="24.02" data-duration="0.06" data-track-index="33" data-volume="0.11"></audio>
+    <audio id="sfx-24" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="24.56" data-duration="0.06" data-track-index="34" data-volume="0.11"></audio>
+    <audio id="sfx-25" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="25.66" data-duration="0.16" data-track-index="35" data-volume="0.14"></audio>
+    <audio id="sfx-26" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="26.2" data-duration="0.06" data-track-index="36" data-volume="0.11"></audio>
+    <audio id="sfx-27" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="26.75" data-duration="0.06" data-track-index="37" data-volume="0.11"></audio>
+    <audio id="sfx-28" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="27.29" data-duration="0.06" data-track-index="38" data-volume="0.11"></audio>
+    <audio id="sfx-29" class="sfx" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="28.39" data-duration="0.23" data-track-index="39" data-volume="0.3"></audio>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      /* ---------- theme, read ONCE at init (deterministic) ---------- */
+      var ROOT = document.getElementById("root");
+      var THEME = "paper";
+      try {
+        var V = window.__hyperframes && window.__hyperframes.getVariables ? window.__hyperframes.getVariables() : null;
+        if (V && V.theme === "ink") THEME = "ink";
+      } catch (e) {
+        /* preview/render without variables → paper, the site's ground */
+      }
+      ROOT.classList.add(THEME);
+
+      /* Concrete values for the two things GSAP cannot interpolate as var(). */
+      var CS = getComputedStyle(ROOT);
+      var ACCENT = CS.getPropertyValue("--accent").trim() || "#6366f1";
+      var NEUTRAL = CS.getPropertyValue("--bar").trim() || "#34343c";
+      var VIG = parseFloat(CS.getPropertyValue("--vig")) || 0;
+
+      var tl = gsap.timeline({ paused: true });
+
+      /* Two easing families, assigned by meaning (remotion/README.md):
+         ARRIVE for anything that arrives and stays, CONSUME for anything
+         pulled in or departing. */
+      var ARRIVE = "power3.out";
+      var CONSUME = "power2.inOut";
+
+      /* ============ SCENE 1 — the week you missed (0.00 → 5.45) ============ */
+      /* All five windows own their opacity from frame 0, so nothing pops. */
+      tl.fromTo("#s1-w2", { opacity: 0, y: 16 }, { opacity: 0.62, y: 0, duration: 0.7, ease: ARRIVE }, 0);
+      tl.fromTo("#s1-w1", { opacity: 0, y: 16 }, { opacity: 0.62, y: 0, duration: 0.7, ease: ARRIVE }, 0.04);
+      tl.fromTo("#s1-w3", { opacity: 0, y: 16 }, { opacity: 0.62, y: 0, duration: 0.7, ease: ARRIVE }, 0.08);
+      tl.fromTo("#s1-w4", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.7, ease: ARRIVE }, 0.12);
+      tl.fromTo("#s1-w5", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.7, ease: ARRIVE }, 0.16);
+
+      /* The week ticking past. */
+      var DATES = [["#s1-d1", 0.4, 1.64], ["#s1-d2", 1.64, 2.73], ["#s1-d3", 2.73, 3.82], ["#s1-d4", 3.82, 4.66], ["#s1-d5", 4.66, 5.45]];
+      for (var d = 0; d < DATES.length; d++) {
+        tl.to(DATES[d][0], { opacity: 1, duration: 0.22, ease: "none" }, DATES[d][1]);
+        if (d < DATES.length - 1) tl.to(DATES[d][0], { opacity: 0, duration: 0.18, ease: "none" }, DATES[d][2] - 0.18);
+      }
+
+      /* Twelve messages you are not reading. // beat-grid: 0.56 → 3.82 on the
+         grid, then sub-beat (4.10, 4.39, 4.66, 4.82, 4.98) so it piles up. */
+      var ROWS = [["#s1-r1", 0.56], ["#s1-r9", 1.09], ["#s1-r4", 1.64], ["#s1-r11", 2.19], ["#s1-r2", 2.73],
+                  ["#s1-r10", 3.27], ["#s1-r5", 3.82], ["#s1-r12", 4.1], ["#s1-r7", 4.39], ["#s1-r3", 4.66],
+                  ["#s1-r6", 4.82], ["#s1-r8", 4.98]];
+      for (var r = 0; r < ROWS.length; r++) {
+        tl.fromTo(ROWS[r][0], { opacity: 0, x: -22 }, { opacity: 1, x: 0, duration: 0.34, ease: ARRIVE }, ROWS[r][1]);
+      }
+
+      /* The pile has a number on it. // beat-grid: 2.19 → 4.39 */
+      var BADGES = [["#s1-b1", 2.19], ["#s1-b2", 2.73], ["#s1-b4", 3.27], ["#s1-b5", 3.82], ["#s1-b3", 4.39]];
+      for (var bi = 0; bi < BADGES.length; bi++) {
+        tl.fromTo(BADGES[bi][0], { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: ARRIVE }, BADGES[bi][1]);
+      }
+
+      /* The film's current: the pile drifts up while the dropped context falls
+         down. Opposing vectors — it is getting away from you. */
+      tl.fromTo("#s1-stack", { y: 0 }, { y: -20, duration: 5.45, ease: "none" }, 0);
+
+      /* Eight fragments fall out of the pile. // beat-grid from 1.90 */
+      var FRAGS = [["#s1-g1", 1.9, 11, -26], ["#s1-g2", 2.19, -13, 22], ["#s1-g3", 2.46, -9, -18], ["#s1-g4", 2.73, 12, 28],
+                   ["#s1-g5", 3.0, -14, -14], ["#s1-g6", 3.27, 10, 24], ["#s1-g7", 3.55, 13, -22], ["#s1-g8", 3.82, -11, 18]];
+      for (var g = 0; g < FRAGS.length; g++) {
+        tl.fromTo(FRAGS[g][0], { y: 0, x: 0, rotation: 0 },
+                  { y: 470, x: FRAGS[g][3], rotation: FRAGS[g][2], duration: 1.9, ease: "power1.in" }, FRAGS[g][1]);
+        tl.fromTo(FRAGS[g][0], { opacity: 0 }, { opacity: 0.82, duration: 0.28, ease: "none" }, FRAGS[g][1]);
+        tl.to(FRAGS[g][0], { opacity: 0, duration: 0.9, ease: "none" }, FRAGS[g][1] + 1.0);
+      }
+
+      /* The headline lands a word at a time; the last word is the payload, so
+         it arrives on its own beat and settles out of a small overshoot. */
+      var WORDS = [["#s1-wa", 1.64], ["#s1-wb", 1.82], ["#s1-wc", 2.0]];
+      for (var w = 0; w < WORDS.length; w++) {
+        tl.fromTo(WORDS[w][0], { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.42, ease: ARRIVE }, WORDS[w][1]);
+      }
+      tl.fromTo("#s1-wd", { opacity: 0, y: 26, scale: 1.06 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: ARRIVE }, 2.22);
+      tl.fromTo("#s1-l2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.45, ease: ARRIVE }, 3.27);
+      tl.to("#s1", { opacity: 0, duration: 0.39, ease: CONSUME }, 5.06);
+
+      /* ============ SCENE 2 — it was all being read (5.06 → 12.40) ============ */
+      /* Threads must not exist before they draw, and must carry NO accent until
+         the mark ignites — the drought is what gives 8.74 its force. */
+      tl.set(".thread", { scaleX: 0, scaleY: 1, backgroundColor: NEUTRAL }, 5.06);
+      tl.set("#s2-v", { scaleX: 1, scaleY: 0 }, 5.06);
+
+      tl.to("#s2-boundary", { opacity: 1, duration: 0.6, ease: CONSUME }, 5.2);
+      tl.to("#s2-base", { opacity: 1, duration: 0.6, ease: CONSUME }, 5.28);
+
+      /* Four sources land one at a time. // beat-grid: 6.00, 6.56, 7.09, 7.64 */
+      var TILES = [["#s2-t1", 6.0], ["#s2-t2", 6.56], ["#s2-t3", 7.09], ["#s2-t4", 7.64]];
+      for (var t = 0; t < TILES.length; t++) {
+        tl.fromTo(TILES[t][0], { opacity: 0, x: -28 }, { opacity: 1, x: 0, duration: 0.42, ease: ARRIVE }, TILES[t][1]);
+      }
+
+      /* One continuous draw: four feeds → the spine → the mark. */
+      tl.to("#s2-h1", { scaleX: 1, duration: 0.26, ease: CONSUME, transformOrigin: "left center" }, 7.9);
+      tl.to("#s2-h2", { scaleX: 1, duration: 0.26, ease: CONSUME, transformOrigin: "left center" }, 7.94);
+      tl.to("#s2-h3", { scaleX: 1, duration: 0.26, ease: CONSUME, transformOrigin: "left center" }, 7.98);
+      tl.to("#s2-h4", { scaleX: 1, duration: 0.26, ease: CONSUME, transformOrigin: "left center" }, 8.02);
+      tl.to("#s2-v", { scaleY: 1, duration: 0.24, ease: CONSUME, transformOrigin: "center top" }, 8.2);
+      tl.to("#s2-h5", { scaleX: 1, duration: 0.22, ease: CONSUME, transformOrigin: "left center" }, 8.4);
+
+      /* The first accent pixel in the film. // beat-locked: 8.74s (strongCue 0.99) */
+      tl.fromTo("#s2-mark", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5, ease: ARRIVE }, 8.74);
+      tl.to(".thread", { backgroundColor: ACCENT, duration: 0.34, ease: "none" }, 8.74);
+      /* Light crosses the glass as it wakes. One pass, then gone. */
+      tl.fromTo("#s2-sheen", { xPercent: -120, opacity: 0 }, { opacity: 1, duration: 0.22, ease: "none" }, 8.7);
+      tl.to("#s2-sheen", { xPercent: 320, duration: 1.15, ease: "power1.inOut" }, 8.7);
+      tl.to("#s2-sheen", { opacity: 0, duration: 0.3, ease: "none" }, 9.55);
+
+      /* It wakes, looks at what it just connected, then follows the thread out
+         to the agent. Causal, not idle — every move is caused by something else
+         on screen. The pills never narrow below ~0.7 except in the blink. */
+      var EYES2 = ".s2-eye";
+      tl.to(EYES2, { attr: { height: 1.92, y: 49.04, rx: 0.96 }, duration: 0.09, ease: CONSUME }, 9.15);
+      tl.to(EYES2, { attr: { height: 24, y: 38, rx: 6 }, duration: 0.16, ease: ARRIVE }, 9.24);
+      tl.to(EYES2, { x: -3.6, duration: 0.3, ease: ARRIVE }, 9.5);
+
+      tl.fromTo("#s2-l1", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.44, ease: ARRIVE }, 9.29);
+
+      /* Out of the mark and into the agent — still inside the machine. */
+      tl.to("#s2-h6", { scaleX: 1, duration: 0.46, ease: CONSUME, transformOrigin: "left center" }, 9.83);
+      tl.to(EYES2, { x: 3.6, duration: 0.4, ease: ARRIVE }, 9.95);
+      tl.fromTo("#s2-claude", { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.42, ease: ARRIVE }, 10.24);
+      tl.to("#s2-claude-label", { opacity: 1, duration: 0.3, ease: ARRIVE }, 10.62);
+      tl.to(EYES2, { x: 0, duration: 0.34, ease: ARRIVE }, 10.9);
+      tl.fromTo("#s2-l2", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.42, ease: ARRIVE }, 10.37);
+
+      tl.to("#s2", { opacity: 0, duration: 0.35, ease: CONSUME }, 12.05);
+
+      /* ============ SCENE 3 — one question (12.15 → 20.75) ============ */
+      tl.fromTo("#s3-term", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.42, ease: ARRIVE }, 12.3);
+
+      /* Typing: a terminal-coloured mask slides right in 36 discrete steps —
+         the wrap is exactly 36ch, so one step is exactly one character.
+         // beat-locked: 13.11s (strongCue 0.98) */
+      tl.to("#s3-mask", { xPercent: 100, duration: 1.42, ease: "steps(36)" }, 13.11);
+      tl.to("#s3-caret", { opacity: 0, duration: 0.18, ease: "none" }, 14.6);
+
+      /* You hit enter and it goes looking. The glances are the retrieval —
+         left, right, then it finds it, blinks, and only then does the local
+         status ignite. Causal: nothing here moves on its own. */
+      tl.fromTo("#s3-mark", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.34, ease: ARRIVE }, 14.7);
+      var EYES3 = ".s3-eye";
+      tl.to(EYES3, { x: -3.6, duration: 0.24, ease: ARRIVE }, 14.92);
+      tl.to(EYES3, { x: 3.6, duration: 0.26, ease: ARRIVE }, 15.16);
+      tl.to(EYES3, { x: 0, duration: 0.2, ease: ARRIVE }, 15.42);
+      tl.to(EYES3, { attr: { height: 1.92, y: 49.04, rx: 0.96 }, duration: 0.08, ease: CONSUME }, 15.46);
+      tl.to(EYES3, { attr: { height: 24, y: 38, rx: 6 }, duration: 0.14, ease: ARRIVE }, 15.54);
+
+      tl.fromTo("#s3-live", { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.32, ease: ARRIVE }, 15.55);
+      tl.fromTo("#s3-answer", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.38, ease: ARRIVE }, 15.84);
+      /* The citation is the moment this act exists for. // beat-locked: 17.47s (strongCue 0.99) */
+      tl.fromTo("#s3-chip", { opacity: 0, y: 20, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: ARRIVE }, 17.47);
+      tl.fromTo("#s3-l1", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.42, ease: ARRIVE }, 18.02);
+
+      tl.to("#s3", { opacity: 0, duration: 0.35, ease: CONSUME }, 20.4);
+
+      /* ============ SCENE 4 — 11:00 (20.65 → 30.47) ============ */
+      tl.fromTo("#s4-call", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: ARRIVE }, 20.65);
+
+      /* It is recording the call. The clock moving is the proof. */
+      tl.to("#s4-rt1", { opacity: 1, duration: 0.3, ease: "none" }, 20.9);
+      tl.to("#s4-rt1", { opacity: 0, duration: 0.2, ease: "none" }, 26.0);
+      tl.to("#s4-rt2", { opacity: 1, duration: 0.2, ease: "none" }, 26.2);
+
+      tl.fromTo("#s4-l1", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: ARRIVE }, 21.28);
+      tl.to("#s4-l1", { opacity: 0, duration: 0.3, ease: CONSUME }, 22.85);
+
+      /* The briefing arrives on its own, from the edge of the screen.
+         // beat-locked: 22.93s (strongCue 1.00) */
+      tl.fromTo("#s4-island", { opacity: 0, x: 300 }, { opacity: 1, x: 0, duration: 0.62, ease: ARRIVE }, 22.93);
+      tl.set("#s4-rail", { scaleY: 0, transformOrigin: "center top" }, 20.65);
+      tl.to("#s4-rail", { opacity: 1, scaleY: 1, duration: 0.5, ease: CONSUME }, 23.3);
+
+      /* The briefing notices you. One blink, nothing else. */
+      tl.to(".s4-eye", { attr: { height: 1.92, y: 49.04, rx: 0.96 }, duration: 0.09, ease: CONSUME }, 23.35);
+      tl.to(".s4-eye", { attr: { height: 24, y: 38, rx: 6 }, duration: 0.16, ease: ARRIVE }, 23.44);
+
+      /* SECTION A — what happened while you were gone. One marker at a time,
+         then held as a set so it can actually be read.
+         // beat-grid: 23.46, 24.02, 24.56 */
+      tl.to("#s4-lbl-a", { opacity: 1, duration: 0.3, ease: ARRIVE }, 23.3);
+      var MARKS = [["#s4-m1", 23.46], ["#s4-m2", 24.02], ["#s4-m3", 24.56]];
+      for (var m = 0; m < MARKS.length; m++) {
+        tl.fromTo(MARKS[m][0], { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.4, ease: ARRIVE }, MARKS[m][1]);
+      }
+
+      /* The call is being transcribed as it happens. // beat-grid: 24.02, 24.56 */
+      tl.fromTo("#s4-tr1", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.36, ease: ARRIVE }, 24.02);
+      tl.fromTo("#s4-tr2", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.36, ease: ARRIVE }, 24.56);
+
+      /* SECTION B — what you have to settle before you hang up. This is the
+         half that makes the call efficient rather than merely informed. The
+         call steps back so the briefing is the subject. // beat: 25.66 */
+      tl.to("#s4-call", { opacity: 0.5, duration: 0.6, ease: CONSUME }, 26.2);
+      tl.to("#s4-div", { opacity: 1, duration: 0.35, ease: CONSUME }, 25.66);
+      tl.to("#s4-lbl-b", { opacity: 1, duration: 0.3, ease: ARRIVE }, 25.8);
+
+      /* // beat-grid: 26.20, 26.75, 27.29 — highest priority first, in accent. */
+      var CLAR = [["#s4-c1", 26.2], ["#s4-c2", 26.75], ["#s4-c3", 27.29]];
+      for (var c = 0; c < CLAR.length; c++) {
+        tl.fromTo(CLAR[c][0], { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.4, ease: ARRIVE }, CLAR[c][1]);
+      }
+
+      /* The bookend to "You know nothing." // beat: 28.39 */
+      tl.fromTo("#s4-l2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.44, ease: ARRIVE }, 28.39);
+
+      tl.to("#s4", { opacity: 0, duration: 0.45, ease: CONSUME }, 30.02);
+
+      /* ============ SCENE 5 — outro (30.20 → 33.30) ============ */
+      tl.fromTo("#s5-mark", { opacity: 0, scale: 0.84 }, { opacity: 1, scale: 1, duration: 0.55, ease: ARRIVE }, 30.2);
+
+      /* The eye-bars are the entire character rig. Heights come from the app's
+         own mark: resting 24, closed 0.08x, wide 1.35x — never below ~0.7x, or
+         the 12x24 pills go square and read as round dots (a different logo). */
+      var EYES = ".eye";
+      tl.to(EYES, { attr: { height: 1.92, y: 49.04, rx: 0.96 }, duration: 0.1, ease: CONSUME }, 30.6);
+      tl.to(EYES, { attr: { height: 24, y: 38, rx: 6 }, duration: 0.14, ease: ARRIVE }, 30.72);
+      tl.to(EYES, { attr: { height: 32.4, y: 33.8, rx: 6 }, duration: 0.3, ease: ARRIVE }, 31.3);
+
+      tl.fromTo("#s5-l1", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.42, ease: ARRIVE }, 30.7);
+      tl.fromTo("#s5-l2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.38, ease: ARRIVE }, 31.45);
+      tl.to("#s5-wordmark", { opacity: 1, duration: 0.4, ease: ARRIVE }, 32.05);
+
+      /* ===================== AUDIO MIX =====================
+         The bed is presence, never a hook. It ducks under the typing and is
+         fully out before the last two lines, which land dry. */
+      tl.fromTo("#bgm", { volume: 0 }, { volume: 0.15, duration: 0.9, ease: "none" }, 0);
+      tl.to("#bgm", { volume: 0.22, duration: 0.5, ease: "none" }, 8.74);
+      tl.to("#bgm", { volume: 0.11, duration: 0.4, ease: "none" }, 12.9);
+      tl.to("#bgm", { volume: 0.2, duration: 0.5, ease: "none" }, 15.84);
+      tl.to("#bgm", { volume: 0.24, duration: 0.5, ease: "none" }, 22.93);
+      tl.to("#bgm", { volume: 0.12, duration: 1, ease: "none" }, 28.39);
+      tl.to("#bgm", { volume: 0, duration: 1.2, ease: "none" }, 30.2);
+
+      /* ============== AUDIO-REACTIVE (subtle, per-frame) ==============
+         Pre-extracted RMS / bass drive three existing elements only: the two
+         accent halos and the vignette's depth. Each halo carries its own
+         deterministic time gate, so the sampler is the sole owner of its
+         opacity and never fights a tween. No waveforms, no bars, no strobing.
+         VIG is 0 on the paper theme, so the vignette stays off there. */
+      (function () {
+        var A = window.AUDIO_DATA;
+        if (!A) return;
+        var halo2 = document.getElementById("s2-halo");
+        var halo3 = document.getElementById("s3-halo");
+        var halo5 = document.getElementById("s5-halo");
+        var vig = document.getElementById("vignette");
+        var last = A.totalFrames - 1;
+        var frames = Math.round(33.3 * A.fps);
+
+        /* Linear 0→1 ramp — a pure function of time, so every frame is
+           reproducible from its own timestamp alone. */
+        function gate(t, from, span) {
+          if (t <= from) return 0;
+          if (t >= from + span) return 1;
+          return (t - from) / span;
+        }
+
+        function sampler(i) {
+          return function () {
+            var k = i > last ? last : i;
+            var t = i / A.fps;
+            var rms = A.rms[k];
+            var bass = A.bass[k];
+            gsap.set(halo2, { opacity: gate(t, 8.74, 0.4) * (0.5 + rms * 0.5), scale: 0.92 + bass * 0.14 });
+            gsap.set(halo3, { opacity: 0.55 + rms * 0.45, scale: 0.92 + bass * 0.16 });
+            gsap.set(halo5, { opacity: gate(t, 30.2, 0.4) * (0.5 + rms * 0.5), scale: 0.94 + rms * 0.12 });
+            gsap.set(vig, { opacity: VIG * (1 + bass * 0.26) });
+          };
+        }
+        for (var f = 0; f < frames; f++) {
+          tl.call(sampler(f), [], f / A.fps);
+        }
+      })();
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
