@@ -26,7 +26,7 @@ const NAV_CLEARANCE = 64;
 
 // A plain `scrollIntoView({ behavior: "smooth" })` computes its target once
 // and animates toward that fixed pixel value. Sections above the target
-// (OrbitSyncJarvis, JarvisOverlaySection) run entrance animations that can
+// (ConnectAnywhere, JarvisOverlaySection) run entrance animations that can
 // still be shifting layout while the scroll is mid-flight, so the browser's
 // one-shot target goes stale and we land short or long of the section.
 // Recomputing the target every step makes the scroll self-correcting.

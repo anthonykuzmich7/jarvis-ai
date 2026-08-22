@@ -1,6 +1,7 @@
 import { HeroAsk } from "@/components/hero/hero-ask";
 import { StrugglesSection } from "@/components/struggles-section";
-import { OrbitSyncJarvis } from "@/components/orbit-sync-jarvis";
+import { ConnectAnywhere } from "@/components/connect-anywhere";
+import { PaperGlow } from "@/components/paper-glow";
 import { JarvisOverlaySection } from "@/components/jarvis-overlay-section";
 import { FeatureShowcase } from "@/components/feature-showcase";
 import { OutcomesSwitch } from "@/components/outcomes-switch";
@@ -210,8 +211,18 @@ export default function Home() {
 
       {/* Desktop layout — hidden on mobile */}
       <main className="hidden md:flex flex-1 flex-col" style={{ backgroundColor: "#FBFEFD" }}>
-        <HeroAsk />
-        <OrbitSyncJarvis />
+        {/* The hero and Connect share one sheet of paper and one light.
+            Both sections clip their own overflow, so a glow living
+            inside either of them got sliced at the boundary and drew a
+            hard rule between the two. Hanging it here instead lets it
+            cross. `overflow-x-clip` rather than `overflow-x-hidden`:
+            clip stops the sideways bleed without making this a scroll
+            container, which would clip vertically and undo the point. */}
+        <div className="relative isolate overflow-x-clip bg-ledger-white">
+          <PaperGlow />
+          <HeroAsk />
+          <ConnectAnywhere />
+        </div>
         <JarvisOverlaySection />
         <StrugglesSection />
         <FeatureShowcase />

@@ -1,5 +1,5 @@
 import { MissionControlJarvis } from "@/components/mission-control-jarvis";
-import { OrbitSyncJarvis } from "@/components/orbit-sync-jarvis";
+import { ConnectAnywhere } from "@/components/connect-anywhere";
 
 function Label({ letter, name, desc }: { letter: string; name: string; desc: string }) {
   return (
@@ -39,10 +39,10 @@ export default function ComparePage() {
       {/* Option B */}
       <Label
         letter="B"
-        name="The Orbit"
-        desc="Tool icons orbit a central Jarvis node with depth — whimsical, unexpected, kinetic"
+        name="Connect Anywhere"
+        desc="Context rains from a live intake rail into one seam, then surfaces wherever you work"
       />
-      <OrbitSyncJarvis />
+      <ConnectAnywhere />
     </main>
   );
 }
