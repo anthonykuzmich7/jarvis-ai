@@ -4,6 +4,7 @@ import { SiteNav } from "@/components/site-nav";
 import { JarvisMark } from "@/components/jarvis-mark";
 import { ShieldIcon } from "@/components/icons";
 import { contentPages } from "@/lib/content/pages";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 /*
   The chrome every page shares: brand mark, nav, footer.
@@ -76,10 +77,10 @@ export function SiteFooter() {
             Early access — we&apos;re onboarding design partners.
           </span>
           <a
-            href="mailto:hello@jarviscontext.com"
+            href={`mailto:${CONTACT_EMAIL}`}
             className="text-graphite transition-colors hover:text-coal-ink"
           >
-            hello@jarviscontext.com
+            {CONTACT_EMAIL}
           </a>
         </div>
       </div>

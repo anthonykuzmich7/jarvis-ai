@@ -10,6 +10,7 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter, Wordmark } from "@/components/site-shell";
 import { faqs } from "@/lib/faqs";
 import { homeJsonLd, jsonLdString } from "@/lib/structured-data";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 
 
@@ -77,7 +78,7 @@ function FaqSection() {
             <p className="mt-4 text-[15px] leading-[1.6] tracking-[-0.12px] text-slate-mid">
               Still have something on your mind?{" "}
               <a
-                href="mailto:hello@jarviscontext.com"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="font-medium text-coal-ink underline underline-offset-2 hover:text-graphite transition-colors"
               >
                 Drop us a line.
