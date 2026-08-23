@@ -54,6 +54,14 @@ const EASE = [0.16, 1, 0.3, 1] as const;
    wanted 380 to have somewhere to burst into. 320 keeps the stage legible
    without turning the terminal into a mostly-empty box. */
 const CARD_BODY = 320;
+/* Phone. Measured at 390x844 the beat comes to 273, and the hero has a
+   whole viewport to land in now that nothing is fixed over the bottom of
+   it. 332 is the beat plus about 60px of dark room, which is what the
+   desktop card spends its slack on too. */
+const CARD_BODY_SM = 332;
+/* Below 360px the question, the tool call and the answer each pick up
+   another line: measured, the beat is 371 tall there. */
+const CARD_BODY_XS = 386;
 
 type Ask = {
   question: string;
@@ -121,9 +129,14 @@ export function HeroAsk() {
          and the shared PaperGlow. The light used to live in here, where
          this section's `overflow-hidden` sliced it flat at the bottom
          edge and drew a rule between the hero and the section below. */
-      className="relative flex min-h-[100dvh] w-full items-center overflow-hidden scroll-mt-16"
+      /* `items-start` until the grid goes two-column. In one column the
+         stack is taller than the viewport, and centring content that
+         overflows its container pushes the top of it up under the nav —
+         the headline loses its first line before you have scrolled at
+         all. Two columns fit, so there it centres. */
+      className="relative flex min-h-[100dvh] w-full items-start overflow-hidden scroll-mt-16 xl:items-center"
     >
-      <div className="relative mx-auto grid w-full max-w-[1400px] items-center gap-14 px-6 pb-8 pt-[92px] xl:grid-cols-[0.92fr_1.08fr] xl:gap-16 xl:pb-8">
+      <div className="relative mx-auto grid w-full max-w-[1400px] items-center gap-10 px-5 pb-14 pt-[84px] sm:px-6 sm:gap-14 xl:grid-cols-[0.92fr_1.08fr] xl:gap-16 xl:pb-8 xl:pt-[92px]">
         {/* Left — the claim */}
         <div>
           <motion.div
@@ -132,8 +145,10 @@ export function HeroAsk() {
             transition={{ duration: 0.9, ease: EASE }}
           >
             <KineticHeadline
-              className="text-coal-ink"
-              style={{ fontSize: "clamp(44px, 5vw, 84px)" }}
+              /* Two clamps rather than one. A single `clamp(44px, 5vw, 84px)`
+                 bottoms out at 44px, which is exactly as wide as the word
+                 "repeating" can be in a 320px column before it breaks. */
+              className="text-[clamp(38px,10.5vw,44px)] text-coal-ink sm:text-[clamp(44px,5vw,84px)]"
             />
           </motion.div>
 
@@ -141,7 +156,7 @@ export function HeroAsk() {
             initial={reduce ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.12, ease: EASE }}
-            className="mt-7 max-w-[42ch] text-[17px] leading-[1.55] tracking-[-0.17px] text-slate-mid text-pretty"
+            className="mt-6 max-w-[42ch] text-[16px] leading-[1.55] tracking-[-0.17px] text-slate-mid text-pretty sm:mt-7 sm:text-[17px]"
           >
             To your AI, and to your team. Jarvis holds your context and hands it
             to whoever asks.
@@ -151,11 +166,11 @@ export function HeroAsk() {
             initial={reduce ? false : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.22, ease: EASE }}
-            className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4"
+            className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 sm:mt-9 sm:gap-x-7"
           >
             <a
               href="#waitlist"
-              className="cta-shine relative inline-flex cursor-pointer items-center overflow-hidden whitespace-nowrap rounded-full bg-coal-ink px-8 py-4 text-sm font-semibold leading-none tracking-[-0.14px] text-white transition-colors hover:bg-graphite active:scale-[0.98]"
+              className="cta-shine relative inline-flex cursor-pointer items-center overflow-hidden whitespace-nowrap rounded-full bg-coal-ink px-7 py-3.5 text-sm font-semibold leading-none tracking-[-0.14px] text-white transition-colors hover:bg-graphite active:scale-[0.98] sm:px-8 sm:py-4"
             >
               Get early access
             </a>
@@ -201,9 +216,15 @@ export function HeroAsk() {
               toolDelay={700}
               toolResultDelay={1500}
               height={CARD_BODY}
+              mobileHeight={CARD_BODY_SM}
+              narrowHeight={CARD_BODY_XS}
             />
           ) : (
-            <MeetingAssistStage active height={CARD_BODY + 40} />
+            <MeetingAssistStage
+              active
+              height={CARD_BODY + 40}
+              mobileHeight={CARD_BODY_SM + 40}
+            />
           )}
 
           <div
