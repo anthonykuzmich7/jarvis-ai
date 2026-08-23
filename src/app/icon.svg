@@ -17,7 +17,14 @@
       .bars { fill: #0A0A0B; }
     }
   </style>
-  <circle class="disc" cx="50" cy="50" r="50" />
-  <rect class="bars" x="32" y="38" width="12" height="24" rx="6" />
-  <rect class="bars" x="56" y="38" width="12" height="24" rx="6" />
+  <!--
+    Fills are set twice on purpose: as presentation attributes here, and as
+    CSS above. CSS wins where it is honoured, which is what gives us the
+    dark-mode swap. Where it is not — several crawlers and thumbnailers strip
+    <style> out of SVG entirely — an element with no fill defaults to black,
+    which turned the mark into a solid black blob with the bars invisible.
+  -->
+  <circle class="disc" fill="#0A0A0B" cx="50" cy="50" r="50" />
+  <rect class="bars" fill="#FFFFFF" x="32" y="38" width="12" height="24" rx="6" />
+  <rect class="bars" fill="#FFFFFF" x="56" y="38" width="12" height="24" rx="6" />
 </svg>
