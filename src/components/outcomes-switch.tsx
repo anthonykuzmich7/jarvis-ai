@@ -34,10 +34,10 @@ export function OutcomesSwitch() {
 
   return (
     <section className="bg-ledger-white">
-      <div className="mx-auto w-full max-w-5xl px-6 py-24 sm:py-32">
+      <div className="mx-auto w-full max-w-5xl px-5 py-16 sm:px-6 sm:py-24 lg:py-32">
 
         {/* Heading */}
-        <div className="mb-12 text-center">
+        <div className="mb-8 text-center sm:mb-12">
           <h2 className="font-display text-[32px] font-bold leading-[1.13] tracking-[-0.96px] text-coal-ink sm:text-[40px] sm:tracking-[-1.2px]">
             What changes with Jarvis.
           </h2>

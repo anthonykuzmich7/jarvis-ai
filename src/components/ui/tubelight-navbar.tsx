@@ -3,19 +3,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
   name: string;
   url: string;
-  icon: LucideIcon;
 }
 
 interface NavBarProps {
   items: NavItem[];
   className?: string;
-  cta?: { label: string; url: string; icon: LucideIcon };
+  cta?: { label: string; url: string };
   brand?: React.ReactNode;
 }
 
@@ -29,43 +27,72 @@ const NAV_CLEARANCE = 64;
 // (ConnectAnywhere, JarvisOverlaySection) run entrance animations that can
 // still be shifting layout while the scroll is mid-flight, so the browser's
 // one-shot target goes stale and we land short or long of the section.
-// Recomputing the target every step makes the scroll self-correcting.
-// setTimeout (not requestAnimationFrame) so the scroll can't stall if the
-// tab loses visibility mid-click. Each step jumps instantly to its computed
-// position — letting the ambient CSS `scroll-behavior: smooth` (globals.css)
-// also animate each micro-step would fight this loop and stall the scroll.
+// Recomputing the target every step makes the scroll self-correcting. Each
+// step jumps instantly to its computed position — letting the ambient CSS
+// `scroll-behavior: smooth` (globals.css) also animate each micro-step would
+// fight this loop and stall the scroll.
+//
+// Driven by requestAnimationFrame rather than setTimeout. The chain used to
+// re-arm with `setTimeout(step, 16)` and reliably died after exactly four
+// ticks in both dev and production, landing about 55% of the way to every
+// target whatever the distance or direction: taps on the nav visibly stopped
+// short. Timer ids are a number shared with everything else on the page, and
+// a stray clearTimeout is enough to end the chain silently. A frame callback
+// is owned by this closure and cannot be cancelled by anything else.
+//
+// The old comment defended setTimeout on the grounds that rAF stalls in a
+// hidden tab. That case is handled explicitly instead: if the document is
+// hidden there is nothing to animate for, so jump to the target and settle.
 function smoothScrollToId(id: string, onSettle?: () => void) {
-  let steps = 0;
   let cancelled = false;
-  let timer: ReturnType<typeof setTimeout> | null = null;
+  let frame: number | null = null;
+  // Frames that did not move. "The page cannot scroll any further" is a run
+  // of them, not a single one: sections below the fold are still animating
+  // in as we pass, so one frame can land exactly where it started and the
+  // next can have somewhere new to go.
+  let stalled = 0;
+  const startedAt = performance.now();
 
   function step() {
+    frame = null;
     if (cancelled) return;
     const el = document.getElementById(id);
     if (!el) return onSettle?.();
+
     const before = window.scrollY;
     const targetY = before + el.getBoundingClientRect().top - NAV_CLEARANCE;
     const diff = targetY - before;
-    if (Math.abs(diff) < 1) {
+
+    if (Math.abs(diff) < 1 || document.hidden) {
       window.scrollTo({ top: targetY, behavior: "instant" });
       return onSettle?.();
     }
-    window.scrollTo({ top: before + diff * 0.18, behavior: "instant" });
-    steps += 1;
-    // Stop once the page can't scroll any further (target sits past the
-    // document's bottom, e.g. FAQ) — otherwise diff never reaches <1 and
-    // this would loop forever. The step cap is just a hard safety net.
-    if (window.scrollY === before || steps > 120) return onSettle?.();
-    timer = setTimeout(step, 16);
+
+    // An eased step, but never one that rounds down to a standstill: the
+    // last few pixels of the tail are smaller than 18% of a pixel.
+    const move = diff * 0.18;
+    window.scrollTo({
+      top: before + (Math.abs(move) < 1 ? Math.sign(diff) : move),
+      behavior: "instant",
+    });
+
+    stalled = Math.abs(window.scrollY - before) < 0.5 ? stalled + 1 : 0;
+    // Hard safety nets: a target that can never be reached (it sits past the
+    // document's bottom, e.g. FAQ on a short page) and a wall-clock budget.
+    if (stalled >= 4 || performance.now() - startedAt > 2000) {
+      return onSettle?.();
+    }
+
+    frame = requestAnimationFrame(step);
   }
 
   step();
   // Returning a canceller is the whole point: two of these chains running at
-  // once both call window.scrollTo every 16ms toward different targets, and
+  // once both call window.scrollTo every frame toward different targets, and
   // the page judders between them. A new navigation must kill the old one.
   return () => {
     cancelled = true;
-    if (timer) clearTimeout(timer);
+    if (frame !== null) cancelAnimationFrame(frame);
   };
 }
 
@@ -73,6 +100,8 @@ export function NavBar({ items, className, cta, brand }: NavBarProps) {
   const [activeTab, setActiveTab] = useState(items[0].name);
   // Flush and transparent over the hero; condensed glass once you leave it.
   const [lifted, setLifted] = useState(false);
+  // The mobile sections sheet.
+  const [menuOpen, setMenuOpen] = useState(false);
   // Cancels the scroll currently in flight, if any.
   const cancelScrollRef = useRef<(() => void) | null>(null);
   // While a click-driven scroll runs, the clicked tab owns the marker. Without
@@ -192,75 +221,196 @@ export function NavBar({ items, className, cta, brand }: NavBarProps) {
     };
   }, []);
 
+  // Escape closes the sheet, and so does a resize past the breakpoint where
+  // the sheet stops rendering: without that the bar keeps the glass it wears
+  // while open, and re-narrowing the window reveals a menu nobody asked for.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    const mq = window.matchMedia("(min-width: 768px)");
+    const onWide = () => {
+      if (mq.matches) setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    mq.addEventListener("change", onWide);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      mq.removeEventListener("change", onWide);
+    };
+  }, [menuOpen]);
+
   // Never leave a scroll chain or timer running after the bar goes away.
   useEffect(() => () => endNavigation(), []);
 
   return (
     <>
-      {/* Mobile: bottom-fixed floating pill */}
-      <div
+      {/* The mobile/desktop switch is `md` (768px), not `sm`. Measured at
+          640px, the desktop bar's three columns come to 661px of content in
+          a 592px gutter: brand, links and CTA sat flush against each other
+          and the CTA ran 21px off the right edge. 768 is the first width
+          where the bar has room to breathe, and the pill below is happier
+          in that range anyway. */}
+
+      {/* Mobile: one bar, carrying the same three things the desktop bar
+          carries — brand, sections, CTA — with the sections behind a menu
+          because five labels do not fit on a 390px line.
+
+          What this replaces: a bottom-fixed pill of six bare icons. It
+          invented a second navigation language for small screens that the
+          desktop never speaks, and the icons were not decodable — a box for
+          "Product", a clock for "Why Jarvis", layers for "Features", an
+          envelope for "Get early access". The labels are the navigation;
+          the sheet just holds them until asked.
+
+          Transparent over the hero, glass once you have left it or once
+          the sheet is open, so the panel reads as hanging off the bar
+          rather than floating free. */}
+      <header
         className={cn(
-          "fixed bottom-0 left-1/2 z-50 mb-6 -translate-x-1/2 sm:hidden",
+          // `fixed` is itself a positioned ancestor, so the panel below can
+          // hang off it with `absolute top-full` without a `relative` here.
+          "fixed top-0 z-50 w-full md:hidden",
+          "transition-[background-color,border-color,box-shadow] duration-300 ease-out",
+          lifted || menuOpen
+            ? "border-b border-ash bg-ledger-white/85 shadow-[0_1px_20px_-8px_rgba(28,26,23,0.18)] backdrop-blur-xl backdrop-saturate-150"
+            : "border-b border-transparent bg-transparent",
           className,
         )}
       >
-        <div className="flex items-center gap-1 rounded-full border border-ash bg-white/90 px-1 py-1 shadow-[rgba(95,99,106,0.10)_0px_0px_0px_1px,rgba(43,43,48,0.08)_0px_4px_16px_0px] backdrop-blur-lg">
-          {items.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.name;
+        <div className="flex h-14 items-center justify-between gap-2 px-4">
+          <div className="flex min-w-0 items-center">{brand}</div>
 
-            return (
+          <div className="flex shrink-0 items-center gap-2">
+            {cta && (
+              /* The desktop CTA, at desktop wording and with the same shine
+                 sweep. It stays on the bar rather than moving into the sheet:
+                 a CTA you have to open a menu to find is not a CTA. */
               <Link
-                key={item.name}
-                href={item.url}
+                href={cta.url}
                 onClick={(e) => {
-                  setActiveTab(item.name);
-                  goToSection(e, item.url);
+                  setMenuOpen(false);
+                  goToSection(e, cta.url);
                 }}
-                className={cn(
-                  "relative shrink-0 cursor-pointer whitespace-nowrap rounded-full px-5 py-2 text-sm tracking-[-0.14px] transition-colors",
-                  isActive
-                    ? "font-semibold text-coal-ink"
-                    : "font-medium text-graphite hover:text-coal-ink",
-                )}
+                className="cta-shine relative shrink-0 cursor-pointer overflow-hidden whitespace-nowrap rounded-full bg-coal-ink px-3.5 py-2 text-[13px] font-semibold tracking-[-0.14px] text-white transition-colors hover:bg-graphite active:scale-[0.98]"
               >
-                <span className="hidden md:inline">{item.name}</span>
-                <span className="md:hidden">
-                  <Icon size={18} strokeWidth={2} />
-                </span>
-                {isActive && (
-                  <motion.div
-                    layoutId="nav-underline-mobile"
-                    className="absolute inset-x-5 bottom-[2px] h-[2px] rounded-full bg-smolder"
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
+                {cta.label}
               </Link>
-            );
-          })}
+            )}
 
-          {cta && cta.icon && (
-            <Link
-              href={cta.url}
-              onClick={(e) => goToSection(e, cta.url)}
-              className="cta-shine relative ml-0.5 shrink-0 cursor-pointer overflow-hidden whitespace-nowrap rounded-full bg-coal-ink px-5 py-2 text-sm font-semibold tracking-[-0.14px] text-white transition-colors hover:bg-graphite"
+            <button
+              type="button"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-nav-sheet"
+              onClick={() => setMenuOpen((open) => !open)}
+              className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-black/10 text-coal-ink transition-colors hover:border-black/20 active:scale-[0.96]"
             >
-              <span className="hidden md:inline">{cta.label}</span>
-              <span className="md:hidden">
-                <cta.icon size={18} strokeWidth={2} />
+              {/* Two bars, not three. The third is the hamburger's decoration,
+                  and at 18px it closes the gaps into a smudge. */}
+              <span aria-hidden className="relative block h-[10px] w-[16px]">
+                <span
+                  className={cn(
+                    "absolute left-0 block h-[1.5px] w-full rounded-full bg-current transition-transform duration-300 ease-out",
+                    menuOpen ? "top-[4px] rotate-45" : "top-0",
+                  )}
+                />
+                <span
+                  className={cn(
+                    "absolute left-0 block h-[1.5px] w-full rounded-full bg-current transition-transform duration-300 ease-out",
+                    menuOpen ? "top-[4px] -rotate-45" : "top-[8px]",
+                  )}
+                />
               </span>
-            </Link>
-          )}
+            </button>
+          </div>
         </div>
-      </div>
+
+        {/* The panel hangs off the bar rather than growing it: `absolute`
+            under `top-full`, so the bar stays 56px whether or not the sheet
+            is open and the page underneath does not reflow.
+
+            Always mounted, shown with a CSS transition on opacity and
+            transform, `inert` while closed so its links leave the tab order
+            and the screen-reader tree. Two earlier versions used
+            AnimatePresence and both left the panel in the DOM forever: the
+            exit ran to completion (opacity 0, translated up) but the child
+            was never unmounted, which also stranded an invisible
+            full-screen backdrop over the page that swallowed every tap.
+            Five links are cheap to keep mounted, and a CSS transition
+            cannot fail to resolve. */}
+        <nav
+          id="mobile-nav-sheet"
+          aria-label="Sections"
+          inert={!menuOpen}
+          className={cn(
+            "absolute left-0 right-0 top-full origin-top border-b border-ash bg-ledger-white/95 shadow-[0_16px_40px_-24px_rgba(28,26,23,0.35)] backdrop-blur-xl backdrop-saturate-150",
+            "transition-[opacity,transform] duration-300 ease-out",
+            menuOpen
+              ? "translate-y-0 opacity-100"
+              : "pointer-events-none -translate-y-2 opacity-0",
+          )}
+        >
+          <div className="flex flex-col px-4 py-2">
+            {items.map((item) => {
+              const isActive = activeTab === item.name;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.url}
+                  aria-current={isActive ? "true" : undefined}
+                  onClick={(e) => {
+                    setActiveTab(item.name);
+                    setMenuOpen(false);
+                    goToSection(e, item.url);
+                  }}
+                  className={cn(
+                    "cursor-pointer py-3 text-[17px] tracking-[-0.2px] transition-colors",
+                    isActive
+                      ? "font-semibold text-coal-ink"
+                      : "font-medium text-graphite",
+                  )}
+                >
+                  {/* The marker is the desktop's: a 2px smolder rule under
+                      the label. `inline-block` so it measures the word, not
+                      the full-width row. Static, unlike the desktop's, which
+                      carries a `layoutId` so it can slide between tabs on
+                      one line — here there is nothing to slide to, because
+                      the active item only changes while you scroll and the
+                      sheet is shut then. */}
+                  <span className="relative inline-block">
+                    {item.name}
+                    {isActive ? (
+                      <span className="absolute -bottom-[3px] left-0 block h-[2px] w-full rounded-full bg-smolder" />
+                    ) : null}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      </header>
+
+      {/* Tap-anywhere-else to dismiss. Under the bar, over everything else.
+          `aria-hidden` and not focusable: it is a convenience, and the two
+          real affordances (the toggle button, Escape) are both keyboard
+          reachable. */}
+      <div
+        aria-hidden
+        onClick={() => setMenuOpen(false)}
+        className={cn(
+          "fixed inset-0 z-40 bg-coal-ink/10 backdrop-blur-[2px] transition-opacity duration-200 md:hidden",
+          menuOpen ? "opacity-100" : "pointer-events-none opacity-0",
+        )}
+      />
 
       {/* Desktop: fixed bar. Fixed rather than sticky so it reserves no layout
           height, which lets the hero actually occupy a full 100dvh instead of
           starting 64px down. */}
       <header
         className={cn(
-          "fixed top-0 z-50 hidden w-full sm:block",
+          "fixed top-0 z-50 hidden w-full md:block",
           "transition-[height,background-color,border-color,box-shadow] duration-300 ease-out",
           lifted
             ? "h-16 border-b border-ash bg-ledger-white/80 shadow-[0_1px_20px_-8px_rgba(28,26,23,0.18)] backdrop-blur-xl backdrop-saturate-150"

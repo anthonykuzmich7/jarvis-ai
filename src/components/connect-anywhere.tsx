@@ -90,11 +90,25 @@ const SEAM_Y = RAIL_H + FALL_H; // 172
 const CHIPS_Y = SEAM_Y + 76; // 248
 const CHIP_H = 40;
 const STEM_H = 18;
-const CARD_Y = CHIPS_Y + CHIP_H + STEM_H; // 306
-const CARD_H = 136;
-const STAGE_H = CARD_Y + CARD_H; // 442
+/* Everything below the chip row used to be constants: one 40px row of
+   surfaces, a stem, a 136px card, total 442. That holds while the four
+   surfaces fit on one line. They do not on a phone — the row wraps to two,
+   and the card, still pinned to a hard-coded CARD_Y, landed on top of the
+   second line. The chip row is measured now and the card and stage follow
+   it, so wrapping to two lines (or to four) just makes the stage taller.
 
+   The card's own height stays a constant, because it holds one fixed
+   reply and its citations. Measured, the four replies need 133px of it
+   down to a 328px card and 154px at 288px, where the longest wraps to a
+   third line; the desktop 136 is three pixels clear of the first number
+   and short of the second. So: the same 136 wherever it has always been,
+   and two steps of headroom below that, each with about ten pixels of
+   slack over the measurement so a font metric cannot clip a citation. */
+const CARD_H = 136;
+const CARD_H_MD = 144; // narrow, reply still two lines
+const CARD_H_SM = 164; // ~320px phone, reply wraps to three
 const CARD_W = 452;
+
 const RAIL_GAP = 16;
 const RAIL_SPEED = 30; // px per second — slow enough to read a fragment
 const MARK_D = 68;
@@ -285,7 +299,9 @@ export function ConnectAnywhere() {
   const railX = React.useRef<number[]>([]);
   const stageW = React.useRef(1200);
 
+  const chipsRowRef = React.useRef<HTMLDivElement>(null);
   const [chipCenters, setChipCenters] = React.useState<number[]>([]);
+  const [chipsHeight, setChipsHeight] = React.useState(CHIP_H);
   const [stageWidth, setStageWidth] = React.useState(1200);
 
   const measure = React.useCallback(() => {
@@ -321,6 +337,10 @@ export function ConnectAnywhere() {
         return r.left - stageRect.left + r.width / 2;
       }),
     );
+
+    /* How tall the surfaces actually came out. One line on a desktop,
+       two on a phone. Everything below hangs off this. */
+    setChipsHeight(chipsRowRef.current?.offsetHeight ?? CHIP_H);
   }, []);
 
   React.useLayoutEffect(() => {
@@ -521,6 +541,9 @@ export function ConnectAnywhere() {
     16,
     Math.min(chipX - cardW / 2, Math.max(16, stageWidth - cardW - 16)),
   );
+  const cardH = cardW < 300 ? CARD_H_SM : cardW < 420 ? CARD_H_MD : CARD_H;
+  const cardY = CHIPS_Y + chipsHeight + STEM_H;
+  const stageH = cardY + cardH;
 
   return (
     <section
@@ -540,7 +563,7 @@ export function ConnectAnywhere() {
          where the next section's hard blue edge needs the room. */
       className="relative scroll-mt-16 overflow-hidden"
     >
-      <div ref={sectionRef} className="relative w-full pb-28 pt-8">
+      <div ref={sectionRef} className="relative w-full pb-20 pt-8 sm:pb-28">
         {/* Heading. Centred, because the diagram under it is symmetric
             about the mark and a left-anchored head fought it. */}
         <motion.div
@@ -561,8 +584,8 @@ export function ConnectAnywhere() {
         {/* Stage — full bleed. */}
         <motion.div
           ref={stageRef}
-          className="relative mt-12 w-full"
-          style={{ height: STAGE_H }}
+          className="relative mt-10 w-full sm:mt-12"
+          style={{ height: stageH }}
           initial={reduce ? false : { opacity: 0 }}
           animate={shown ? { opacity: 1 } : undefined}
           transition={{ duration: 0.6, ease: EASE, delay: 0.15 }}
@@ -586,7 +609,13 @@ export function ConnectAnywhere() {
                 ref={(el) => {
                   railRefs.current[i] = el;
                 }}
-                className="absolute left-0 flex items-center gap-2 whitespace-nowrap rounded-[9px] border border-ash bg-card px-3 py-[7px]"
+                /* Compacter on a phone. A 390px stage shows one fragment
+                   per lane whatever we do, but at desktop metrics the
+                   longest of them came to 387px and pressed against both
+                   edges of the mask, so the rail read as one card wedged
+                   across the screen rather than as something drifting
+                   through it. */
+                className="absolute left-0 flex items-center gap-1.5 whitespace-nowrap rounded-[9px] border border-ash bg-card px-2.5 py-[6px] sm:gap-2 sm:px-3 sm:py-[7px]"
                 style={{
                   top: i % 2 === 0 ? LANE_A : LANE_B,
                   willChange: "transform",
@@ -594,10 +623,10 @@ export function ConnectAnywhere() {
                 }}
               >
                 <BrandMark name={f.mark} size={12} className="text-stone" />
-                <span className="font-mono text-[10.5px] leading-none tracking-[-0.1px] text-stone">
+                <span className="font-mono text-[9.5px] leading-none tracking-[-0.1px] text-stone sm:text-[10.5px]">
                   {f.source}
                 </span>
-                <span className="text-[12.5px] leading-none tracking-[-0.12px] text-graphite">
+                <span className="text-[11.5px] leading-none tracking-[-0.12px] text-graphite sm:text-[12.5px]">
                   {f.line}
                 </span>
               </div>
@@ -796,7 +825,14 @@ export function ConnectAnywhere() {
               A row, not a grid of feature cards: these are places, and
               places sit side by side. */}
           <div
-            className="absolute inset-x-0 flex flex-wrap items-center justify-center gap-3 px-6"
+            ref={chipsRowRef}
+            /* Capped so the four wrap 2+2 rather than 3+1. Three of them
+               do fit on a 390px line, which leaves "Any MCP client" alone
+               on a second row reading as an overflow accident rather than
+               as the tail of the list. The cap breaks after the second
+               chip instead, and the pair that lands on the first row is
+               the two surfaces that carry a colour mark. */
+            className="absolute inset-x-0 mx-auto flex max-w-[304px] flex-wrap items-center justify-center gap-2.5 px-5 sm:max-w-none sm:gap-3 sm:px-6"
             style={{ top: CHIPS_Y }}
           >
             {SURFACES.map((s, i) => {
@@ -811,7 +847,7 @@ export function ConnectAnywhere() {
                   aria-pressed={on}
                   onClick={() => setBeat(i)}
                   className={
-                    "flex cursor-pointer items-center gap-2 rounded-full border px-5 text-[13.5px] font-medium leading-none tracking-[-0.13px] transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coal-ink " +
+                    "flex cursor-pointer items-center gap-2 rounded-full border px-3.5 text-[12.5px] font-medium leading-none tracking-[-0.13px] transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coal-ink sm:px-5 sm:text-[13.5px] " +
                     (on
                       ? "border-transparent bg-coal-ink text-white"
                       : "border-ash bg-card text-stone hover:text-graphite")
@@ -841,7 +877,7 @@ export function ConnectAnywhere() {
           <motion.div
             aria-hidden
             className="absolute left-0 w-px bg-ash"
-            style={{ top: CHIPS_Y + CHIP_H, height: STEM_H }}
+            style={{ top: CHIPS_Y + chipsHeight, height: STEM_H }}
             initial={false}
             animate={{ x: chipX }}
             transition={{ duration: 0.55, ease: EASE, delay: 0.28 }}
@@ -851,9 +887,9 @@ export function ConnectAnywhere() {
           <motion.div
             className="absolute left-0 overflow-hidden rounded-[10px] border border-ash bg-card"
             style={{
-              top: CARD_Y,
+              top: cardY,
               width: cardW,
-              height: CARD_H,
+              height: cardH,
               boxShadow:
                 "rgba(95,99,106,0.10) 0px 0px 0px 1px, rgba(43,43,48,0.10) 0px 2px 10px 0px",
             }}

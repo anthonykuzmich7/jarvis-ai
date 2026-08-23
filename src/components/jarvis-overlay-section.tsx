@@ -58,11 +58,11 @@ function GitHubMark({ className }: { className?: string }) {
 /* ─── Config ─────────────────────────────────────────────────────── */
 
 const APP_ICONS = [
-  { id: "slack",   Mark: SlackMark,   badge: 53, pad: "p-[9px]"  },
-  { id: "gmail",   Mark: GmailMark,   badge: 32, pad: "p-[13px]" },
-  { id: "granola", Mark: GranolaMark, badge: 8,  pad: "p-[10px]" },
-  { id: "zoom",    Mark: ZoomMark,    badge: 4,  pad: "p-[13px]" },
-  { id: "github",  Mark: GitHubMark,  badge: 12, pad: "p-[10px]" },
+  { id: "slack",   Mark: SlackMark,   badge: 53, pad: "p-[7px] sm:p-[9px]"  },
+  { id: "gmail",   Mark: GmailMark,   badge: 32, pad: "p-[10px] sm:p-[13px]" },
+  { id: "granola", Mark: GranolaMark, badge: 8,  pad: "p-[8px] sm:p-[10px]" },
+  { id: "zoom",    Mark: ZoomMark,    badge: 4,  pad: "p-[10px] sm:p-[13px]" },
+  { id: "github",  Mark: GitHubMark,  badge: 12, pad: "p-[8px] sm:p-[10px]" },
 ] as const;
 
 const SYNC_STATES = [
@@ -120,23 +120,22 @@ function OverlayPanel({ live }: { live: boolean }) {
         <div className="h-[9px] w-[9px] rounded-full" style={{ background: "#28c840" }} />
       </div>
 
-      <div className="flex flex-col gap-7 px-6 pb-5 pt-9">
+      <div className="flex flex-col gap-6 px-4 pb-5 pt-9 sm:gap-7 sm:px-6">
 
         {/* App icons row */}
         <div className="flex items-center justify-between px-1">
           {APP_ICONS.map(({ id, Mark, badge, pad }) => (
             <div key={id} className="relative">
               <div
-                className={`flex h-[68px] w-[68px] items-center justify-center overflow-hidden rounded-[20px] bg-white ${pad}`}
+                className={`flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-[15px] bg-white sm:h-[68px] sm:w-[68px] sm:rounded-[20px] ${pad}`}
                 style={{ boxShadow: "0 4px 18px rgba(0,0,0,0.3)" }}
               >
                 <Mark className="h-full w-full" />
               </div>
               {/* iOS-native badge — large red pill, bold white number */}
               <div
-                className="absolute -right-2 -top-2 flex min-w-[26px] items-center justify-center rounded-full px-[6px] text-[13px] font-extrabold leading-[26px] text-white"
+                className="absolute -right-1.5 -top-1.5 flex h-[20px] min-w-[20px] items-center justify-center rounded-full px-[5px] text-[11px] font-extrabold leading-[20px] text-white sm:-right-2 sm:-top-2 sm:h-[26px] sm:min-w-[26px] sm:px-[6px] sm:text-[13px] sm:leading-[26px]"
                 style={{
-                  height: "26px",
                   background: "#FF3B30",
                   boxShadow: "0 1px 4px rgba(0,0,0,0.35)",
                 }}
@@ -157,19 +156,19 @@ function OverlayPanel({ live }: { live: boolean }) {
         >
           {/* Jarvis side */}
           <div
-            className="flex shrink-0 items-center gap-2.5 px-5 py-[11px]"
+            className="flex shrink-0 items-center gap-2 px-3.5 py-[11px] sm:gap-2.5 sm:px-5"
             style={{ borderRight: "1px solid rgba(255,255,255,0.08)" }}
           >
             <JarvisFaceLight className="h-5 w-5" />
-            <span className="text-[13px] font-semibold text-white">Jarvis</span>
+            <span className="text-[12px] font-semibold text-white sm:text-[13px]">Jarvis</span>
           </div>
 
           {/* Cycling status */}
-          <div className="relative flex h-[42px] flex-1 items-center overflow-hidden px-5">
+          <div className="relative flex h-[42px] flex-1 items-center overflow-hidden px-3.5 sm:px-5">
             <AnimatePresence mode="wait">
               <motion.div
                 key={current.id}
-                className="flex items-center gap-2.5"
+                className="flex items-center gap-2 sm:gap-2.5"
                 initial={{ opacity: 0, y: 7 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -7 }}
@@ -181,7 +180,7 @@ function OverlayPanel({ live }: { live: boolean }) {
                 >
                   <current.Mark className="h-full w-full object-contain" />
                 </div>
-                <span className="whitespace-nowrap text-[13px] text-white/55">
+                <span className="whitespace-nowrap text-[12px] text-white/55 sm:text-[13px]">
                   {current.label}
                 </span>
                 <motion.span
@@ -244,7 +243,7 @@ export function JarvisOverlaySection() {
 
       <div
         ref={ref}
-        className="relative mx-auto flex min-h-[100dvh] max-w-5xl flex-col items-center justify-center px-6 py-24 sm:py-32"
+        className="relative mx-auto flex min-h-[100dvh] max-w-5xl flex-col items-center justify-center px-4 py-20 sm:px-6 sm:py-32"
       >
         {/* ⌘J keyboard hint */}
         <motion.div
@@ -285,7 +284,7 @@ export function JarvisOverlaySection() {
 
         {/* Overlay panel */}
         <motion.div
-          className="mt-14 w-full flex justify-center"
+          className="mt-10 w-full flex justify-center sm:mt-14"
           initial={reduce ? false : { opacity: 0, y: 28, scale: 0.96 }}
           animate={live ? { opacity: 1, y: 0, scale: 1 } : undefined}
           transition={{ duration: 0.6, ease: EASE, delay: 0.22 }}

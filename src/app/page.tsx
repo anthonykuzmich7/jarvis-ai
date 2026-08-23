@@ -8,7 +8,6 @@ import { OutcomesSwitch } from "@/components/outcomes-switch";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { SiteNav } from "@/components/site-nav";
 import { ShieldIcon } from "@/components/icons";
-import { MobileLayout } from "@/components/mobile/mobile-layout";
 import { JarvisMark } from "@/components/jarvis-mark";
 
 
@@ -29,35 +28,10 @@ function Wordmark({ className }: { className?: string }) {
   );
 }
 
-function SectionHeading({
-  title,
-  description,
-  eyebrow: _eyebrow,
-}: {
-  eyebrow?: string;
-  title: string;
-  description?: string;
-}) {
-  return (
-    <div className="mx-auto max-w-2xl text-center">
-      <h2
-        className="font-display text-3xl font-semibold leading-[1.15] tracking-[-0.64px] text-foreground sm:text-4xl text-balance"
-      >
-        {title}
-      </h2>
-      {description ? (
-        <p className="mt-5 text-[17px] leading-[1.5] tracking-[-0.16px] text-muted-foreground text-pretty">
-          {description}
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
 function WaitlistSection() {
   return (
     <section id="waitlist" className="scroll-mt-16 bg-ledger-white">
-      <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
+      <div className="mx-auto max-w-5xl px-5 py-16 sm:px-6 sm:py-28">
         {/* Contained card with Panxo video background */}
         <div
           className="relative rounded-[20px]"
@@ -78,14 +52,14 @@ function WaitlistSection() {
           />
 
           {/* Content */}
-          <div className="relative z-10 px-8 py-20 text-center sm:px-16 sm:py-24">
-            <h2 className="font-display text-[40px] font-bold leading-[1.1] tracking-[-1.44px] text-coal-ink text-balance sm:text-[52px] sm:tracking-[-2px]">
+          <div className="relative z-10 px-5 py-14 text-center sm:px-16 sm:py-24">
+            <h2 className="font-display text-[30px] font-bold leading-[1.1] tracking-[-1px] text-coal-ink text-balance sm:text-[40px] sm:tracking-[-1.44px] lg:text-[52px] lg:tracking-[-2px]">
               Get Jarvis for your team
             </h2>
 
             {/* Frosted glass form card */}
             <div
-              className="mx-auto mt-12 max-w-3xl rounded-2xl bg-white/80 px-8 py-8 backdrop-blur-md sm:px-10"
+              className="mx-auto mt-8 max-w-3xl rounded-2xl bg-white/80 px-4 py-6 backdrop-blur-md sm:mt-12 sm:px-10 sm:py-8"
               style={{
                 boxShadow:
                   "rgba(255,255,255,0.35) 0px 0px 0px 1px, rgba(43,43,48,0.1) 0px 4px 24px 0px",
@@ -130,15 +104,15 @@ function FaqSection() {
 
   return (
     <section id="faq" className="scroll-mt-16 bg-ledger-white">
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
-        <div className="grid gap-16 lg:grid-cols-[2fr_3fr] lg:gap-24">
+      <div className="mx-auto max-w-6xl px-5 py-16 sm:px-6 sm:py-28">
+        <div className="grid gap-10 sm:gap-16 lg:grid-cols-[2fr_3fr] lg:gap-24">
 
           {/* Left — sticky heading block */}
           <div className="lg:pt-1">
             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-graphite">
               FAQ
             </p>
-            <h2 className="mt-3 font-display text-[32px] font-bold leading-[1.13] tracking-[-0.96px] text-coal-ink sm:text-[40px] sm:tracking-[-1.2px]">
+            <h2 className="mt-3 font-display text-[28px] font-bold leading-[1.13] tracking-[-0.84px] text-coal-ink sm:text-[32px] sm:tracking-[-0.96px] lg:text-[40px] lg:tracking-[-1.2px]">
               Questions you&apos;re already asking.
             </h2>
             <p className="mt-4 text-[15px] leading-[1.6] tracking-[-0.12px] text-slate-mid">
@@ -156,8 +130,8 @@ function FaqSection() {
           <div className="divide-y divide-ash border-t border-ash">
             {faqs.map((f) => (
               <details key={f.q} className="group py-5">
-                <summary className="flex cursor-pointer list-none items-start justify-between gap-6 text-left [&::-webkit-details-marker]:hidden">
-                  <span className="text-[16px] font-semibold leading-[1.4] tracking-[-0.2px] text-coal-ink group-open:text-coal-ink">
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-left [&::-webkit-details-marker]:hidden sm:gap-6">
+                  <span className="text-[15px] font-semibold leading-[1.4] tracking-[-0.2px] text-coal-ink group-open:text-coal-ink sm:text-[16px]">
                     {f.q}
                   </span>
                   <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-ash bg-white text-graphite transition-transform duration-200 group-open:rotate-45"
@@ -184,7 +158,7 @@ function FaqSection() {
 function SiteFooter() {
   return (
     <footer className="border-t border-ash bg-ledger-white">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-10 sm:flex-row">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 sm:flex-row sm:px-6 sm:py-10">
         <div className="flex items-center gap-3 text-foreground">
           <JarvisMark className="h-[22px] w-[22px]" />
           <span className="wordmark text-sm">jarvis</span>
@@ -202,15 +176,19 @@ function SiteFooter() {
 export default function Home() {
   return (
     <>
-      {/* Mobile only: brand mark fixed top-left, independent of the bottom-fixed pill nav. */}
-      <div className="fixed left-6 top-5 z-50 sm:hidden">
-        <Wordmark />
-      </div>
-      {/* Desktop: brand mark lives inside the sticky nav bar's left slot. */}
+      {/* One nav for both. On mobile it splits into a translucent top bar
+          carrying the brand and a bottom-fixed pill carrying the sections;
+          on desktop both live in the single fixed bar. */}
       <SiteNav brand={<Wordmark />} />
 
-      {/* Desktop layout — hidden on mobile */}
-      <main className="hidden md:flex flex-1 flex-col" style={{ backgroundColor: "#FBFEFD" }}>
+      {/* One tree, one set of section ids. There used to be a second,
+          mobile-only tree (`MobileLayout`) rendered beside this one, which
+          meant every section existed twice and the two copies drifted:
+          different copy, different features, and anchors the mobile nav
+          could not reach, because `#problem` and friends resolved to the
+          desktop sections that were `display:none` at that width. The
+          sections below are responsive instead. */}
+      <main className="flex flex-1 flex-col" style={{ backgroundColor: "#FBFEFD" }}>
         {/* The hero and Connect share one sheet of paper and one light.
             Both sections clip their own overflow, so a glow living
             inside either of them got sliced at the boundary and drew a
@@ -230,12 +208,8 @@ export default function Home() {
         <FaqSection />
         <WaitlistSection />
       </main>
-      <div className="hidden md:block"><SiteFooter /></div>
 
-      {/* Mobile layout — hidden on desktop */}
-      <div className="md:hidden">
-        <MobileLayout />
-      </div>
+      <SiteFooter />
     </>
   );
 }

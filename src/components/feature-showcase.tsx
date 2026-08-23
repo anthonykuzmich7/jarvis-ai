@@ -204,8 +204,8 @@ export function FeatureShowcase() {
 
   return (
     <section id="features" className="scroll-mt-16 bg-background">
-      <div className="mx-auto w-full max-w-6xl px-6 pt-32 pb-32 sm:pt-44 sm:pb-44">
-        <div className="grid items-center gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16">
+      <div className="mx-auto w-full max-w-6xl px-5 pb-20 pt-20 sm:px-6 sm:pb-32 sm:pt-32 lg:pb-44 lg:pt-44">
+        <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16">
 
           {/* Left: heading + selectable job list */}
           <div>
@@ -218,7 +218,7 @@ export function FeatureShowcase() {
             </p>
 
             {/* Job list — border-b on every item, not just last */}
-            <div className="mt-10 flex flex-col border-t border-ash">
+            <div className="mt-8 flex flex-col border-t border-ash sm:mt-10">
               {jobs.map((job, i) => {
                 const isActive = i === active;
                 return (
@@ -290,7 +290,7 @@ export function FeatureShowcase() {
           {/* Right: static mockup — sits directly on the section background,
               no outer gradient frame. Only the switch between the two
               mockups crossfades; each mockup itself is a single static frame. */}
-          <div className="relative h-[360px] sm:h-[420px]">
+          <div className="relative h-[330px] sm:h-[360px] lg:h-[420px]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}

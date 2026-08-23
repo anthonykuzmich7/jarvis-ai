@@ -235,20 +235,20 @@ export function StrugglesSection() {
 
   return (
     <section id="problem" className="scroll-mt-16 bg-ledger-white">
-      <div className="mx-auto w-full max-w-6xl px-6 py-24 sm:py-32">
+      <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-6 sm:py-24 lg:py-32">
         {/* Heading */}
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-balance font-display text-3xl font-semibold leading-[1.15] tracking-[-0.64px] text-foreground sm:text-4xl">
             Same struggle. Every role.
           </h2>
-          <p className="mt-4 text-pretty text-lg leading-relaxed text-muted-foreground">
+          <p className="mt-4 text-pretty text-[16px] leading-relaxed text-muted-foreground sm:text-lg">
             Whether you write the code or sell it, the answer already exists
             somewhere in your tools — just not where you can find it.
           </p>
         </div>
 
         {/* Tabs — centered above everything, the section's primary control */}
-        <div role="tablist" aria-label="Team struggles" className="mt-10 flex justify-center gap-2">
+        <div role="tablist" aria-label="Team struggles" className="mt-8 grid grid-cols-2 gap-2 sm:mt-10 sm:flex sm:justify-center">
           {TABS.map((t) => {
             const selected = t.id === tabId;
             const Icon = t.id === "technical" ? LaptopIcon : MessageCircleIcon;
@@ -260,20 +260,20 @@ export function StrugglesSection() {
                 aria-controls={`struggle-panel-${t.id}`}
                 onClick={() => setTabId(t.id)}
                 className={
-                  "inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[14px] font-medium leading-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coal-ink " +
+                  "inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2.5 text-center text-[13px] font-medium leading-[1.25] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coal-ink sm:gap-2 sm:px-5 sm:text-[14px] sm:leading-none " +
                   (selected
                     ? "bg-coal-ink text-white"
                     : "border border-black/10 text-coal-ink/70 hover:text-coal-ink")
                 }
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-4 w-4 shrink-0" />
                 {t.label}
               </button>
             );
           })}
         </div>
 
-        <div ref={ref} className="mt-16 grid items-start gap-10 lg:grid-cols-[2fr_3fr] lg:gap-16">
+        <div ref={ref} className="mt-10 grid items-start gap-8 sm:mt-16 sm:gap-10 lg:grid-cols-[2fr_3fr] lg:gap-16">
           {/* Left — struggle narrative */}
           <div className="lg:mt-2">
             <span className="text-[12px] font-medium uppercase leading-none tracking-[0.05em] text-graphite">
@@ -284,7 +284,7 @@ export function StrugglesSection() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: EASE }}
-              className="mt-4 text-[17px] leading-[1.65] tracking-[-0.17px] text-slate-mid"
+              className="mt-4 text-[16px] leading-[1.65] tracking-[-0.17px] text-slate-mid sm:text-[17px]"
             >
               <span className="font-semibold text-coal-ink">{tab.struggleLead}</span>
               {tab.struggleRest}

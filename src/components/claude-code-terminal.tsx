@@ -367,6 +367,8 @@ export function ClaudeCodeTerminal({
   toolResultDelay,
   minHeight = 248,
   height,
+  mobileHeight,
+  narrowHeight,
   contentKey,
 }: {
   question: string;
@@ -387,6 +389,17 @@ export function ClaudeCodeTerminal({
       rotating demo) so the card never resizes between variants. Takes
       precedence over minHeight when set. */
   height?: number;
+  /** Body fixed height from 360px up to `sm`. The same answer needs
+      roughly twice the lines in a 300px-wide column as it does in a
+      600px one, so a single number clips the source chips off the
+      bottom on a phone. Applied as a CSS variable rather than a
+      measured breakpoint so the server and the client render the same
+      markup. */
+  mobileHeight?: number;
+  /** Body fixed height below 360px, where the question, the tool call
+      and the answer each pick up another line. Defaults to
+      `mobileHeight`, so a caller that does not care can ignore it. */
+  narrowHeight?: number;
   /** Identifies the current question/answer/sources set. Pass a value
       that changes (e.g. a rotating index) to crossfade to new content
       in place — the window chrome around it never remounts or flashes.
@@ -414,8 +427,19 @@ export function ClaudeCodeTerminal({
 
       {/* Terminal body — fixed-size, static container; only its content crossfades */}
       <div
-        className="relative overflow-hidden p-6 font-mono text-[13px] leading-[1.7]"
-        style={height ? { height } : { minHeight }}
+        className={
+          "relative overflow-hidden p-5 font-mono text-[12.5px] leading-[1.65] sm:p-6 sm:text-[13px] sm:leading-[1.7] " +
+          (height
+            ? "h-[var(--cc-h-xs)] min-[360px]:h-[var(--cc-h-sm)] sm:h-[var(--cc-h)]"
+            : "min-h-[var(--cc-h-xs)] min-[360px]:min-h-[var(--cc-h-sm)] sm:min-h-[var(--cc-h)]")
+        }
+        style={
+          {
+            "--cc-h": `${height ?? minHeight}px`,
+            "--cc-h-sm": `${mobileHeight ?? height ?? minHeight}px`,
+            "--cc-h-xs": `${narrowHeight ?? mobileHeight ?? height ?? minHeight}px`,
+          } as React.CSSProperties
+        }
       >
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.div

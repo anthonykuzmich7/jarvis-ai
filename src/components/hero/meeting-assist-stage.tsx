@@ -269,17 +269,40 @@ function PanelContent({
 export function MeetingAssistStage({
   active,
   height = 360,
+  mobileHeight,
 }: {
   /** Gates every timer. The hero swaps tabs by remounting, so the arc
       restarts on its own and needs no rewind; the flag is here for any
       caller that keeps the stage mounted but hidden. */
   active: boolean;
   height?: number;
+  /** Height below `sm`. The briefing needs more room in a phone-width
+      column for the same reason it needs a wider panel there. */
+  mobileHeight?: number;
 }) {
   const reduce = useReducedMotion();
   const [step, setStep] = React.useState(0);
   const [speaking, setSpeaking] = React.useState(0);
   const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  /* The open panel is a percentage of the stage, and 64% of a phone is
+     about 220px — narrow enough that "While you were out" wraps to three
+     lines and the timeline stops reading as a timeline. Measured rather
+     than guessed from a breakpoint, because the stage is a grid cell
+     whose width does not track the viewport one-to-one. It starts at the
+     desktop value and corrects after mount, which is invisible: the
+     panel is 0px wide until the arc reaches `briefing`. */
+  const stageRef = React.useRef<HTMLDivElement>(null);
+  const [narrow, setNarrow] = React.useState(false);
+  React.useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setNarrow(entry.contentRect.width < 420);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const dates = useMissedDates();
   const phase: Phase = reduce ? "briefing" : ARC[step].phase;
@@ -326,8 +349,19 @@ export function MeetingAssistStage({
     };
   }, [open, reduce]);
 
+  const width = narrow ? { ...WIDTH, briefing: "92%", nudge: "230px", gather: "244px" } : WIDTH;
+
   return (
-    <div className="relative" style={{ height }}>
+    <div
+      ref={stageRef}
+      className="relative h-[var(--ms-h-sm)] sm:h-[var(--ms-h)]"
+      style={
+        {
+          "--ms-h": `${height}px`,
+          "--ms-h-sm": `${mobileHeight ?? height}px`,
+        } as React.CSSProperties
+      }
+    >
       <CallSurface speaking={reduce ? -1 : speaking} />
 
       {/* Jarvis, over the call. One element for every state, never
@@ -346,7 +380,7 @@ export function MeetingAssistStage({
           boxShadow: "0 18px 44px rgba(0,0,0,0.42)",
         }}
         animate={{
-          width: WIDTH[phase],
+          width: width[phase],
           backgroundColor: TINT[phase],
           borderRadius: RADIUS[phase],
           opacity: phase === "call" ? 0 : 1,
