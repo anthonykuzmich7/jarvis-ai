@@ -3,7 +3,12 @@
 import type { ReactNode } from "react";
 import { NavBar } from "@/components/ui/tubelight-navbar";
 
-const navItems = [
+/* On the homepage the nav scrolls between sections, so bare hashes are right.
+   Off it there are no such sections — `#faq` on /mcp resolves to nothing — so
+   the same labels have to point back at the homepage instead. NavBar already
+   ignores any href that is not a live in-page anchor and lets Next route it
+   normally, so one component serves both. */
+const sectionItems = [
   { name: "Home", url: "#home" },
   { name: "Product", url: "#product" },
   { name: "Why Jarvis", url: "#problem" },
@@ -11,11 +16,23 @@ const navItems = [
   { name: "FAQ", url: "#faq" },
 ];
 
-export function SiteNav({ brand }: { brand?: ReactNode }) {
+const offSiteItems = sectionItems.map((item) => ({
+  ...item,
+  url: item.url === "#home" ? "/" : `/${item.url}`,
+}));
+
+export function SiteNav({
+  brand,
+  offSite = false,
+}: {
+  brand?: ReactNode;
+  /** True on any page that is not the homepage. */
+  offSite?: boolean;
+}) {
   return (
     <NavBar
-      items={navItems}
-      cta={{ label: "Get early access", url: "#waitlist" }}
+      items={offSite ? offSiteItems : sectionItems}
+      cta={{ label: "Get early access", url: offSite ? "/#waitlist" : "#waitlist" }}
       brand={brand}
     />
   );

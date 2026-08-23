@@ -7,26 +7,12 @@ import { FeatureShowcase } from "@/components/feature-showcase";
 import { OutcomesSwitch } from "@/components/outcomes-switch";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { SiteNav } from "@/components/site-nav";
-import { ShieldIcon } from "@/components/icons";
-import { JarvisMark } from "@/components/jarvis-mark";
+import { SiteFooter, Wordmark } from "@/components/site-shell";
+import { faqs } from "@/lib/faqs";
+import { homeJsonLd, jsonLdString } from "@/lib/structured-data";
 
 
 
-
-function Wordmark({ className }: { className?: string }) {
-  return (
-    <a
-      href="/"
-      aria-label="jarvis"
-      className={"flex items-center gap-2.5 " + (className ?? "")}
-    >
-      <JarvisMark className="h-[32px] w-[32px] shrink-0" />
-      <span className="wordmark text-xl text-foreground leading-none">
-        jarvis<span className="cursor-blink select-none" aria-hidden="true">_</span>
-      </span>
-    </a>
-  );
-}
 
 function WaitlistSection() {
   return (
@@ -75,33 +61,6 @@ function WaitlistSection() {
 }
 
 function FaqSection() {
-  const faqs = [
-    {
-      q: "How does Jarvis grant access safely?",
-      a: "Access is the sensitive part, so it runs on rules you define, with approvals where you want them and a full audit trail. You decide what Jarvis can grant on its own and what still needs a human yes.",
-    },
-    {
-      q: "What about data privacy?",
-      a: "Jarvis separates your personal work context — your Slack, meetings, contacts — from shared company knowledge. You control what teammates and admins can see.",
-    },
-    {
-      q: "What does it connect to?",
-      a: "Slack and your knowledge base to start, with identity providers, code hosting, meetings, and cloud on the roadmap. Jarvis also exposes context to AI tools over MCP.",
-    },
-    {
-      q: "Is it available today?",
-      a: "We're in early access and validating with design partners. Join the waitlist and we'll reach out as we open spots.",
-    },
-    {
-      q: "Does it work with our existing tools?",
-      a: "Yes — Jarvis sits on top of what you already use. It reads from Slack, Confluence, GitHub, and your identity provider. No migration, no new workflow.",
-    },
-    {
-      q: "How long does setup take?",
-      a: "Most teams are running in under a day. Connect your integrations, define your access rules, and Jarvis is ready to onboard your next hire.",
-    },
-  ];
-
   return (
     <section id="faq" className="scroll-mt-16 bg-ledger-white">
       <div className="mx-auto max-w-6xl px-5 py-16 sm:px-6 sm:py-28">
@@ -118,7 +77,7 @@ function FaqSection() {
             <p className="mt-4 text-[15px] leading-[1.6] tracking-[-0.12px] text-slate-mid">
               Still have something on your mind?{" "}
               <a
-                href="mailto:hello@jarvis.ai"
+                href="mailto:hello@jarviscontext.com"
                 className="font-medium text-coal-ink underline underline-offset-2 hover:text-graphite transition-colors"
               >
                 Drop us a line.
@@ -155,27 +114,19 @@ function FaqSection() {
   );
 }
 
-function SiteFooter() {
-  return (
-    <footer className="border-t border-ash bg-ledger-white">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 sm:flex-row sm:px-6 sm:py-10">
-        <div className="flex items-center gap-3 text-foreground">
-          <JarvisMark className="h-[22px] w-[22px]" />
-          <span className="wordmark text-sm">jarvis</span>
-          <span className="text-xs text-stone">working title</span>
-        </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <ShieldIcon className="h-4 w-4" />
-          Built for IT companies. Early access.
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 export default function Home() {
   return (
     <>
+      {/* Organization + WebSite + SoftwareApplication + FAQPage, as one @graph.
+          Rendered server-side in the page body: crawlers read JSON-LD anywhere
+          in the document, and keeping it beside the page it describes means the
+          noindexed /compare route does not inherit an FAQ schema for content it
+          does not have. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdString(homeJsonLd) }}
+      />
+
       {/* One nav for both. On mobile it splits into a translucent top bar
           carrying the brand and a bottom-fixed pill carrying the sections;
           on desktop both live in the single fixed bar. */}

@@ -22,6 +22,10 @@ import { useReducedMotion } from "framer-motion";
   to refs, so nothing re-renders React on pointer move.
 */
 
+/* The word that performs the sentence. Named once: it is rendered as real
+   text in the solid copy and as generated content in the echoes. */
+const ECHO_WORD = "repeating";
+
 const GHOSTS = 5;
 const SETTLE_S = 1.15; // echoes converge over this long on load
 const REACH = 420; // px of cursor influence around the word
@@ -181,17 +185,24 @@ export function KineticHeadline({
                 ghostRefs.current[i] = el;
               }}
               aria-hidden
-              className="pointer-events-none absolute left-0 top-0 whitespace-nowrap will-change-transform"
+              /* The word is drawn by `.kinetic-echo::before { content: attr() }`
+                 rather than sitting here as a text node. As real text these five
+                 echoes were part of the H1's text content, so a crawler read the
+                 headline as "Stop repeatingrepeatingrepeatingrepeatingrepeating
+                 repeating yourself." — `aria-hidden` hides a node from the
+                 accessibility tree, it does not hide it from an indexer.
+                 Generated content is not indexed, and the span still carries the
+                 transform and opacity the animation writes to it. */
+              data-echo={ECHO_WORD}
+              className="kinetic-echo pointer-events-none absolute left-0 top-0 whitespace-nowrap will-change-transform"
               style={{
                 opacity: 0,
                 color: "transparent",
                 WebkitTextStroke: `1.5px ${strokeColor}`,
               }}
-            >
-              repeating
-            </span>
+            />
           ))}
-          <span className="relative">repeating</span>
+          <span className="relative">{ECHO_WORD}</span>
           {/* Struck through as the echoes resolve into one. */}
           <span
             ref={ruleRef}
@@ -200,7 +211,11 @@ export function KineticHeadline({
             style={{ height: "0.045em", transform: "scaleX(0)" }}
           />
         </span>
-      </span>
+      </span>{" "}
+      {/* An explicit space between the two block spans. They stack visually
+          either way, and a browser drops whitespace between block boxes — but a
+          crawler that extracts text without rendering CSS concatenates the
+          siblings, and the H1 came out as "Stop repeatingyourself." */}
       <span className="block">yourself.</span>
     </h1>
   );

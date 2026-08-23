@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter, Lato } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { AttributionCapture } from "@/components/attribution-capture";
+import {
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_URL,
+  SOCIAL_DESCRIPTION,
+} from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -28,15 +35,50 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-  title: "Jarvis AI — your new hire's first teammate",
-  description:
-    "Jarvis is an AI teammate that grants new hires their access and answers their onboarding questions — so people are productive on day one, and IT stops being the bottleneck.",
-  openGraph: {
-    title: "Jarvis AI — your new hire's first teammate",
-    description:
-      "Onboard new hires and grant their access without an IT specialist. Productive on day one instead of week two.",
-    type: "website",
+  /* Required for relative canonicals and OG image paths to resolve to absolute
+     URLs. Without it Next throws at build time for any relative metadata URL. */
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_TITLE,
+    /* Child routes get "<page> — Jarvis" without repeating the brand by hand. */
+    template: `%s — ${SITE_NAME}`,
   },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  /* The apex and the old *.vercel.app deployment URL both serve this same HTML.
+     The canonical is what tells Google those are one page, not three. */
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: SITE_TITLE,
+    description: SOCIAL_DESCRIPTION,
+    url: "/",
+    locale: "en_US",
+  },
+  twitter: {
+    /* Was `summary`, a small square thumbnail, because no image was set at all.
+       `summary_large_image` plus the generated opengraph-image gives the full
+       1200x630 card. */
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SOCIAL_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      /* Lets Google use full-size thumbnails in Images and Discover, and stops
+         it truncating our snippet to a length it guesses at. Both default to
+         conservative values otherwise. */
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  category: "technology",
 };
 
 export default function RootLayout({
