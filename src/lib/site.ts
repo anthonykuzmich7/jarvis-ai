@@ -35,4 +35,9 @@ export const SITE_DESCRIPTION =
 export const SOCIAL_DESCRIPTION =
   "Your context, everywhere you work. Jarvis listens in meetings, remembers what your team decided, and hands it to your AI tools — so you never brief them twice.";
 
+/** The address the footer and the FAQ both point at. Defined once because it
+    was previously written out in two places, and the two had already drifted
+    to a domain we do not own. */
+export const CONTACT_EMAIL = "jarviscontext@gmail.com";
+
 export const url = (path = "/") => new URL(path, `${SITE_URL}/`).toString();
