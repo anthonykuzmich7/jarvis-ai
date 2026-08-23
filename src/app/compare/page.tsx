@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { MissionControlJarvis } from "@/components/mission-control-jarvis";
 import { ConnectAnywhere } from "@/components/connect-anywhere";
 
@@ -15,6 +16,17 @@ function Label({ letter, name, desc }: { letter: string; name: string; desc: str
     </div>
   );
 }
+
+/* An internal design-review page — two candidate layouts stacked for
+   comparison. It was reachable and fully indexable, which risks a thin,
+   duplicate-content page ranking for our own brand terms. robots.ts disallows
+   crawling it; this noindex is the belt to that braces, because a URL that is
+   merely disallowed can still be indexed from an external link. */
+export const metadata: Metadata = {
+  title: "Layout comparison",
+  robots: { index: false, follow: false, nocache: true },
+  alternates: { canonical: "/compare" },
+};
 
 export default function ComparePage() {
   return (

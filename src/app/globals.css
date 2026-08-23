@@ -165,3 +165,13 @@ body {
 .signal-pulse {
   animation: signal-pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* The kinetic headline's outlined echoes. Their text comes from a data
+   attribute so it is generated content, not a text node: the five decorative
+   copies of "repeating" used to land inside the H1's indexed text, which made
+   the page's only H1 read as one 60-character nonsense word to a crawler.
+   Everything visual is unchanged — the span still receives the transform and
+   opacity the animation writes, and ::before inherits its stroke and colour. */
+.kinetic-echo::before {
+  content: attr(data-echo);
+}
