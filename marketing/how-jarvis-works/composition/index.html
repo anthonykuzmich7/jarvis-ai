@@ -1,12 +1,8 @@
-<!doctype html>
-<html
-  lang="en"
-  data-resolution="landscape"
-  data-composition-variables='[{"id":"theme","type":"enum","label":"Theme","default":"paper","options":[{"value":"paper","label":"Paper (white)"},{"value":"ink","label":"Ink (black)"}]}]'
->
+<!DOCTYPE html>
+<html lang="en" data-resolution="landscape" data-composition-variables="[{&quot;id&quot;:&quot;theme&quot;,&quot;type&quot;:&quot;enum&quot;,&quot;label&quot;:&quot;Theme&quot;,&quot;default&quot;:&quot;ink&quot;,&quot;options&quot;:[{&quot;value&quot;:&quot;paper&quot;,&quot;label&quot;:&quot;Paper (white)&quot;},{&quot;value&quot;:&quot;ink&quot;,&quot;label&quot;:&quot;Ink (black)&quot;}]}]">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1920, height=1080" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
     <title>How Jarvis works</title>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="assets/music/audio-data.js"></script>
@@ -341,7 +337,7 @@
       }
 
       /* ---------------- scene 3 — the terminal ---------------- */
-      #s3-term { left: 430px; top: 210px; width: 1060px; height: 520px; background: var(--term); }
+      #s3-term { left: 400px; top: 150px; width: 1120px; height: 652px; background: var(--term); }
       #s3-term .win__body { padding: 34px 38px; gap: 0; }
       .term__q {
         display: flex; align-items: baseline; gap: 14px;
@@ -358,6 +354,7 @@
       .type-caret { width: 16px; height: 38px; background: var(--win-text-2); }
 
       .status { display: flex; align-items: center; gap: 16px; margin-top: 40px; }
+      #s3-status { margin-top: 26px; }
       /* It goes and looks. This fills the hole between "you hit enter" and
          "the answer lands", which was 1.2s of nothing. */
       #s3-mark { width: 58px; height: 58px; flex: none; opacity: 0; }
@@ -505,6 +502,215 @@
         opacity: 0;
       }
 
+
+      /* ============================================================
+         SCENE F — FOCUS (the Today screen)
+
+         Not a mock: the geometry, the colour law and the build order are
+         lifted from Sources/JarvisGuideApp/TodayUI/. Three columns — hour
+         numerals, the RAIL (the time axis), then the content. One rail
+         width for every block; colour is the only variable. A calendar
+         event gets a lit BAND (square at the head, rounded at the tail,
+         starting at the rail); a Jarvis task gets an indigo rail on bare
+         ground and no surface at all. Rest gets nothing.
+         ============================================================ */
+      /* The camera. Scaling the SCENE would mean tweening a .clip, which the
+         framework owns — so the zoom-through pushes this wrapper instead. */
+      #sf-cam { position: absolute; inset: 0; }
+      #sf-win {
+        position: absolute;
+        left: 440px; top: 80px; width: 1040px; height: 790px;
+        background: var(--elevated);
+        border: 1px solid var(--hairline);
+        border-radius: 18px;
+        overflow: hidden;
+        opacity: 0;
+      }
+      #root.paper #sf-win { box-shadow: 0 18px 52px rgba(28, 26, 23, 0.09); }
+      /* The title bar is 56, not a stock 38 x 1.7 — on a window whose whole
+         job is one sentence, a standard bar spends an eighth of the height on
+         a mark nobody reads. (JarvisLockupMetrics.barHeight) */
+      #sf-bar {
+        position: absolute; left: 0; right: 0; top: 0; height: 56px;
+        display: flex; align-items: center; justify-content: center; gap: 11px;
+        border-bottom: 1px solid var(--hairline);
+      }
+      #sf-lockup { display: flex; align-items: center; gap: 11px; opacity: 0; }
+      #sf-lockup .mark-svg { width: 34px; height: 34px; display: block; }
+      #sf-word { font-size: 21px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-2); }
+
+      /* The focus sentence. Prose does not move — only the task NAMES do. */
+      #sf-sent {
+        position: absolute; left: 44px; right: 44px; top: 86px;
+        font-size: 30px; line-height: 1.44; font-weight: 500;
+        color: var(--text-2); letter-spacing: -0.012em;
+      }
+      .sf-c { opacity: 0; }
+      .sf-name { color: var(--accent-text); font-weight: 600; }
+      /* Each word of a name is its own box so the phrase can be PICKED UP,
+         left to right, as its hour lands below (TodayBuild.liftHeight). */
+      .sfw { display: inline-block; }
+
+      #sf-day { position: absolute; left: 0; right: 0; top: 232px; height: 558px; }
+      .sf-rule {
+        position: absolute; left: 114px; right: 44px; height: 1px;
+        background: rgba(255, 255, 255, 0.05);
+        transform-origin: left center;
+      }
+      #root.paper .sf-rule { background: rgba(28, 26, 23, 0.07); }
+      .sf-hr {
+        position: absolute; left: 44px; width: 52px; text-align: right;
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 19px; color: var(--text-3);
+        opacity: 0;
+      }
+      /* The unclaimed axis: the whole day, at rest, drawn downward first. */
+      #sf-spine {
+        position: absolute; left: 115px; top: 16px; width: 1px; height: 518px;
+        background: rgba(255, 255, 255, 0.07);
+        transform-origin: center top;
+      }
+      #root.paper #sf-spine { background: rgba(28, 26, 23, 0.1); }
+      .sf-rail {
+        position: absolute; left: 114px; width: 4px; border-radius: 2px;
+        transform-origin: center top;
+        opacity: 0;
+      }
+      .sf-rail--task { background: var(--accent); }
+      .sf-rail--meet { background: var(--text-1); }
+
+      .sf-blk { position: absolute; left: 136px; right: 44px; opacity: 0; }
+      /* A meeting IS its slot: the ground starts where the axis ends and runs
+         to the day's width, square at the head and rounded at the tail. */
+      .sf-band {
+        position: absolute; left: -18px; right: 0; top: 0; bottom: 0;
+        /* Brighter than TodayReact.hoverGround (0.075) on purpose: a hovered
+           task must never look like a meeting. */
+        background: rgba(255, 255, 255, 0.115);
+        border-radius: 0 11px 11px 0;
+      }
+      #root.paper .sf-band { background: rgba(28, 26, 23, 0.07); }
+      /* Under the pointer a row gains a white OVERLAY, never a second token —
+         so the same 7.5% keeps a meeting a step above a hovered task. */
+      .sf-hover {
+        position: absolute; left: -18px; right: 0; top: 0; bottom: 0;
+        border-radius: 0 11px 11px 0;
+        background: #ffffff;
+        opacity: 0;
+      }
+      #root.paper .sf-hover { background: #1c1a17; }
+      .sf-blk__in { position: relative; padding-top: 5px; }
+      .sf-blk__t {
+        font-size: 23px; font-weight: 500; letter-spacing: -0.012em;
+        color: var(--text-1);
+      }
+      .sf-blk--meet .sf-blk__t { font-weight: 600; }
+      .sf-blk--task .sf-blk__t { color: rgba(244, 244, 245, 0.86); }
+      #root.paper .sf-blk--task .sf-blk__t { color: rgba(28, 26, 23, 0.84); }
+      .sf-blk__why {
+        margin-top: 3px;
+        display: flex; align-items: center; gap: 11px;
+        font-size: 17px; color: var(--text-3); letter-spacing: -0.004em;
+        opacity: 0;
+      }
+      .sf-src { display: flex; gap: 6px; }
+      .sf-src img {
+        width: 21px; height: 21px; border-radius: 5px; object-fit: contain;
+        background: rgba(255, 255, 255, 0.055);
+      }
+      #root.paper .sf-src img { background: rgba(28, 26, 23, 0.05); }
+      /* Rest: no rail, no plate, no hue. The hour rules already drew this box. */
+      .sf-rest { font-size: 19px; color: var(--text-2); }
+
+      /* The now-marker lives in the gutter — a label, a dot, and no rule
+         across the day. A full-width line has to cross whatever is running,
+         and with tasks on bare ground it reads as a strikethrough. */
+      #sf-now { position: absolute; left: 0; right: 0; opacity: 0; }
+      #sf-now-t {
+        position: absolute; left: 44px; width: 52px; text-align: right;
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 19px; color: var(--accent-text);
+        transform: translateY(-10px);
+      }
+      #sf-now-d {
+        position: absolute; left: 110px; top: -5px;
+        width: 12px; height: 12px; border-radius: 50%;
+        background: var(--accent);
+      }
+      #sf-load {
+        position: absolute; right: 34px; top: 20px;
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 18px; letter-spacing: 0.04em; color: var(--text-3);
+        opacity: 0;
+      }
+
+      /* The mark in flight between scene 2 and the Focus title bar. It is the
+         carrier across that cut: same object, matched position and velocity. */
+      #flight-in { position: absolute; left: 825px; top: 341px; width: 190px; height: 190px; opacity: 0; }
+      #flight-in .mark-svg { width: 100%; height: 100%; display: block; }
+
+      /* ============================================================
+         SCENE 3 — Claude Code, with the Jarvis MCP server attached.
+         The tool line is the real one: a loopback HTTP MCP server on
+         127.0.0.1:8765 exposing search_context.
+         ============================================================ */
+      #s3-ctx {
+        display: flex; align-items: center; gap: 12px;
+        margin-bottom: 26px;
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 21px; color: var(--win-text-2); letter-spacing: 0.01em;
+        opacity: 0;
+      }
+      #s3-ctx img { width: 22px; height: 22px; border-radius: 5px; object-fit: contain; }
+      .s3-tool {
+        display: flex; align-items: baseline; gap: 14px;
+        margin-top: 30px;
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 24px; color: var(--win-text-2); letter-spacing: 0.01em;
+        opacity: 0;
+      }
+      .s3-tool__bullet { color: var(--accent-text); font-size: 22px; }
+      .s3-tool__name { color: var(--win-text); }
+      #s3-tool2 { margin-top: 10px; padding-left: 36px; }
+      #s3-local {
+        display: inline-flex; align-items: center; gap: 9px;
+        margin-left: 14px;
+        color: var(--accent-text);
+      }
+
+      /* ============================================================
+         SCENE 4 — disperse. The briefing bursts into edge-docked islands
+         so the call's faces stay unobstructed (⌘⇧D in the app).
+         ============================================================ */
+      .isl {
+        position: absolute;
+        background: var(--hudglass, rgba(20, 20, 22, 0.82));
+        border: 1px solid var(--hairline-strong);
+        border-radius: 20px;
+        padding: 20px 24px;
+        opacity: 0;
+      }
+      #root.paper .isl { background: rgba(255, 255, 255, 0.9); box-shadow: 0 14px 40px rgba(28, 26, 23, 0.12); }
+      .isl__k {
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase;
+        color: var(--text-3);
+      }
+      .isl__t { margin-top: 8px; font-size: 22px; font-weight: 500; color: var(--text-1); letter-spacing: -0.008em; }
+      .isl__s { margin-top: 5px; font-size: 18px; color: var(--text-2); }
+      #s4-i1 { left: 44px; top: 24px; width: 500px; padding: 16px 22px; }
+      #s4-i2 { left: 1500px; top: 296px; width: 360px; }
+      #s4-i3 { left: 660px; top: 918px; width: 600px; border-radius: 26px; padding: 16px 26px; }
+      #s4-i3 .isl__t { margin-top: 0; color: var(--text-2); font-size: 21px; }
+      /* The keystroke that causes the burst, on the panel it bursts. */
+      #s4-hint {
+        position: absolute; left: 1210px; width: 560px; top: 92px;
+        text-align: center;
+        font-family: "SF Mono", Menlo, ui-monospace, monospace;
+        font-size: 19px; letter-spacing: 0.09em; color: var(--text-3);
+        opacity: 0;
+      }
+
       /* ---------------- grain + vignette (ink only) ---------------- */
       #grain {
         pointer-events: none;
@@ -520,363 +726,543 @@
     </style>
   </head>
   <body>
-    <div
-      id="root"
-      data-composition-id="main"
-      data-start="0"
-      data-duration="33.3"
-      data-width="1920"
-      data-height="1080"
-      data-fps="30"
-    >
+    <div data-hf-id="hf-nk1p" id="root" data-composition-id="main" data-start="0" data-duration="36" data-width="1920" data-height="1080" data-fps="30">
       <!-- Opaque stage ground. Guards every seam against a white flash. -->
-      <div id="stage" class="clip scene" data-start="0" data-duration="33.3" data-track-index="0"></div>
+      <div data-hf-id="hf-5ztf" id="stage" class="clip scene" data-start="0" data-duration="36" data-track-index="0"></div>
 
       <!-- ================= SCENE 1 — the week you missed (0.00 → 5.45) ================= -->
-      <section id="s1" class="clip scene" data-start="0" data-duration="5.45" data-track-index="1">
-        <div id="s1-stack">
+      <section data-hf-id="hf-tuy5" id="s1" class="clip scene" data-start="0" data-duration="5.45" data-track-index="1">
+        <div data-hf-id="hf-pa9u" id="s1-stack">
         <!-- Back row -->
-        <div id="s1-w1" class="win tier-back" style="left: 200px; top: 128px; width: 520px; height: 356px">
-          <div class="win__bar">
-            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
-            <img id="img-01" class="win__logo" src="assets/logos/slack.png" alt="" />
-            <div class="win__title">Slack — #eng</div>
-            <div class="win__spacer"></div>
-            <div class="win__badge" id="s1-b1">24</div>
+        <div data-hf-id="hf-e249" id="s1-w1" class="win tier-back" style="left: 200px; top: 128px; width: 520px; height: 356px">
+          <div data-hf-id="hf-cgg3" class="win__bar">
+            <div data-hf-id="hf-cpa1" class="win__dot"></div><div data-hf-id="hf-lux9" class="win__dot"></div><div data-hf-id="hf-n1uc" class="win__dot"></div>
+            <img data-hf-id="hf-avdn" id="img-01" class="win__logo" src="assets/logos/slack.png" alt="">
+            <div data-hf-id="hf-82q5" class="win__title">Slack — #eng</div>
+            <div data-hf-id="hf-0v6g" class="win__spacer"></div>
+            <div data-hf-id="hf-gi05" class="win__badge" id="s1-b1">24</div>
           </div>
-          <div class="win__body">
-            <div class="row" id="s1-r1"><div class="row__avatar" style="background: #36c5f0"></div><div class="row__stack"><div class="bar" style="width: 42%"></div><div class="bar bar--dim" style="width: 78%"></div></div></div>
-            <div class="row" id="s1-r2"><div class="row__avatar" style="background: #2eb67d"></div><div class="row__stack"><div class="bar" style="width: 58%"></div><div class="bar bar--dim" style="width: 66%"></div></div></div>
-            <div class="row" id="s1-r3"><div class="row__avatar" style="background: #ecb22e"></div><div class="row__stack"><div class="bar" style="width: 35%"></div><div class="bar bar--dim" style="width: 88%"></div></div></div>
-          </div>
-        </div>
-
-        <div id="s1-w2" class="win tier-back" style="left: 700px; top: 100px; width: 520px; height: 356px">
-          <div class="win__bar">
-            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
-            <img id="img-02" class="win__logo" src="assets/logos/gmail.png" alt="" />
-            <div class="win__title">Inbox</div>
-            <div class="win__spacer"></div>
-            <div class="win__badge" id="s1-b2">18</div>
-          </div>
-          <div class="win__body">
-            <div class="row" id="s1-r4"><div class="row__avatar" style="background: #ea4335"></div><div class="row__stack"><div class="bar" style="width: 66%"></div><div class="bar bar--dim" style="width: 84%"></div></div></div>
-            <div class="row" id="s1-r5"><div class="row__avatar" style="background: #4285f4"></div><div class="row__stack"><div class="bar" style="width: 48%"></div><div class="bar bar--dim" style="width: 72%"></div></div></div>
-            <div class="row" id="s1-r6"><div class="row__avatar" style="background: #fbbc04"></div><div class="row__stack"><div class="bar" style="width: 61%"></div><div class="bar bar--dim" style="width: 55%"></div></div></div>
+          <div data-hf-id="hf-tta0" class="win__body">
+            <div data-hf-id="hf-oyvg" class="row" id="s1-r1"><div data-hf-id="hf-qiy9" class="row__avatar" style="background: #36c5f0"></div><div data-hf-id="hf-e2k6" class="row__stack"><div data-hf-id="hf-hb9o" class="bar" style="width: 42%"></div><div data-hf-id="hf-vv00" class="bar bar--dim" style="width: 78%"></div></div></div>
+            <div data-hf-id="hf-xmrb" class="row" id="s1-r2"><div data-hf-id="hf-xrtm" class="row__avatar" style="background: #2eb67d"></div><div data-hf-id="hf-znq2" class="row__stack"><div data-hf-id="hf-9e7z" class="bar" style="width: 58%"></div><div data-hf-id="hf-mdsb" class="bar bar--dim" style="width: 66%"></div></div></div>
+            <div data-hf-id="hf-tona" class="row" id="s1-r3"><div data-hf-id="hf-ubsb" class="row__avatar" style="background: #ecb22e"></div><div data-hf-id="hf-0213" class="row__stack"><div data-hf-id="hf-nomm" class="bar" style="width: 35%"></div><div data-hf-id="hf-72rj" class="bar bar--dim" style="width: 88%"></div></div></div>
           </div>
         </div>
 
-        <div id="s1-w3" class="win tier-back" style="left: 1200px; top: 128px; width: 520px; height: 356px">
-          <div class="win__bar">
-            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
-            <svg class="win__logo" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="3.4" fill="#4285f4" /><rect x="3" y="5" width="18" height="5.4" rx="3.4" fill="#1a73e8" /><rect x="7" y="2.4" width="2.4" height="5" rx="1.2" fill="#9aa0a6" /><rect x="14.6" y="2.4" width="2.4" height="5" rx="1.2" fill="#9aa0a6" /><rect x="6.6" y="12.6" width="4.2" height="4.2" rx="1.1" fill="#ffffff" /></svg>
-            <div class="win__title">Calendar</div>
-            <div class="win__spacer"></div>
-            <div class="win__badge" id="s1-b3">3</div>
+        <div data-hf-id="hf-1c81" id="s1-w2" class="win tier-back" style="left: 700px; top: 100px; width: 520px; height: 356px">
+          <div data-hf-id="hf-afnn" class="win__bar">
+            <div data-hf-id="hf-mnjb" class="win__dot"></div><div data-hf-id="hf-nuge" class="win__dot"></div><div data-hf-id="hf-ng5d" class="win__dot"></div>
+            <img data-hf-id="hf-yxzg" id="img-02" class="win__logo" src="assets/logos/gmail.png" alt="">
+            <div data-hf-id="hf-lm2e" class="win__title">Inbox</div>
+            <div data-hf-id="hf-3rcg" class="win__spacer"></div>
+            <div data-hf-id="hf-7dfd" class="win__badge" id="s1-b2">18</div>
           </div>
-          <div class="win__body">
-            <div class="evt" id="s1-r7"><div class="evt__spine" style="background: #4285f4"></div><div class="row__stack"><div class="bar" style="width: 52%"></div><div class="bar bar--dim" style="width: 70%"></div></div></div>
-            <div class="evt" id="s1-r8"><div class="evt__spine" style="background: #34a853"></div><div class="row__stack"><div class="bar" style="width: 44%"></div><div class="bar bar--dim" style="width: 62%"></div></div></div>
+          <div data-hf-id="hf-n0i8" class="win__body">
+            <div data-hf-id="hf-4k4x" class="row" id="s1-r4"><div data-hf-id="hf-8a4l" class="row__avatar" style="background: #ea4335"></div><div data-hf-id="hf-0gc4" class="row__stack"><div data-hf-id="hf-6zpm" class="bar" style="width: 66%"></div><div data-hf-id="hf-ncxf" class="bar bar--dim" style="width: 84%"></div></div></div>
+            <div data-hf-id="hf-3sh4" class="row" id="s1-r5"><div data-hf-id="hf-iq01" class="row__avatar" style="background: #4285f4"></div><div data-hf-id="hf-0un5" class="row__stack"><div data-hf-id="hf-2cg6" class="bar" style="width: 48%"></div><div data-hf-id="hf-ky5m" class="bar bar--dim" style="width: 72%"></div></div></div>
+            <div data-hf-id="hf-cgcz" class="row" id="s1-r6"><div data-hf-id="hf-wwwh" class="row__avatar" style="background: #fbbc04"></div><div data-hf-id="hf-18y6" class="row__stack"><div data-hf-id="hf-6m57" class="bar" style="width: 61%"></div><div data-hf-id="hf-niwd" class="bar bar--dim" style="width: 55%"></div></div></div>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-7ha2" id="s1-w3" class="win tier-back" style="left: 1200px; top: 128px; width: 520px; height: 356px">
+          <div data-hf-id="hf-a1cm" class="win__bar">
+            <div data-hf-id="hf-on2g" class="win__dot"></div><div data-hf-id="hf-o8rf" class="win__dot"></div><div data-hf-id="hf-pfoi" class="win__dot"></div>
+            <svg data-hf-id="hf-w85n" class="win__logo" viewBox="0 0 24 24" fill="none"><rect data-hf-id="hf-s2xs" x="3" y="5" width="18" height="16" rx="3.4" fill="#4285f4" /><rect data-hf-id="hf-mks4" x="3" y="5" width="18" height="5.4" rx="3.4" fill="#1a73e8" /><rect data-hf-id="hf-3mw3" x="7" y="2.4" width="2.4" height="5" rx="1.2" fill="#9aa0a6" /><rect data-hf-id="hf-lepv" x="14.6" y="2.4" width="2.4" height="5" rx="1.2" fill="#9aa0a6" /><rect data-hf-id="hf-asln" x="6.6" y="12.6" width="4.2" height="4.2" rx="1.1" fill="#ffffff" /></svg>
+            <div data-hf-id="hf-a26w" class="win__title">Calendar</div>
+            <div data-hf-id="hf-2kfd" class="win__spacer"></div>
+            <div data-hf-id="hf-s6x2" class="win__badge" id="s1-b3">3</div>
+          </div>
+          <div data-hf-id="hf-ltl5" class="win__body">
+            <div data-hf-id="hf-k68n" class="evt" id="s1-r7"><div data-hf-id="hf-9sfa" class="evt__spine" style="background: #4285f4"></div><div data-hf-id="hf-1n97" class="row__stack"><div data-hf-id="hf-auo1" class="bar" style="width: 52%"></div><div data-hf-id="hf-vsqw" class="bar bar--dim" style="width: 70%"></div></div></div>
+            <div data-hf-id="hf-wor4" class="evt" id="s1-r8"><div data-hf-id="hf-tutp" class="evt__spine" style="background: #34a853"></div><div data-hf-id="hf-21k8" class="row__stack"><div data-hf-id="hf-w4r6" class="bar" style="width: 44%"></div><div data-hf-id="hf-wngf" class="bar bar--dim" style="width: 62%"></div></div></div>
           </div>
         </div>
 
         <!-- Front row -->
-        <div id="s1-w4" class="win tier-front" style="left: 448px; top: 262px; width: 520px; height: 262px">
-          <div class="win__bar">
-            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
-            <svg class="win__logo" viewBox="0 0 24 24" fill="none"><rect x="4" y="2.5" width="16" height="19" rx="3" fill="#94a3b8" /><rect x="7.2" y="7" width="9.6" height="1.8" rx="0.9" fill="#ffffff" /><rect x="7.2" y="11" width="9.6" height="1.8" rx="0.9" fill="#ffffff" opacity="0.75" /><rect x="7.2" y="15" width="6" height="1.8" rx="0.9" fill="#ffffff" opacity="0.5" /></svg>
-            <div class="win__title">Team status</div>
-            <div class="win__spacer"></div>
-            <div class="win__badge" id="s1-b4">7</div>
+        <div data-hf-id="hf-mb6x" id="s1-w4" class="win tier-front" style="left: 448px; top: 262px; width: 520px; height: 262px">
+          <div data-hf-id="hf-9n1l" class="win__bar">
+            <div data-hf-id="hf-p1dh" class="win__dot"></div><div data-hf-id="hf-fjuv" class="win__dot"></div><div data-hf-id="hf-fy5w" class="win__dot"></div>
+            <svg data-hf-id="hf-ru0b" class="win__logo" viewBox="0 0 24 24" fill="none"><rect data-hf-id="hf-w6xw" x="4" y="2.5" width="16" height="19" rx="3" fill="#94a3b8" /><rect data-hf-id="hf-o5u9" x="7.2" y="7" width="9.6" height="1.8" rx="0.9" fill="#ffffff" /><rect data-hf-id="hf-3yjm" x="7.2" y="11" width="9.6" height="1.8" rx="0.9" fill="#ffffff" opacity="0.75" /><rect data-hf-id="hf-wn22" x="7.2" y="15" width="6" height="1.8" rx="0.9" fill="#ffffff" opacity="0.5" /></svg>
+            <div data-hf-id="hf-2jnb" class="win__title">Team status</div>
+            <div data-hf-id="hf-2yqe" class="win__spacer"></div>
+            <div data-hf-id="hf-kf2b" class="win__badge" id="s1-b4">7</div>
           </div>
-          <div class="win__body">
-            <div class="row" id="s1-r9"><div class="row__avatar" style="background: #0ea5e9"></div><div class="row__stack"><div class="bar" style="width: 70%"></div><div class="bar bar--dim" style="width: 90%"></div></div></div>
-            <div class="row" id="s1-r10"><div class="row__avatar" style="background: #14b8a6"></div><div class="row__stack"><div class="bar" style="width: 40%"></div><div class="bar bar--dim" style="width: 64%"></div></div></div>
+          <div data-hf-id="hf-m7w6" class="win__body">
+            <div data-hf-id="hf-xj9w" class="row" id="s1-r9"><div data-hf-id="hf-fddt" class="row__avatar" style="background: #0ea5e9"></div><div data-hf-id="hf-2fv9" class="row__stack"><div data-hf-id="hf-0r9x" class="bar" style="width: 70%"></div><div data-hf-id="hf-qktq" class="bar bar--dim" style="width: 90%"></div></div></div>
+            <div data-hf-id="hf-qgz0" class="row" id="s1-r10"><div data-hf-id="hf-wdos" class="row__avatar" style="background: #14b8a6"></div><div data-hf-id="hf-2u6a" class="row__stack"><div data-hf-id="hf-swa6" class="bar" style="width: 40%"></div><div data-hf-id="hf-4blh" class="bar bar--dim" style="width: 64%"></div></div></div>
           </div>
         </div>
 
-        <div id="s1-w5" class="win tier-front" style="left: 952px; top: 262px; width: 520px; height: 262px">
-          <div class="win__bar">
-            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
-            <img id="img-03" class="win__logo" src="assets/logos/slack.png" alt="" />
-            <div class="win__title">Slack — DMs</div>
-            <div class="win__spacer"></div>
-            <div class="win__badge" id="s1-b5">12</div>
+        <div data-hf-id="hf-bpji" id="s1-w5" class="win tier-front" style="left: 952px; top: 262px; width: 520px; height: 262px">
+          <div data-hf-id="hf-98qk" class="win__bar">
+            <div data-hf-id="hf-er8t" class="win__dot"></div><div data-hf-id="hf-f5ju" class="win__dot"></div><div data-hf-id="hf-h52z" class="win__dot"></div>
+            <img data-hf-id="hf-n8t5" id="img-03" class="win__logo" src="assets/logos/slack.png" alt="">
+            <div data-hf-id="hf-vgri" class="win__title">Slack — DMs</div>
+            <div data-hf-id="hf-1rtb" class="win__spacer"></div>
+            <div data-hf-id="hf-f5b4" class="win__badge" id="s1-b5">12</div>
           </div>
-          <div class="win__body">
-            <div class="row" id="s1-r11"><div class="row__avatar" style="background: #e01e5a"></div><div class="row__stack"><div class="bar" style="width: 55%"></div><div class="bar bar--dim" style="width: 76%"></div></div></div>
-            <div class="row" id="s1-r12"><div class="row__avatar" style="background: #2eb67d"></div><div class="row__stack"><div class="bar" style="width: 63%"></div><div class="bar bar--dim" style="width: 58%"></div></div></div>
+          <div data-hf-id="hf-l0z3" class="win__body">
+            <div data-hf-id="hf-r8mt" class="row" id="s1-r11"><div data-hf-id="hf-ap9v" class="row__avatar" style="background: #e01e5a"></div><div data-hf-id="hf-u3j2" class="row__stack"><div data-hf-id="hf-j4gs" class="bar" style="width: 55%"></div><div data-hf-id="hf-plom" class="bar bar--dim" style="width: 76%"></div></div></div>
+            <div data-hf-id="hf-v6qu" class="row" id="s1-r12"><div data-hf-id="hf-isla" class="row__avatar" style="background: #2eb67d"></div><div data-hf-id="hf-tp81" class="row__stack"><div data-hf-id="hf-wfyd" class="bar" style="width: 63%"></div><div data-hf-id="hf-5b7u" class="bar bar--dim" style="width: 58%"></div></div></div>
           </div>
         </div>
 
         </div>
 
         <!-- Context falling out of the pile, down the gutters. -->
-        <div class="frag" id="s1-g1" style="left: 96px; top: 512px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #36c5f0"></span><span class="frag__bar"></span></div>
-        <div class="frag" id="s1-g2" style="left: 1672px; top: 486px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #ea4335"></span><span class="frag__bar"></span></div>
-        <div class="frag" id="s1-g3" style="left: 268px; top: 560px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #2eb67d"></span><span class="frag__bar"></span></div>
-        <div class="frag" id="s1-g4" style="left: 1500px; top: 544px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #4285f4"></span><span class="frag__bar"></span></div>
-        <div class="frag" id="s1-g5" style="left: 60px; top: 636px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #ecb22e"></span><span class="frag__bar"></span></div>
-        <div class="frag" id="s1-g6" style="left: 1744px; top: 620px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #e01e5a"></span><span class="frag__bar"></span></div>
-        <div class="frag" id="s1-g7" style="left: 320px; top: 700px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #0ea5e9"></span><span class="frag__bar"></span></div>
-        <div class="frag" id="s1-g8" style="left: 1560px; top: 704px" data-layout-allow-overflow=""><span class="frag__dot" style="background: #fbbc04"></span><span class="frag__bar"></span></div>
+        <div data-hf-id="hf-jh84" class="frag" id="s1-g1" style="left: 96px; top: 512px" data-layout-allow-overflow=""><span data-hf-id="hf-592g" class="frag__dot" style="background: #36c5f0"></span><span data-hf-id="hf-h7b6" class="frag__bar"></span></div>
+        <div data-hf-id="hf-sq8o" class="frag" id="s1-g2" style="left: 1672px; top: 486px" data-layout-allow-overflow=""><span data-hf-id="hf-8wak" class="frag__dot" style="background: #ea4335"></span><span data-hf-id="hf-655y" class="frag__bar"></span></div>
+        <div data-hf-id="hf-rx46" class="frag" id="s1-g3" style="left: 268px; top: 560px" data-layout-allow-overflow=""><span data-hf-id="hf-7o47" class="frag__dot" style="background: #2eb67d"></span><span data-hf-id="hf-6jgz" class="frag__bar"></span></div>
+        <div data-hf-id="hf-mxfd" class="frag" id="s1-g4" style="left: 1500px; top: 544px" data-layout-allow-overflow=""><span data-hf-id="hf-r8io" class="frag__dot" style="background: #4285f4"></span><span data-hf-id="hf-6xs0" class="frag__bar"></span></div>
+        <div data-hf-id="hf-x7lu" class="frag" id="s1-g5" style="left: 60px; top: 636px" data-layout-allow-overflow=""><span data-hf-id="hf-ndnu" class="frag__dot" style="background: #ecb22e"></span><span data-hf-id="hf-45mt" class="frag__bar"></span></div>
+        <div data-hf-id="hf-6rl8" class="frag" id="s1-g6" style="left: 1744px; top: 620px" data-layout-allow-overflow=""><span data-hf-id="hf-o76q" class="frag__dot" style="background: #e01e5a"></span><span data-hf-id="hf-4jxu" class="frag__bar"></span></div>
+        <div data-hf-id="hf-jlzf" class="frag" id="s1-g7" style="left: 320px; top: 700px" data-layout-allow-overflow=""><span data-hf-id="hf-xj70" class="frag__dot" style="background: #0ea5e9"></span><span data-hf-id="hf-4y8v" class="frag__bar"></span></div>
+        <div data-hf-id="hf-mt5h" class="frag" id="s1-g8" style="left: 1560px; top: 704px" data-layout-allow-overflow=""><span data-hf-id="hf-i2do" class="frag__dot" style="background: #fbbc04"></span><span data-hf-id="hf-5cjw" class="frag__bar"></span></div>
 
         <!-- The week ticking past. -->
-        <div id="s1-date">
-          <span class="datestep" id="s1-d1">Aug 14</span>
-          <span class="datestep" id="s1-d2">Aug 16</span>
-          <span class="datestep" id="s1-d3">Aug 18</span>
-          <span class="datestep" id="s1-d4">Aug 20</span>
-          <span class="datestep" id="s1-d5">Aug 21</span>
+        <div data-hf-id="hf-i4rq" id="s1-date">
+          <span data-hf-id="hf-0x4f" class="datestep" id="s1-d1">Aug 14</span>
+          <span data-hf-id="hf-1uxu" class="datestep" id="s1-d2">Aug 16</span>
+          <span data-hf-id="hf-x09x" class="datestep" id="s1-d3">Aug 18</span>
+          <span data-hf-id="hf-khjd" class="datestep" id="s1-d4">Aug 20</span>
+          <span data-hf-id="hf-ov1j" class="datestep" id="s1-d5">Aug 21</span>
         </div>
 
-        <div id="s1-l1" class="caption caption--words" style="top: 706px"><span class="w" id="s1-wa">You</span> <span class="w" id="s1-wb">can&rsquo;t</span> <span class="w" id="s1-wc">remember</span> <span class="w" id="s1-wd">everything.</span></div>
-        <div id="s1-l2" class="caption caption--quiet" style="top: 804px">It&rsquo;s spread across every tool.</div>
+        <div data-hf-id="hf-wkvz" id="s1-l1" class="caption caption--words" style="top: 706px"><span data-hf-id="hf-g1tm" class="w" id="s1-wa">You</span> <span data-hf-id="hf-xh7z" class="w" id="s1-wb">can’t</span> <span data-hf-id="hf-7dla" class="w" id="s1-wc">remember</span> <span data-hf-id="hf-m19n" class="w" id="s1-wd">everything.</span></div>
+        <div data-hf-id="hf-bbbm" id="s1-l2" class="caption caption--quiet" style="top: 804px">It’s spread across every tool.</div>
       </section>
 
       <!-- ============ SCENE 2 — it was all being read (5.06 → 12.40) ============ -->
-      <section id="s2" class="clip scene" data-start="5.06" data-duration="7.34" data-track-index="2">
-        <div id="s2-boundary">
-          <div id="s2-screen"><div id="s2-sheen"></div></div>
-          <div id="s2-edge"></div>
-          <div id="s2-notch"></div>
-          <div id="s2-hinge"></div>
+      <section data-hf-id="hf-7lny" id="s2" class="clip scene" data-start="5.06" data-duration="6.2" data-track-index="2">
+        <div data-hf-id="hf-dah9" id="s2-boundary">
+          <div data-hf-id="hf-nqpn" id="s2-screen"><div data-hf-id="hf-uhd6" id="s2-sheen"></div></div>
+          <div data-hf-id="hf-4dp8" id="s2-edge"></div>
+          <div data-hf-id="hf-xvrv" id="s2-notch"></div>
+          <div data-hf-id="hf-3an0" id="s2-hinge"></div>
         </div>
-        <div id="s2-base"><div id="s2-groove"></div></div>
+        <div data-hf-id="hf-ubr4" id="s2-base"><div data-hf-id="hf-0oa1" id="s2-groove"></div></div>
 
-        <div class="tile" id="s2-t1" style="top: 268px"><img class="tile__logo" src="assets/logos/slack.png" alt="Slack" /><div class="tile__label">Slack</div></div>
-        <div class="tile" id="s2-t2" style="top: 358px"><img class="tile__logo" src="assets/logos/gmail.png" alt="Gmail" /><div class="tile__label">Gmail</div></div>
-        <div class="tile" id="s2-t3" style="top: 448px"><img class="tile__logo" src="assets/logos/telegram.png" alt="Telegram" /><div class="tile__label">Telegram</div></div>
-        <div class="tile" id="s2-t4" style="top: 538px"><img class="tile__logo" src="assets/logos/meetings.png" alt="Meetings" /><div class="tile__label">Meetings</div></div>
+        <div data-hf-id="hf-1rg8" class="tile" id="s2-t1" style="top: 268px"><img data-hf-id="hf-8ezo" class="tile__logo" src="assets/logos/slack.png" alt="Slack"><div data-hf-id="hf-knvs" class="tile__label">Slack</div></div>
+        <div data-hf-id="hf-tmlt" class="tile" id="s2-t2" style="top: 358px"><img data-hf-id="hf-jwdg" class="tile__logo" src="assets/logos/gmail.png" alt="Gmail"><div data-hf-id="hf-tcza" class="tile__label">Gmail</div></div>
+        <div data-hf-id="hf-kcf2" class="tile" id="s2-t3" style="top: 448px"><img data-hf-id="hf-wzqy" class="tile__logo" src="assets/logos/telegram.png" alt="Telegram"><div data-hf-id="hf-uonv" class="tile__label">Telegram</div></div>
+        <div data-hf-id="hf-xxtj" class="tile" id="s2-t4" style="top: 538px"><img data-hf-id="hf-8wcw" class="tile__logo" src="assets/logos/meetings.png" alt="Meetings"><div data-hf-id="hf-yzy6" class="tile__label">Meetings</div></div>
 
         <!-- Four feeds → one spine → the mark. -->
-        <div class="thread" id="s2-h1" style="left: 580px; top: 299px; width: 122px; height: 3px"></div>
-        <div class="thread" id="s2-h2" style="left: 580px; top: 389px; width: 122px; height: 3px"></div>
-        <div class="thread" id="s2-h3" style="left: 580px; top: 479px; width: 122px; height: 3px"></div>
-        <div class="thread" id="s2-h4" style="left: 580px; top: 569px; width: 122px; height: 3px"></div>
-        <div class="thread" id="s2-v" style="left: 700px; top: 299px; width: 3px; height: 273px"></div>
-        <div class="thread" id="s2-h5" style="left: 700px; top: 434px; width: 128px; height: 3px"></div>
+        <div data-hf-id="hf-a1nc" class="thread" id="s2-h1" style="left: 580px; top: 299px; width: 122px; height: 3px"></div>
+        <div data-hf-id="hf-8y57" class="thread" id="s2-h2" style="left: 580px; top: 389px; width: 122px; height: 3px"></div>
+        <div data-hf-id="hf-60aa" class="thread" id="s2-h3" style="left: 580px; top: 479px; width: 122px; height: 3px"></div>
+        <div data-hf-id="hf-lg5h" class="thread" id="s2-h4" style="left: 580px; top: 569px; width: 122px; height: 3px"></div>
+        <div data-hf-id="hf-1xku" class="thread" id="s2-v" style="left: 700px; top: 299px; width: 3px; height: 273px"></div>
+        <div data-hf-id="hf-yz3n" class="thread" id="s2-h5" style="left: 700px; top: 434px; width: 128px; height: 3px"></div>
 
-        <div id="s2-halo"></div>
-        <div id="s2-mark">
-          <svg class="mark-svg" viewBox="0 0 100 100" style="width: 190px; height: 190px">
-            <circle cx="50" cy="50" r="50" fill="var(--disc)" />
-            <rect class="s2-eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
-            <rect class="s2-eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+        <div data-hf-id="hf-lwd1" id="s2-halo"></div>
+        <div data-hf-id="hf-sbbc" id="s2-mark">
+          <svg data-hf-id="hf-kelq" class="mark-svg" viewBox="0 0 100 100" style="width: 190px; height: 190px">
+            <circle data-hf-id="hf-7a46" cx="50" cy="50" r="50" fill="var(--disc)" />
+            <rect data-hf-id="hf-5iq1" class="s2-eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+            <rect data-hf-id="hf-vuib" class="s2-eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
           </svg>
         </div>
 
         <!-- Out of the mark and into the agent. Still inside the machine. -->
-        <div class="thread" id="s2-h6" style="left: 1015px; top: 434px; width: 409px; height: 3px"></div>
-        <div id="s2-claude"><img src="assets/logos/claude.png" alt="Claude" /></div>
-        <div id="s2-claude-label">Claude Code</div>
+        <div data-hf-id="hf-fouw" class="thread" id="s2-h6" style="left: 1015px; top: 434px; width: 409px; height: 3px"></div>
+        <div data-hf-id="hf-p5kd" id="s2-claude"><img data-hf-id="hf-dtkw" src="assets/logos/claude.png" alt="Claude"></div>
+        <div data-hf-id="hf-qpo7" id="s2-claude-label">Claude Code</div>
 
-        <div id="s2-l1" class="caption" style="top: 856px">Jarvis remembers all of it.</div>
-        <div id="s2-l2" class="caption caption--quiet" style="top: 940px">Nothing leaves your Mac.</div>
+        <div data-hf-id="hf-9u3f" id="s2-l1" class="caption" style="top: 856px">Jarvis remembers all of it.</div>
+        <div data-hf-id="hf-jlif" id="s2-l2" class="caption caption--quiet" style="top: 940px">Nothing leaves your Mac.</div>
       </section>
 
-      <!-- ================= SCENE 3 — one question (12.15 → 20.75) ================= -->
-      <section id="s3" class="clip scene" data-start="12.3" data-duration="8.45" data-track-index="3">
-        <div id="s3-term" class="win term">
-          <div class="win__bar">
-            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
-            <div class="win__title">Claude Code</div>
-          </div>
-          <div class="win__body">
-            <div class="term__q">
-              <span class="term__prefix">&gt;</span>
-              <span class="type-wrap">what did I miss on the payments bug?<span id="s3-mask" class="type-mask" data-layout-allow-overflow=""><span id="s3-caret" class="type-caret"></span></span></span>
-            </div>
-
-            <div id="s3-status" class="status">
-              <div id="s3-mark">
-                <svg class="mark-svg" viewBox="0 0 100 100" style="width: 58px; height: 58px">
-                  <circle cx="50" cy="50" r="50" fill="var(--disc)" />
-                  <rect class="s3-eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
-                  <rect class="s3-eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
-                </svg>
-              </div>
-              <div id="s3-live">
-                <div class="status__dot"><div id="s3-halo" class="status__halo" data-layout-allow-overflow=""></div></div>
-                <div class="status__label">Jarvis &middot; local</div>
-              </div>
-            </div>
-
-            <div id="s3-answer">Tom&rsquo;s fix is in review &mdash; not shipped. It double-charged 3 customers.</div>
-
-            <div id="s3-chip">&#8627; #eng &middot; 3 days ago</div>
-          </div>
-        </div>
-
-        <div id="s3-l1" class="caption" style="top: 812px">You didn&rsquo;t read the week. It did.</div>
-      </section>
-
-      <!-- ================= SCENE 4 — 11:00 (20.65 → 30.47) ================= -->
-      <section id="s4" class="clip scene" data-start="20.65" data-duration="9.82" data-track-index="4">
-        <div id="s4-call" class="win">
-          <div class="win__bar">
-            <div class="win__dot"></div><div class="win__dot"></div><div class="win__dot"></div>
-            <div class="win__title">1:1 &middot; David Park</div>
-            <div class="win__spacer"></div>
-            <div id="s4-rec">
-              <span id="s4-rec-dot"></span>Recording
-              <span id="s4-rec-t"><span id="s4-rt1">02:41</span><span id="s4-rt2">07:18</span></span>
-            </div>
-          </div>
-          <div class="win__body">
-            <div id="s4-seats">
-              <div class="seat">
-                <div class="seat__disc" style="background: #4e63b0">DP</div>
-                <div class="seat__name">David Park</div>
-                <div class="seat__role">Your manager</div>
-              </div>
-              <div class="seat">
-                <div class="seat__disc" style="background: #3e7c7c">YOU</div>
-                <div class="seat__name">You</div>
-                <div class="seat__role">Team lead</div>
-              </div>
-            </div>
-            <div id="s4-tr">
-              <div class="tr" id="s4-tr1">
-                <span class="tr__t">11:01</span>
-                <span class="tr__s" style="color: var(--sp-a)">David Park</span>
-                <span class="tr__x">Are we still good on the launch date?</span>
-              </div>
-              <div class="tr" id="s4-tr2">
-                <span class="tr__t">11:02</span>
-                <span class="tr__s" style="color: var(--sp-b)">You</span>
-                <span class="tr__x">Contained. I&rsquo;ll get you a firm date today.</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="s4-island">
-          <div id="s4-island-head">
-            <svg class="mark-svg" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="50" fill="var(--disc)" />
-              <rect class="s4-eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
-              <rect class="s4-eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
-            </svg>
-            <div class="island__title">Jarvis on the call</div>
-          </div>
-          <div class="island__label" id="s4-lbl-a" style="top: 104px">While you were out</div>
-          <div id="s4-rail"></div>
-
-          <div class="mark-row" id="s4-m1" style="top: 144px">
-            <div class="mark-row__node" style="background: #f59e0b"></div>
-            <div>
-              <div class="mark-row__date">AUG 18</div>
-              <div class="mark-row__head">Checkout bug halted the release</div>
-            </div>
-          </div>
-          <div class="mark-row" id="s4-m2" style="top: 216px">
-            <div class="mark-row__node" style="background: #34d399"></div>
-            <div>
-              <div class="mark-row__date">AUG 20</div>
-              <div class="mark-row__head">Signup redesign is on staging</div>
-            </div>
-          </div>
-          <div class="mark-row" id="s4-m3" style="top: 288px">
-            <div class="mark-row__node" style="background: var(--accent)"></div>
-            <div>
-              <div class="mark-row__date">TODAY</div>
-              <div class="mark-row__head">Launch date owed this week</div>
-            </div>
-          </div>
-
-          <div id="s4-div"></div>
-          <div class="island__label" id="s4-lbl-b" style="top: 428px">What to clarify</div>
-
-          <div class="clar" id="s4-c1" style="top: 480px">
-            <div class="clar__box clar__box--hi"></div>
-            <div class="clar__t clar__t--hi">Is the payments bug fixed?</div>
-          </div>
-          <div class="clar" id="s4-c2" style="top: 560px">
-            <div class="clar__box"></div>
-            <div class="clar__t">What&rsquo;s the real launch date?</div>
-          </div>
-          <div class="clar" id="s4-c3" style="top: 640px">
-            <div class="clar__box"></div>
-            <div class="clar__t">Did the team stay unblocked?</div>
-          </div>
-        </div>
-
-        <div id="s4-l1" class="caption caption--quiet" style="top: 922px">You know nothing.</div>
-        <div id="s4-l2" class="caption" style="top: 916px">Now you do.</div>
-      </section>
-
-      <!-- ================= SCENE 5 — outro (30.20 → 33.30) ================= -->
-      <section id="s5" class="clip scene" data-start="30.2" data-duration="3.1" data-track-index="5">
-        <div id="s5-halo"></div>
-        <div id="s5-mark">
-          <svg class="mark-svg" viewBox="0 0 100 100" style="width: 230px; height: 230px">
-            <circle cx="50" cy="50" r="50" fill="var(--disc)" />
-            <rect id="s5-eye-l" class="eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
-            <rect id="s5-eye-r" class="eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+      <!-- The carrier across the scene-2 seam: the same mark, handed over at
+           matched position and velocity, landing on Focus's title-bar lockup. -->
+      <div data-hf-id="hf-heg1" id="flight" class="clip" data-start="10.85" data-duration="0.75" data-track-index="7">
+        <div data-hf-id="hf-t4f1" id="flight-in">
+          <svg data-hf-id="hf-x8tu" class="mark-svg" viewBox="0 0 100 100">
+            <circle data-hf-id="hf-dqhm" cx="50" cy="50" r="50" fill="var(--disc)" />
+            <rect data-hf-id="hf-97v8" class="fl-eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+            <rect data-hf-id="hf-du5a" class="fl-eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
           </svg>
         </div>
-        <div id="s5-l1" class="caption" style="top: 582px">You walked in cold.</div>
-        <div id="s5-l2" class="caption" style="top: 678px">Jarvis didn&rsquo;t.</div>
-        <div id="s5-wordmark">jarvis_</div>
+      </div>
+
+      <!-- ============ SCENE F — FOCUS, the day drawing itself (11.20 → 17.50) ============ -->
+      <section data-hf-id="hf-qsiq" id="sf" class="clip scene" data-start="11.2" data-duration="6.26" data-track-index="3">
+        <div data-hf-id="hf-rhyg" id="sf-cam">
+        <div data-hf-id="hf-ag93" id="sf-win">
+          <div data-hf-id="hf-i2qi" id="sf-bar">
+            <div data-hf-id="hf-pfsx" id="sf-lockup">
+              <svg data-hf-id="hf-i4l2" class="mark-svg" viewBox="0 0 100 100">
+                <circle data-hf-id="hf-e4sn" cx="50" cy="50" r="50" fill="var(--disc)" />
+                <rect data-hf-id="hf-wgmd" class="sf-eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+                <rect data-hf-id="hf-9ln3" class="sf-eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+              </svg>
+              <div data-hf-id="hf-ig36" id="sf-word">Jarvis</div>
+            </div>
+          </div>
+
+          <!-- The focus sentence. Verbatim TodayContent.base.sentence. -->
+          <div data-hf-id="hf-n281" id="sf-sent">
+            <span data-hf-id="hf-jypg" class="sf-c" id="sf-c1">Start with <span data-hf-id="hf-m858" class="sf-name" id="sf-n-fix"><span data-hf-id="hf-53wd" class="sfw">Review</span>&#160;<span data-hf-id="hf-1cuz" class="sfw">Tom’s</span>&#160;<span data-hf-id="hf-f7dh" class="sfw">checkout</span>&#160;<span data-hf-id="hf-a1ec" class="sfw">fix</span></span></span><span data-hf-id="hf-ruac" class="sf-c" id="sf-c2">. Tom, David and Sarah are all waiting on it. Then <span data-hf-id="hf-45ov" class="sf-name" id="sf-n-date"><span data-hf-id="hf-8ij4" class="sfw">Pin</span>&#160;<span data-hf-id="hf-gqao" class="sfw">the</span>&#160;<span data-hf-id="hf-pm16" class="sfw">launch</span>&#160;<span data-hf-id="hf-aczh" class="sfw">date</span></span></span><span data-hf-id="hf-075j" class="sf-c" id="sf-c3">, then <span data-hf-id="hf-d95k" class="sf-name" id="sf-n-sign"><span data-hf-id="hf-1vzk" class="sfw">Sign</span>&#160;<span data-hf-id="hf-88fa" class="sfw">off</span>&#160;<span data-hf-id="hf-c1n8" class="sfw">Sarah’s</span>&#160;<span data-hf-id="hf-vaoq" class="sfw">redesign</span></span>.</span>
+          </div>
+
+          <div data-hf-id="hf-bnt7" id="sf-day">
+            <div data-hf-id="hf-easg" id="sf-spine"></div>
+            <!-- A booked hour has no rules: the hours a meeting swallows are NOT DRAWN. -->
+            <div data-hf-id="hf-s3z9" class="sf-rule" id="sf-r9" style="top: 16px"></div>
+            <div data-hf-id="hf-fkjb" class="sf-rule" id="sf-r12" style="top: 238px"></div>
+            <div data-hf-id="hf-dnk1" class="sf-rule" id="sf-r13" style="top: 312px"></div>
+            <div data-hf-id="hf-rrv8" class="sf-rule" id="sf-r16" style="top: 534px"></div>
+            <div data-hf-id="hf-lb4p" class="sf-hr" id="sf-h10" style="top: 79px">10</div>
+            <div data-hf-id="hf-9sss" class="sf-hr" id="sf-h11" style="top: 153px">11</div>
+            <div data-hf-id="hf-c6xq" class="sf-hr" id="sf-h12" style="top: 227px">12</div>
+            <div data-hf-id="hf-udaj" class="sf-hr" id="sf-h13" style="top: 301px">13</div>
+            <div data-hf-id="hf-456q" class="sf-hr" id="sf-h14" style="top: 375px">14</div>
+            <div data-hf-id="hf-3zb0" class="sf-hr" id="sf-h15" style="top: 449px">15</div>
+            <div data-hf-id="hf-klo5" class="sf-hr" id="sf-h16" style="top: 523px">16</div>
+
+            <div data-hf-id="hf-30aq" class="sf-rail sf-rail--task" id="sf-rail-fix1" style="top: 16px; height: 68px"></div>
+            <div data-hf-id="hf-cgac" class="sf-blk sf-blk--task" id="sf-b-fix1" style="top: 16px; height: 68px">
+              <div data-hf-id="hf-sg5h" class="sf-hover" id="sf-hv-fix1"></div>
+              <div data-hf-id="hf-wgfu" class="sf-blk__in">
+                <div data-hf-id="hf-5wtg" class="sf-blk__t">Review Tom’s checkout fix</div>
+                <div data-hf-id="hf-11xt" class="sf-blk__why" id="sf-w-fix1">
+                  <span data-hf-id="hf-nb5y">1 of 2, so you can answer David at ten</span>
+                  <span data-hf-id="hf-xyzz" class="sf-src"><img data-hf-id="hf-9xvu" src="assets/logos/slack.png" alt=""><img data-hf-id="hf-39lj" src="assets/logos/linear.png" alt=""><img data-hf-id="hf-mdzq" src="assets/logos/meetings.png" alt=""></span>
+                </div>
+              </div>
+            </div>
+            <div data-hf-id="hf-f8g4" class="sf-rail sf-rail--meet" id="sf-rail-1on1" style="top: 90px; height: 74px"></div>
+            <div data-hf-id="hf-oaoq" class="sf-blk sf-blk--meet" id="sf-b-1on1" style="top: 90px; height: 74px">
+              <div data-hf-id="hf-qzql" class="sf-band"></div>
+              <div data-hf-id="hf-we1c" class="sf-hover" id="sf-hv-1on1"></div>
+              <div data-hf-id="hf-vye6" class="sf-blk__in">
+                <div data-hf-id="hf-03f7" class="sf-blk__t">1:1 with David Park</div>
+              </div>
+            </div>
+            <div data-hf-id="hf-4y8r" class="sf-rail sf-rail--task" id="sf-rail-fix2" style="top: 164px; height: 68px"></div>
+            <div data-hf-id="hf-msnh" class="sf-blk sf-blk--task" id="sf-b-fix2" style="top: 164px; height: 68px">
+              <div data-hf-id="hf-we9i" class="sf-hover" id="sf-hv-fix2"></div>
+              <div data-hf-id="hf-wcp7" class="sf-blk__in">
+                <div data-hf-id="hf-yfj0" class="sf-blk__t">Review Tom’s checkout fix</div>
+                <div data-hf-id="hf-501u" class="sf-blk__why" id="sf-w-fix2">
+                  <span data-hf-id="hf-iobw">2 of 2, once David is gone</span>
+                  <span data-hf-id="hf-1rbj" class="sf-src"><img data-hf-id="hf-6zym" src="assets/logos/slack.png" alt=""><img data-hf-id="hf-lniv" src="assets/logos/linear.png" alt=""><img data-hf-id="hf-aywq" src="assets/logos/meetings.png" alt=""></span>
+                </div>
+              </div>
+            </div>
+            <div data-hf-id="hf-7jrh" class="sf-blk sf-blk--rest" id="sf-b-lunch" style="top: 238px; height: 68px"><div data-hf-id="hf-wr08" class="sf-blk__in"><div data-hf-id="hf-ymje" class="sf-rest">Lunch</div></div></div>
+            <div data-hf-id="hf-bl8l" class="sf-rail sf-rail--task" id="sf-rail-date" style="top: 312px; height: 68px"></div>
+            <div data-hf-id="hf-9ykz" class="sf-blk sf-blk--task" id="sf-b-date" style="top: 312px; height: 68px">
+              <div data-hf-id="hf-guy7" class="sf-hover" id="sf-hv-date"></div>
+              <div data-hf-id="hf-tyv1" class="sf-blk__in">
+                <div data-hf-id="hf-5xte" class="sf-blk__t">Pin the launch date</div>
+                <div data-hf-id="hf-cw2z" class="sf-blk__why" id="sf-w-date">
+                  <span data-hf-id="hf-it9k">before David briefs leadership</span>
+                  <span data-hf-id="hf-1d0i" class="sf-src"><img data-hf-id="hf-wd3c" src="assets/logos/gmail.png" alt=""><img data-hf-id="hf-bd7r" src="assets/logos/meetings.png" alt=""></span>
+                </div>
+              </div>
+            </div>
+            <div data-hf-id="hf-3n08" class="sf-rail sf-rail--meet" id="sf-rail-sync" style="top: 386px; height: 74px"></div>
+            <div data-hf-id="hf-fp86" class="sf-blk sf-blk--meet" id="sf-b-sync" style="top: 386px; height: 74px">
+              <div data-hf-id="hf-ulup" class="sf-band"></div>
+              <div data-hf-id="hf-9l7m" class="sf-hover" id="sf-hv-sync"></div>
+              <div data-hf-id="hf-ud62" class="sf-blk__in">
+                <div data-hf-id="hf-8ds5" class="sf-blk__t">Launch sync</div>
+                <div data-hf-id="hf-c3ha" class="sf-blk__why" id="sf-w-sync">
+                  <span data-hf-id="hf-jna8">the whole team</span>
+                </div>
+              </div>
+            </div>
+            <div data-hf-id="hf-ffn0" class="sf-rail sf-rail--task" id="sf-rail-sign" style="top: 460px; height: 68px"></div>
+            <div data-hf-id="hf-hf62" class="sf-blk sf-blk--task" id="sf-b-sign" style="top: 460px; height: 68px">
+              <div data-hf-id="hf-ooe0" class="sf-hover" id="sf-hv-sign"></div>
+              <div data-hf-id="hf-urh3" class="sf-blk__in">
+                <div data-hf-id="hf-wvy9" class="sf-blk__t">Sign off Sarah’s redesign</div>
+                <div data-hf-id="hf-5f98" class="sf-blk__why" id="sf-w-sign">
+                  <span data-hf-id="hf-m6wr">last, nobody blocked behind it</span>
+                  <span data-hf-id="hf-0yph" class="sf-src"><img data-hf-id="hf-7e9n" src="assets/logos/slack.png" alt=""><img data-hf-id="hf-l97u" src="assets/logos/linear.png" alt=""></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 09:20. In the gutter, with no rule across the day. -->
+            <div data-hf-id="hf-uqch" id="sf-now" style="top: 40.6667px">
+              <div data-hf-id="hf-zp9v" id="sf-now-t">09:20</div>
+              <div data-hf-id="hf-lrby" id="sf-now-d"></div>
+            </div>
+          </div>
+
+          <div data-hf-id="hf-ve86" id="sf-load">5H WORK IN 4H OPEN</div>
+        </div>
+
+        </div>
+        <div data-hf-id="hf-riug" id="sf-l1" class="caption" style="top: 906px">It doesn’t list your work. It places it.</div>
+      </section>
+
+      <!-- ========== SCENE 3 — 09:00, inside the code (17.46 → 23.50) ========== -->
+      <section data-hf-id="hf-z7lo" id="s3" class="clip scene" data-start="17.46" data-duration="6" data-track-index="4">
+        <div data-hf-id="hf-o74f" id="s3-term" class="win term">
+          <div data-hf-id="hf-8ufj" class="win__bar">
+            <div data-hf-id="hf-hje0" class="win__dot"></div><div data-hf-id="hf-gcgx" class="win__dot"></div><div data-hf-id="hf-gqry" class="win__dot"></div>
+            <div data-hf-id="hf-kfit" class="win__title">~/checkout — claude</div>
+          </div>
+          <div data-hf-id="hf-lfa4" class="win__body">
+            <!-- The hour you are in, straight off the 09:00 block you just left. -->
+            <div data-hf-id="hf-vs18" id="s3-ctx">
+              <img data-hf-id="hf-2ed5" src="assets/logos/github.png" alt="">PR #412 · Retry checkout on gateway timeout
+            </div>
+
+            <div data-hf-id="hf-iys1" class="term__q">
+              <span data-hf-id="hf-nt41" class="term__prefix">&gt;</span>
+              <span data-hf-id="hf-ivp2" class="type-wrap">what did I miss on the payments bug?<span data-hf-id="hf-mk3w" id="s3-mask" class="type-mask" data-layout-allow-overflow=""><span data-hf-id="hf-dc6l" id="s3-caret" class="type-caret"></span></span></span>
+            </div>
+
+            <!-- The real surface: a loopback MCP server the agent already has. -->
+            <div data-hf-id="hf-f5tt" class="s3-tool" id="s3-tool1">
+              <span data-hf-id="hf-y4vx" class="s3-tool__bullet">●</span>
+              <span data-hf-id="hf-b1ux"><span data-hf-id="hf-axrk" class="s3-tool__name">jarvis</span> · search_context(“payments bug”)</span>
+            </div>
+            <div data-hf-id="hf-zrj6" class="s3-tool" id="s3-tool2">
+              ⎿&#160; 3 results
+              <span data-hf-id="hf-7j08" id="s3-local"><span data-hf-id="hf-pdo2" class="status__dot" style="width: 11px; height: 11px"></span>127.0.0.1 · nothing left the Mac</span>
+            </div>
+
+            <div data-hf-id="hf-7r9x" id="s3-status" class="status">
+              <div data-hf-id="hf-rqjv" id="s3-mark">
+                <svg data-hf-id="hf-ofsm" class="mark-svg" viewBox="0 0 100 100" style="width: 58px; height: 58px">
+                  <circle data-hf-id="hf-ej3o" cx="50" cy="50" r="50" fill="var(--disc)" />
+                  <rect data-hf-id="hf-p4yo" class="s3-eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+                  <rect data-hf-id="hf-z0a2" class="s3-eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+                </svg>
+              </div>
+              <div data-hf-id="hf-mrmm" id="s3-live">
+                <div data-hf-id="hf-0xl9" class="status__dot"><div data-hf-id="hf-2az2" id="s3-halo" class="status__halo" data-layout-allow-overflow=""></div></div>
+                <div data-hf-id="hf-q84t" class="status__label">Jarvis · local</div>
+              </div>
+            </div>
+
+            <div data-hf-id="hf-5sc1" id="s3-answer">Tom’s fix is in review — not shipped. It double-charged 3 customers.</div>
+
+            <div data-hf-id="hf-cfus" id="s3-chip">↳ #eng · 3 days ago</div>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-75hu" id="s3-l1" class="caption" style="top: 856px">You didn’t read the week. It did.</div>
+      </section>
+
+      <!-- ============= SCENE 4 — 10:00, on the call (23.46 → 32.82) ============= -->
+      <section data-hf-id="hf-esaq" id="s4" class="clip scene" data-start="23.46" data-duration="9.28" data-track-index="5">
+        <div data-hf-id="hf-l61i" id="s4-call" class="win">
+          <div data-hf-id="hf-8g4i" class="win__bar">
+            <div data-hf-id="hf-iqb3" class="win__dot"></div><div data-hf-id="hf-j4m4" class="win__dot"></div><div data-hf-id="hf-w624" class="win__dot"></div>
+            <div data-hf-id="hf-2d69" class="win__title">1:1 · David Park · 10:00</div>
+            <div data-hf-id="hf-264c" class="win__spacer"></div>
+            <div data-hf-id="hf-ziqs" id="s4-rec">
+              <span data-hf-id="hf-yuo4" id="s4-rec-dot"></span>Recording
+              <span data-hf-id="hf-vunx" id="s4-rec-t"><span data-hf-id="hf-bk4u" id="s4-rt1">02:41</span><span data-hf-id="hf-srxc" id="s4-rt2">07:18</span></span>
+            </div>
+          </div>
+          <div data-hf-id="hf-k8d1" class="win__body">
+            <div data-hf-id="hf-olyd" id="s4-seats">
+              <div data-hf-id="hf-fj77" class="seat">
+                <div data-hf-id="hf-u8lp" class="seat__disc" style="background: #4e63b0">DP</div>
+                <div data-hf-id="hf-itta" class="seat__name">David Park</div>
+                <div data-hf-id="hf-zcyp" class="seat__role">Your manager</div>
+              </div>
+              <div data-hf-id="hf-ezpv" class="seat">
+                <div data-hf-id="hf-0vy6" class="seat__disc" style="background: #3e7c7c">YOU</div>
+                <div data-hf-id="hf-nmx3" class="seat__name">You</div>
+                <div data-hf-id="hf-4mbi" class="seat__role">Team lead</div>
+              </div>
+            </div>
+            <div data-hf-id="hf-sz57" id="s4-tr">
+              <div data-hf-id="hf-tl5d" class="tr" id="s4-tr1">
+                <span data-hf-id="hf-j017" class="tr__t">10:01</span>
+                <span data-hf-id="hf-0tqq" class="tr__s" style="color: var(--sp-a)">David Park</span>
+                <span data-hf-id="hf-uvoc" class="tr__x">Are we still good on the launch date?</span>
+              </div>
+              <div data-hf-id="hf-zqv6" class="tr" id="s4-tr2">
+                <span data-hf-id="hf-ilq6" class="tr__t">10:02</span>
+                <span data-hf-id="hf-0iww" class="tr__s" style="color: var(--sp-b)">You</span>
+                <span data-hf-id="hf-p8np" class="tr__x">Contained. I’ll get you a firm date today.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-pnsi" id="s4-island">
+          <div data-hf-id="hf-f9ct" id="s4-island-head">
+            <svg data-hf-id="hf-iiw3" class="mark-svg" viewBox="0 0 100 100">
+              <circle data-hf-id="hf-exep" cx="50" cy="50" r="50" fill="var(--disc)" />
+              <rect data-hf-id="hf-pzrz" class="s4-eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+              <rect data-hf-id="hf-c4f1" class="s4-eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+            </svg>
+            <div data-hf-id="hf-yeba" class="island__title">Jarvis on the call</div>
+          </div>
+          <div data-hf-id="hf-w8ww" class="island__label" id="s4-lbl-a" style="top: 104px">While you were out</div>
+          <div data-hf-id="hf-qovx" id="s4-rail"></div>
+
+          <div data-hf-id="hf-u79e" class="mark-row" id="s4-m1" style="top: 144px">
+            <div data-hf-id="hf-frw0" class="mark-row__node" style="background: #f59e0b"></div>
+            <div data-hf-id="hf-yeow">
+              <div data-hf-id="hf-cf72" class="mark-row__date">AUG 18</div>
+              <div data-hf-id="hf-6xvy" class="mark-row__head">Checkout bug halted the release</div>
+            </div>
+          </div>
+          <div data-hf-id="hf-gjr5" class="mark-row" id="s4-m2" style="top: 216px">
+            <div data-hf-id="hf-719b" class="mark-row__node" style="background: #34d399"></div>
+            <div data-hf-id="hf-y7yw">
+              <div data-hf-id="hf-246l" class="mark-row__date">AUG 20</div>
+              <div data-hf-id="hf-ycsj" class="mark-row__head">Signup redesign is on staging</div>
+            </div>
+          </div>
+          <div data-hf-id="hf-t2mz" class="mark-row" id="s4-m3" style="top: 288px">
+            <div data-hf-id="hf-7tcq" class="mark-row__node" style="background: var(--accent)"></div>
+            <div data-hf-id="hf-x11t">
+              <div data-hf-id="hf-vcnj" class="mark-row__date">TODAY</div>
+              <div data-hf-id="hf-tufg" class="mark-row__head">Launch date owed this week</div>
+            </div>
+          </div>
+
+          <div data-hf-id="hf-oezy" id="s4-div"></div>
+          <div data-hf-id="hf-v21q" class="island__label" id="s4-lbl-b" style="top: 428px">David will ask</div>
+
+          <div data-hf-id="hf-7m75" class="clar" id="s4-c1" style="top: 480px">
+            <div data-hf-id="hf-n1hz" class="clar__box clar__box--hi"></div>
+            <div data-hf-id="hf-mnr0" class="clar__t clar__t--hi">Is the payments bug fixed?</div>
+          </div>
+          <div data-hf-id="hf-vgrz" class="clar" id="s4-c2" style="top: 560px">
+            <div data-hf-id="hf-8vex" class="clar__box"></div>
+            <div data-hf-id="hf-5q99" class="clar__t">What’s the real launch date?</div>
+          </div>
+          <div data-hf-id="hf-qer1" class="clar" id="s4-c3" style="top: 640px">
+            <div data-hf-id="hf-fugt" class="clar__box"></div>
+            <div data-hf-id="hf-3ji8" class="clar__t">Did the team stay unblocked?</div>
+          </div>
+        </div>
+
+        <!-- ⌘⇧D. The panel bursts into edge-docked islands so the call's
+             faces stay unobstructed. Same content, out of the way. -->
+        <div data-hf-id="hf-5t4c" class="isl" id="s4-i1" data-layout-allow-overlap="">
+          <div data-hf-id="hf-314a" class="isl__k">While you were out</div>
+          <div data-hf-id="hf-y58w" class="isl__t">Checkout bug halted the release</div>
+          <div data-hf-id="hf-mod7" class="isl__s">Tom’s fix is in review, not shipped yet.</div>
+        </div>
+        <div data-hf-id="hf-golz" class="isl" id="s4-i2" data-layout-allow-overlap="">
+          <div data-hf-id="hf-pfj0" class="isl__k">David Park wants</div>
+          <div data-hf-id="hf-xvkc" class="isl__t">A number for leadership</div>
+          <div data-hf-id="hf-tksm" class="isl__s">Is the launch on track?</div>
+        </div>
+        <div data-hf-id="hf-aiw6" class="isl" id="s4-i3" data-layout-allow-overlap="">
+          <div data-hf-id="hf-xnpa" class="isl__k">Ask</div>
+          <div data-hf-id="hf-l2xz" class="isl__t">Ask Jarvis anything about this call…</div>
+        </div>
+        <div data-hf-id="hf-d8fp" id="s4-hint">⌘⇧D</div>
+
+        <div data-hf-id="hf-1wes" id="s4-l1" class="caption caption--quiet" style="top: 922px">You know nothing.</div>
+        <div data-hf-id="hf-0rqt" id="s4-l2" class="caption" style="top: 916px">Now you do.</div>
+      </section>
+
+      <!-- ================= SCENE 5 — outro (32.74 → 36.01) ================= -->
+      <section data-hf-id="hf-rfey" id="s5" class="clip scene" data-start="32.74" data-duration="3.27" data-track-index="6">
+        <div data-hf-id="hf-pqos" id="s5-halo"></div>
+        <div data-hf-id="hf-le2p" id="s5-mark">
+          <svg data-hf-id="hf-gej0" class="mark-svg" viewBox="0 0 100 100" style="width: 230px; height: 230px">
+            <circle data-hf-id="hf-fbpq" cx="50" cy="50" r="50" fill="var(--disc)" />
+            <rect data-hf-id="hf-8xk6" id="s5-eye-l" class="eye" x="32" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+            <rect data-hf-id="hf-de42" id="s5-eye-r" class="eye" x="56" y="38" width="12" height="24" rx="6" fill="var(--eye)" />
+          </svg>
+        </div>
+        <div data-hf-id="hf-44cy" id="s5-l1" class="caption" style="top: 582px">You walked in cold.</div>
+        <div data-hf-id="hf-t6nw" id="s5-l2" class="caption" style="top: 678px">Jarvis didn’t.</div>
+        <div data-hf-id="hf-hhfl" id="s5-wordmark">jarvis_</div>
       </section>
 
       <!-- Grain + vignette sit above every scene. Ink only — both are 0 on paper. -->
-      <div id="grain" class="clip" data-start="0" data-duration="33.3" data-track-index="8"></div>
-      <div id="vignette" class="clip" data-start="0" data-duration="33.3" data-track-index="9"></div>
+      <div data-hf-id="hf-xrqk" id="grain" class="clip" data-start="0" data-duration="36" data-track-index="8"></div>
+      <div data-hf-id="hf-ih78" id="vignette" class="clip" data-start="0" data-duration="36" data-track-index="9"></div>
     </div>
 
     <!-- ===================== AUDIO ===================== -->
-    <audio id="bgm" src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3" data-start="0" data-duration="33.3" data-track-index="10" data-volume="1"></audio>
+    <audio data-hf-id="hf-tifl" id="bgm" src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3" data-start="0" data-duration="36" data-track-index="10" data-volume="1"></audio>
 
     <!-- S1 — the pile-up, accelerating -->
-    <audio id="sfx-01" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="1.09" data-duration="0.19" data-track-index="11" data-volume="0.1"></audio>
-    <audio id="sfx-02" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="2.19" data-duration="0.19" data-track-index="12" data-volume="0.11"></audio>
-    <audio id="sfx-03" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="3.27" data-duration="0.19" data-track-index="13" data-volume="0.12"></audio>
-    <audio id="sfx-04" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="4.1" data-duration="0.19" data-track-index="14" data-volume="0.14"></audio>
-    <audio id="sfx-05" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="4.66" data-duration="0.19" data-track-index="15" data-volume="0.16"></audio>
-
-    <!-- S2 — the chrome collapses, four tiles land, the mark ignites -->
-    <audio id="sfx-06" class="sfx" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="5.2" data-duration="0.23" data-track-index="16" data-volume="0.2"></audio>
-    <audio id="sfx-07" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="6" data-duration="0.16" data-track-index="17" data-volume="0.15"></audio>
-    <audio id="sfx-08" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="6.56" data-duration="0.16" data-track-index="18" data-volume="0.15"></audio>
-    <audio id="sfx-09" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="7.09" data-duration="0.16" data-track-index="19" data-volume="0.15"></audio>
-    <audio id="sfx-10" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="7.64" data-duration="0.16" data-track-index="20" data-volume="0.15"></audio>
-    <audio id="sfx-11" class="sfx" src="assets/sfx/impact/impactSoft_medium_003.ogg" data-start="8.74" data-duration="0.19" data-track-index="21" data-volume="0.28"></audio>
-
-    <!-- S3 — the query types, the citation rings -->
-    <audio id="sfx-12" class="sfx" src="assets/sfx/keyboard/keypress-003.wav" data-start="13.11" data-duration="0.3" data-track-index="22" data-volume="0.16"></audio>
-    <audio id="sfx-13" class="sfx" src="assets/sfx/keyboard/keypress-011.wav" data-start="13.29" data-duration="0.3" data-track-index="23" data-volume="0.15"></audio>
-    <audio id="sfx-14" class="sfx" src="assets/sfx/keyboard/keypress-007.wav" data-start="13.47" data-duration="0.3" data-track-index="24" data-volume="0.16"></audio>
-    <audio id="sfx-15" class="sfx" src="assets/sfx/keyboard/keypress-022.wav" data-start="13.65" data-duration="0.3" data-track-index="25" data-volume="0.15"></audio>
-    <audio id="sfx-16" class="sfx" src="assets/sfx/keyboard/keypress-014.wav" data-start="13.83" data-duration="0.3" data-track-index="26" data-volume="0.16"></audio>
-    <audio id="sfx-17" class="sfx" src="assets/sfx/keyboard/keypress-031.wav" data-start="14.01" data-duration="0.3" data-track-index="27" data-volume="0.15"></audio>
-    <audio id="sfx-18" class="sfx" src="assets/sfx/keyboard/keypress-019.wav" data-start="14.19" data-duration="0.3" data-track-index="28" data-volume="0.16"></audio>
-    <audio id="sfx-19" class="sfx" src="assets/sfx/keyboard/keypress-027.wav" data-start="14.37" data-duration="0.3" data-track-index="29" data-volume="0.14"></audio>
-    <audio id="sfx-20" class="sfx" src="assets/sfx/impact/impactBell_heavy_000.ogg" data-start="17.47" data-duration="1.53" data-track-index="30" data-volume="0.26"></audio>
-
-    <!-- S4 — the briefing arrives, the week lands, the question hits -->
-    <audio id="sfx-21" class="sfx" src="assets/sfx/casino/card-slide-3.ogg" data-start="22.93" data-duration="0.65" data-track-index="31" data-volume="0.22"></audio>
-    <audio id="sfx-22" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="23.46" data-duration="0.06" data-track-index="32" data-volume="0.11"></audio>
-    <audio id="sfx-23" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="24.02" data-duration="0.06" data-track-index="33" data-volume="0.11"></audio>
-    <audio id="sfx-24" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="24.56" data-duration="0.06" data-track-index="34" data-volume="0.11"></audio>
-    <audio id="sfx-25" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="25.66" data-duration="0.16" data-track-index="35" data-volume="0.14"></audio>
-    <audio id="sfx-26" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="26.2" data-duration="0.06" data-track-index="36" data-volume="0.11"></audio>
-    <audio id="sfx-27" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="26.75" data-duration="0.06" data-track-index="37" data-volume="0.11"></audio>
-    <audio id="sfx-28" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="27.29" data-duration="0.06" data-track-index="38" data-volume="0.11"></audio>
-    <audio id="sfx-29" class="sfx" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="28.39" data-duration="0.23" data-track-index="39" data-volume="0.3"></audio>
+    <audio data-hf-id="hf-ti8i" id="sfx-01" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="1.09" data-duration="0.19" data-track-index="11" data-volume="0.1"></audio>
+    <audio data-hf-id="hf-bc1x" id="sfx-02" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="2.19" data-duration="0.19" data-track-index="12" data-volume="0.11"></audio>
+    <audio data-hf-id="hf-tcz0" id="sfx-03" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="3.27" data-duration="0.19" data-track-index="13" data-volume="0.12"></audio>
+    <audio data-hf-id="hf-v1cf" id="sfx-04" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="4.1" data-duration="0.19" data-track-index="14" data-volume="0.14"></audio>
+    <audio data-hf-id="hf-3cc8" id="sfx-05" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="4.66" data-duration="0.19" data-track-index="15" data-volume="0.16"></audio>
+    <!-- S2 — the chrome collapses -->
+    <audio data-hf-id="hf-xfvi" id="sfx-06" class="sfx" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="5.2" data-duration="0.23" data-track-index="16" data-volume="0.2"></audio>
+    <!-- four tiles land -->
+    <audio data-hf-id="hf-t4zt" id="sfx-07" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="6.0" data-duration="0.16" data-track-index="17" data-volume="0.15"></audio>
+    <audio data-hf-id="hf-5rp2" id="sfx-08" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="6.56" data-duration="0.16" data-track-index="18" data-volume="0.15"></audio>
+    <audio data-hf-id="hf-exx9" id="sfx-09" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="7.09" data-duration="0.16" data-track-index="19" data-volume="0.15"></audio>
+    <audio data-hf-id="hf-ly7u" id="sfx-10" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="7.64" data-duration="0.16" data-track-index="20" data-volume="0.15"></audio>
+    <!-- the ignite — the first accent in the film -->
+    <audio data-hf-id="hf-g10l" id="sfx-11" class="sfx" src="assets/sfx/impact/impactSoft_medium_003.ogg" data-start="8.74" data-duration="0.19" data-track-index="21" data-volume="0.28"></audio>
+    <!-- the mark lands on the Focus lockup -->
+    <audio data-hf-id="hf-vyiu" id="sfx-12" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="11.46" data-duration="0.16" data-track-index="22" data-volume="0.16"></audio>
+    <!-- SF — the axis is drawn -->
+    <audio data-hf-id="hf-2prs" id="sfx-13" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="12.65" data-duration="0.16" data-track-index="23" data-volume="0.1"></audio>
+    <!-- your calendar, placed first -->
+    <audio data-hf-id="hf-xopu" id="sfx-14" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="13.03" data-duration="0.06" data-track-index="24" data-volume="0.13"></audio>
+    <audio data-hf-id="hf-n3cm" id="sfx-15" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="13.12" data-duration="0.06" data-track-index="25" data-volume="0.13"></audio>
+    <!-- Jarvis's work, into the gaps -->
+    <audio data-hf-id="hf-5h2e" id="sfx-16" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="13.29" data-duration="0.16" data-track-index="26" data-volume="0.13"></audio>
+    <audio data-hf-id="hf-1jrv" id="sfx-17" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="13.38" data-duration="0.16" data-track-index="27" data-volume="0.12"></audio>
+    <audio data-hf-id="hf-mmq4" id="sfx-18" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="13.46" data-duration="0.16" data-track-index="28" data-volume="0.12"></audio>
+    <audio data-hf-id="hf-b2zi" id="sfx-19" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="13.55" data-duration="0.16" data-track-index="29" data-volume="0.12"></audio>
+    <!-- the now-marker, last -->
+    <audio data-hf-id="hf-nvvz" id="sfx-20" class="sfx" src="assets/sfx/impact/impactGeneric_light_002.ogg" data-start="13.99" data-duration="0.19" data-track-index="30" data-volume="0.15"></audio>
+    <!-- the push into the 09:00 hour -->
+    <audio data-hf-id="hf-5fem" id="sfx-21" class="sfx" src="assets/sfx/casino/card-slide-3.ogg" data-start="16.66" data-duration="0.6" data-track-index="31" data-volume="0.2"></audio>
+    <!-- S3 — the query is typed -->
+    <audio data-hf-id="hf-lq1h" id="sfx-22" class="sfx" src="assets/sfx/keyboard/keypress-003.wav" data-start="18.0" data-duration="0.3" data-track-index="32" data-volume="0.16"></audio>
+    <audio data-hf-id="hf-e978" id="sfx-23" class="sfx" src="assets/sfx/keyboard/keypress-011.wav" data-start="18.18" data-duration="0.3" data-track-index="33" data-volume="0.15"></audio>
+    <audio data-hf-id="hf-55p2" id="sfx-24" class="sfx" src="assets/sfx/keyboard/keypress-007.wav" data-start="18.36" data-duration="0.3" data-track-index="34" data-volume="0.16"></audio>
+    <audio data-hf-id="hf-psn2" id="sfx-25" class="sfx" src="assets/sfx/keyboard/keypress-022.wav" data-start="18.54" data-duration="0.3" data-track-index="35" data-volume="0.15"></audio>
+    <audio data-hf-id="hf-mnm2" id="sfx-26" class="sfx" src="assets/sfx/keyboard/keypress-014.wav" data-start="18.72" data-duration="0.3" data-track-index="36" data-volume="0.16"></audio>
+    <audio data-hf-id="hf-3s3o" id="sfx-27" class="sfx" src="assets/sfx/keyboard/keypress-031.wav" data-start="18.9" data-duration="0.3" data-track-index="37" data-volume="0.15"></audio>
+    <audio data-hf-id="hf-x4db" id="sfx-28" class="sfx" src="assets/sfx/keyboard/keypress-019.wav" data-start="19.08" data-duration="0.3" data-track-index="38" data-volume="0.16"></audio>
+    <audio data-hf-id="hf-rxej" id="sfx-29" class="sfx" src="assets/sfx/keyboard/keypress-027.wav" data-start="19.26" data-duration="0.3" data-track-index="39" data-volume="0.15"></audio>
+    <!-- search_context fires -->
+    <audio data-hf-id="hf-98j9" id="sfx-30" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="19.64" data-duration="0.06" data-track-index="40" data-volume="0.13"></audio>
+    <audio data-hf-id="hf-d18t" id="sfx-31" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="20.19" data-duration="0.06" data-track-index="41" data-volume="0.11"></audio>
+    <!-- the citation — the only bright sound in the film -->
+    <audio data-hf-id="hf-zpz6" id="sfx-32" class="sfx" src="assets/sfx/impact/impactBell_heavy_000.ogg" data-start="21.82" data-duration="1.53" data-track-index="42" data-volume="0.26"></audio>
+    <!-- S4 — the briefing arrives -->
+    <audio data-hf-id="hf-saaj" id="sfx-33" class="sfx" src="assets/sfx/casino/card-slide-3.ogg" data-start="24.55" data-duration="0.6" data-track-index="43" data-volume="0.22"></audio>
+    <!-- the missed week, marker by marker -->
+    <audio data-hf-id="hf-poej" id="sfx-34" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="25.09" data-duration="0.06" data-track-index="44" data-volume="0.11"></audio>
+    <audio data-hf-id="hf-3226" id="sfx-35" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="25.64" data-duration="0.06" data-track-index="45" data-volume="0.11"></audio>
+    <audio data-hf-id="hf-9aod" id="sfx-36" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="26.19" data-duration="0.06" data-track-index="46" data-volume="0.11"></audio>
+    <!-- what David will ask -->
+    <audio data-hf-id="hf-0l2w" id="sfx-37" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="26.73" data-duration="0.16" data-track-index="47" data-volume="0.14"></audio>
+    <audio data-hf-id="hf-js66" id="sfx-38" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="27.28" data-duration="0.06" data-track-index="48" data-volume="0.11"></audio>
+    <audio data-hf-id="hf-hd04" id="sfx-39" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="27.82" data-duration="0.06" data-track-index="49" data-volume="0.11"></audio>
+    <audio data-hf-id="hf-w5ov" id="sfx-40" class="sfx" src="assets/sfx/interface/click_003.ogg" data-start="28.37" data-duration="0.06" data-track-index="50" data-volume="0.11"></audio>
+    <!-- "Now you do." -->
+    <audio data-hf-id="hf-mw23" id="sfx-41" class="sfx" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="28.92" data-duration="0.23" data-track-index="51" data-volume="0.3"></audio>
+    <!-- DISPERSE — the panel bursts -->
+    <audio data-hf-id="hf-t3j5" id="sfx-42" class="sfx" src="assets/sfx/impact/impactSoft_medium_003.ogg" data-start="30.01" data-duration="0.19" data-track-index="52" data-volume="0.3"></audio>
+    <audio data-hf-id="hf-w1d3" id="sfx-43" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="30.42" data-duration="0.16" data-track-index="53" data-volume="0.1"></audio>
+    <audio data-hf-id="hf-2b0i" id="sfx-44" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="30.47" data-duration="0.16" data-track-index="54" data-volume="0.1"></audio>
+    <audio data-hf-id="hf-hjgk" id="sfx-45" class="sfx" src="assets/sfx/interface/drop_001.ogg" data-start="30.52" data-duration="0.16" data-track-index="55" data-volume="0.1"></audio>
+    <!-- S5 — the mark arrives -->
+    <audio data-hf-id="hf-4gav" id="sfx-46" class="sfx" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="32.74" data-duration="0.23" data-track-index="56" data-volume="0.22"></audio>
 
     <script>
       window.__timelines = window.__timelines || {};
 
       /* ---------- theme, read ONCE at init (deterministic) ---------- */
       var ROOT = document.getElementById("root");
-      var THEME = "paper";
+      var THEME = "ink";
       try {
         var V = window.__hyperframes && window.__hyperframes.getVariables ? window.__hyperframes.getVariables() : null;
-        if (V && V.theme === "ink") THEME = "ink";
+        if (V && V.theme === "paper") THEME = "paper";
       } catch (e) {
-        /* preview/render without variables → paper, the site's ground */
+        /* preview/render without variables → ink, the landing page ground */
       }
       ROOT.classList.add(THEME);
 
@@ -997,113 +1383,281 @@
       tl.to(EYES2, { x: 0, duration: 0.34, ease: ARRIVE }, 10.9);
       tl.fromTo("#s2-l2", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.42, ease: ARRIVE }, 10.37);
 
-      tl.to("#s2", { opacity: 0, duration: 0.35, ease: CONSUME }, 12.05);
+      /* --- the seam. Everything but the mark is consumed; the MARK is handed
+         across the cut as the carrier, shrinking as it goes. Scene 3 (Focus)
+         answers that shrink with a scale that is also shrinking (1.035 → 1),
+         so the camera keeps pulling back through the boundary. */
+      tl.to("#s2-boundary, #s2-base, #s2-claude, #s2-claude-label, #s2-l1, #s2-l2", { opacity: 0, duration: 0.34, ease: CONSUME }, 10.86);
+      tl.set("#s2-boundary, #s2-base, #s2-claude, #s2-claude-label, #s2-l1, #s2-l2", { opacity: 0 }, 11.2);
+      tl.to(".tile, .thread", { opacity: 0, duration: 0.3, ease: CONSUME }, 10.86);
+      tl.set(".tile, .thread", { opacity: 0 }, 11.2);
+      tl.to("#s2-mark", { opacity: 0, duration: 0.001, ease: "none" }, 10.86);
+      tl.set("#s2-mark", { opacity: 0 }, 10.85);
 
-      /* ============ SCENE 3 — one question (12.15 → 20.75) ============ */
-      tl.fromTo("#s3-term", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.42, ease: ARRIVE }, 12.3);
+      /* ============ THE FLIGHT — the mark lands on Focus's title bar ============
+         190px at (825,341) → 34px at (906.5,91), which is exactly where
+         JarvisLockupMetrics puts the disc in the real window. Same object,
+         matched velocity: this is the only thing crossing the cut. */
+      tl.set("#flight-in", { opacity: 0, x: 0, y: 0, scale: 1 }, 10.85);
+      tl.to("#flight-in", { opacity: 1, duration: 0.001, ease: "none" }, 10.86);
+      tl.to("#flight-in", { x: 3.5, y: -328, scale: 0.1789, duration: 0.6, ease: CONSUME }, 10.86);
+      tl.to("#flight-in", { opacity: 0, duration: 0.001, ease: "none" }, 11.46);
+
+      /* ================= SCENE F — FOCUS (11.20 → 17.46) =================
+         The day drawing itself. The order IS the argument: the axis exists
+         first, then the hours, then YOUR COMMITMENTS, and only then the work
+         Jarvis placed around them. Timings are TodayBuild's own table
+         (Sources/JarvisGuideApp/TodayUI/TodayBuildChoreography.swift), offset
+         to the beat the build fires on. Length comes from stagger, never from
+         slow moves: the whole build runs ~1.6s and nothing in it exceeds
+         420ms. */
+      tl.set(".sf-rule", { scaleX: 0 }, 11.2);
+      tl.set("#sf-spine", { scaleY: 0 }, 11.2);
+      tl.set(".sf-rail", { scaleY: 0 }, 11.2);
+
+      tl.fromTo("#sf-win", { opacity: 0, scale: 1.035 }, { opacity: 1, scale: 1, duration: 0.46, ease: ARRIVE }, 11.22);
+      /* The carrier lands and becomes the lockup — a hard swap at identical
+         size and position, so there is no dissolve at the handover. */
+      tl.to("#sf-lockup", { opacity: 1, duration: 0.001, ease: "none" }, 11.46);
+
+      /* The focus sentence. PROSE DOES NOT MOVE — only opacity. */
+      tl.to("#sf-c1", { opacity: 1, duration: 0.42, ease: ARRIVE }, 11.46);
+      tl.to("#sf-c2", { opacity: 1, duration: 0.42, ease: ARRIVE }, 11.72);
+      tl.to("#sf-c3", { opacity: 1, duration: 0.42, ease: ARRIVE }, 11.95);
+
+      /* It has read the sentence too. */
+      tl.to(".sf-eye", { attr: { height: 1.92, y: 49.04, rx: 0.96 }, duration: 0.09, ease: CONSUME }, 12.24);
+      tl.to(".sf-eye", { attr: { height: 24, y: 38, rx: 6 }, duration: 0.16, ease: ARRIVE }, 12.33);
+
+      /* --- the build fires. // beat-grid: 12.55 --- */
+      var B0 = 12.55;
+      tl.to("#sf-spine", { scaleY: 1, duration: 0.42, ease: ARRIVE }, B0 + 0.1);
+
+      /* The hours. Each rule is DRAWN, left to right, out of the axis it hangs
+         off; the numeral follows its own rule rather than arriving with it.
+         A booked hour has no rules at all, so four of the eight never exist. */
+      var HOURS = [9, 10, 11, 12, 13, 14, 15, 16];
+      for (var h = 0; h < HOURS.length; h++) {
+        var at = B0 + 0.16 + h * 0.034;
+        var rule = document.getElementById("sf-r" + HOURS[h]);
+        var num = document.getElementById("sf-h" + HOURS[h]);
+        if (rule) tl.to(rule, { scaleX: 1, duration: 0.26, ease: ARRIVE }, at);
+        if (num) tl.fromTo(num, { opacity: 0, x: -5 }, { opacity: 1, x: 0, duration: 0.24, ease: ARRIVE }, at + 0.05);
+      }
+
+      /* YOUR CALENDAR first. A meeting lands DAMPED — it is a fixed point and
+         should feel immovable. */
+      var MEET = [["1on1", B0 + 0.48], ["sync", B0 + 0.57]];
+      for (var mm = 0; mm < MEET.length; mm++) {
+        tl.to("#sf-rail-" + MEET[mm][0], { opacity: 1, scaleY: 1, duration: 0.24, ease: ARRIVE }, MEET[mm][1]);
+        tl.fromTo("#sf-b-" + MEET[mm][0], { opacity: 0, y: -7, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.24, ease: ARRIVE }, MEET[mm][1]);
+      }
+
+      /* THEN Jarvis's work, finding the gaps between them. A task settles on a
+         spring with a whisper of overshoot, because it is the part of the day
+         that can still move. Same distance, same duration, opposite character. */
+      var SETTLE = "back.out(1.15)";
+      var TASKS = [["fix1", "#sf-n-fix", B0 + 0.74], ["fix2", null, B0 + 0.825],
+                   ["date", "#sf-n-date", B0 + 0.91], ["sign", "#sf-n-sign", B0 + 0.995]];
+      for (var tk = 0; tk < TASKS.length; tk++) {
+        var id = TASKS[tk][0], nm = TASKS[tk][1], t = TASKS[tk][2];
+        tl.to("#sf-rail-" + id, { opacity: 0.85, scaleY: 1, duration: 0.42, ease: SETTLE }, t);
+        tl.fromTo("#sf-b-" + id, { opacity: 0, y: -7, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.42, ease: SETTLE }, t);
+
+        /* The causal link, made visible: the words you just read becoming an
+           hour of your day. The name is PICKED UP — each of its words lifts in
+           turn, left to right, and is SET DOWN on a spring. Not a shake (the
+           system's word for an error) and not a pop (a notification's gesture):
+           a phrase with a length, moving in the direction of reading. */
+        if (nm) {
+          tl.fromTo(nm, { color: "#818cf8" }, { color: "#c3c8ff", duration: 0.14, ease: ARRIVE }, t);
+          tl.to(nm, { color: "#818cf8", duration: 0.34, ease: CONSUME }, t + 0.34);
+          var ws = document.querySelectorAll(nm + " .sfw");
+          for (var wi = 0; wi < ws.length; wi++) {
+            tl.to(ws[wi], { y: -10, duration: 0.14, ease: ARRIVE }, t + wi * 0.04);
+            tl.to(ws[wi], { y: 0, duration: 0.34, ease: "back.out(2)" }, t + wi * 0.04 + 0.14);
+          }
+        }
+      }
+
+      /* The reasons, deliberately AFTER every block has landed. The day should
+         read as placed first and justified second: you see where your hours
+         went, then why. */
+      var WHY = [["fix1", 0], ["fix2", 2], ["date", 3], ["sync", 4], ["sign", 5]];
+      for (var wy = 0; wy < WHY.length; wy++) {
+        tl.to("#sf-w-" + WHY[wy][0], { opacity: 1, duration: 0.28, ease: ARRIVE }, B0 + 1.02 + WHY[wy][1] * 0.055);
+      }
+
+      /* The hour nobody wants anything from — no rail, no plate, no hue. */
+      tl.fromTo("#sf-b-lunch", { opacity: 0 }, { opacity: 1, duration: 0.28, ease: ARRIVE }, B0 + 1.28);
+
+      /* The only genuinely live thing on the screen, so it gets the only real
+         bounce, and it arrives last — after the day it measures. */
+      tl.fromTo("#sf-now", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.7)" }, B0 + 1.44);
+
+      tl.fromTo("#sf-l1", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.44, ease: ARRIVE }, 14.73);
+      tl.to("#sf-load", { opacity: 1, duration: 0.32, ease: ARRIVE }, 15.28);
+
+      /* 09:20 — you are standing in the first block. It lights the way the app
+         lights it: a white overlay on the row and the rail at full strength.
+         BOTH halves of the split task light at once, an hour apart, which is
+         the clearest statement this screen can make that one phrase became two
+         hours. // beat-grid: 15.82 */
+      tl.to("#sf-hv-fix1, #sf-hv-fix2", { opacity: 0.075, duration: 0.12, ease: ARRIVE }, 15.82);
+      tl.to("#sf-rail-fix1, #sf-rail-fix2", { opacity: 1, duration: 0.12, ease: ARRIVE }, 15.82);
+      tl.fromTo("#sf-n-fix", { color: "#818cf8" }, { color: "#c3c8ff", duration: 0.12, ease: ARRIVE }, 15.82);
+
+      /* Stillness before the climax, then the push INTO the hour: the camera
+         drives through the 09:00 block and comes out the other side inside the
+         work. Growing on the way out, growing on the way in — one continuous
+         move across the cut. // beat-grid: 16.91 → cut 17.46 */
+      tl.to("#sf-l1", { opacity: 0, duration: 0.26, ease: CONSUME }, 16.66);
+      tl.to("#sf-cam", { transformOrigin: "1006px 362px", scale: 1.7, duration: 0.8, ease: "power2.in" }, 16.66);
+
+      /* ============ SCENE 3 — 09:00, inside the code (17.46 → 23.46) ============
+         The block you just pushed through, opened. Claude Code with the Jarvis
+         MCP server attached — the real surface: a loopback HTTP server on
+         127.0.0.1:8765 exposing search_context. Entry is mid-flight: it picks
+         the push up where the Focus scene left it, never from rest. */
+      tl.fromTo("#s3-term", { opacity: 0.5, scale: 0.55 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" }, 17.46);
+      /* The file you already had open — it is state, not an event, so it is
+         there the moment the scene is. */
+      tl.set("#s3-ctx", { opacity: 1 }, 17.46);
 
       /* Typing: a terminal-coloured mask slides right in 36 discrete steps —
          the wrap is exactly 36ch, so one step is exactly one character.
-         // beat-locked: 13.11s (strongCue 0.98) */
-      tl.to("#s3-mask", { xPercent: 100, duration: 1.42, ease: "steps(36)" }, 13.11);
-      tl.to("#s3-caret", { opacity: 0, duration: 0.18, ease: "none" }, 14.6);
+         // beat-grid: 18.00 */
+      tl.to("#s3-mask", { xPercent: 100, duration: 1.42, ease: "steps(36)" }, 18.0);
+      tl.to("#s3-caret", { opacity: 0, duration: 0.18, ease: "none" }, 19.42);
 
-      /* You hit enter and it goes looking. The glances are the retrieval —
-         left, right, then it finds it, blinks, and only then does the local
-         status ignite. Causal: nothing here moves on its own. */
-      tl.fromTo("#s3-mark", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.34, ease: ARRIVE }, 14.7);
+      /* The tool call. This is the whole act: the agent you already use, asking
+         your own machine. // beat-grid: 19.64, 20.19 */
+      tl.fromTo("#s3-tool1", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.34, ease: ARRIVE }, 19.64);
+      tl.fromTo("#s3-tool2", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.34, ease: ARRIVE }, 20.19);
+
+      /* It found it, blinks once, and only then does the answer land. */
+      tl.fromTo("#s3-mark", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.34, ease: ARRIVE }, 20.3);
       var EYES3 = ".s3-eye";
-      tl.to(EYES3, { x: -3.6, duration: 0.24, ease: ARRIVE }, 14.92);
-      tl.to(EYES3, { x: 3.6, duration: 0.26, ease: ARRIVE }, 15.16);
-      tl.to(EYES3, { x: 0, duration: 0.2, ease: ARRIVE }, 15.42);
-      tl.to(EYES3, { attr: { height: 1.92, y: 49.04, rx: 0.96 }, duration: 0.08, ease: CONSUME }, 15.46);
-      tl.to(EYES3, { attr: { height: 24, y: 38, rx: 6 }, duration: 0.14, ease: ARRIVE }, 15.54);
+      tl.to(EYES3, { x: -3.6, duration: 0.2, ease: ARRIVE }, 20.42);
+      tl.to(EYES3, { x: 0, duration: 0.2, ease: ARRIVE }, 20.62);
+      tl.to(EYES3, { attr: { height: 1.92, y: 49.04, rx: 0.96 }, duration: 0.08, ease: CONSUME }, 20.63);
+      tl.to(EYES3, { attr: { height: 24, y: 38, rx: 6 }, duration: 0.14, ease: ARRIVE }, 20.71);
 
-      tl.fromTo("#s3-live", { opacity: 0, x: -12 }, { opacity: 1, x: 0, duration: 0.32, ease: ARRIVE }, 15.55);
-      tl.fromTo("#s3-answer", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.38, ease: ARRIVE }, 15.84);
-      /* The citation is the moment this act exists for. // beat-locked: 17.47s (strongCue 0.99) */
-      tl.fromTo("#s3-chip", { opacity: 0, y: 20, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: ARRIVE }, 17.47);
-      tl.fromTo("#s3-l1", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.42, ease: ARRIVE }, 18.02);
+      tl.fromTo("#s3-answer", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.38, ease: ARRIVE }, 20.73);
+      /* The citation is the moment this act exists for. // beat-grid: 21.82 */
+      tl.fromTo("#s3-chip", { opacity: 0, y: 20, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: ARRIVE }, 21.82);
+      tl.fromTo("#s3-l1", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.42, ease: ARRIVE }, 22.37);
 
-      tl.to("#s3", { opacity: 0, duration: 0.35, ease: CONSUME }, 20.4);
+      /* Out on the current — LEFT. The call enters on the same vector.  */
+      tl.to("#s3-term, #s3-l1", { x: -190, opacity: 0, duration: 0.4, ease: "power4.in" }, 23.06);
+      tl.set("#s3-term, #s3-l1", { opacity: 0 }, 23.46);
 
-      /* ============ SCENE 4 — 11:00 (20.65 → 30.47) ============ */
-      tl.fromTo("#s4-call", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: ARRIVE }, 20.65);
+      /* ============ SCENE 4 — 10:00, on the call (23.46 → 32.74) ============
+         The 1:1 the Focus screen just handed you into, briefed. */
+      tl.fromTo("#s4-call", { x: 240, opacity: 0.5 }, { x: 0, opacity: 1, duration: 0.66, ease: "power4.out" }, 23.46);
 
       /* It is recording the call. The clock moving is the proof. */
-      tl.to("#s4-rt1", { opacity: 1, duration: 0.3, ease: "none" }, 20.9);
-      tl.to("#s4-rt1", { opacity: 0, duration: 0.2, ease: "none" }, 26.0);
-      tl.to("#s4-rt2", { opacity: 1, duration: 0.2, ease: "none" }, 26.2);
+      tl.to("#s4-rt1", { opacity: 1, duration: 0.3, ease: "none" }, 23.81);
+      tl.to("#s4-rt1", { opacity: 0, duration: 0.2, ease: "none" }, 26.6);
+      tl.to("#s4-rt2", { opacity: 1, duration: 0.2, ease: "none" }, 26.8);
 
-      tl.fromTo("#s4-l1", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: ARRIVE }, 21.28);
-      tl.to("#s4-l1", { opacity: 0, duration: 0.3, ease: CONSUME }, 22.85);
+      tl.fromTo("#s4-l1", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: ARRIVE }, 24.01);
+      tl.to("#s4-l1", { opacity: 0, duration: 0.3, ease: CONSUME }, 25.3);
 
       /* The briefing arrives on its own, from the edge of the screen.
-         // beat-locked: 22.93s (strongCue 1.00) */
-      tl.fromTo("#s4-island", { opacity: 0, x: 300 }, { opacity: 1, x: 0, duration: 0.62, ease: ARRIVE }, 22.93);
-      tl.set("#s4-rail", { scaleY: 0, transformOrigin: "center top" }, 20.65);
-      tl.to("#s4-rail", { opacity: 1, scaleY: 1, duration: 0.5, ease: CONSUME }, 23.3);
+         // beat-grid: 24.55 */
+      tl.fromTo("#s4-island", { opacity: 0, x: 300 }, { opacity: 1, x: 0, duration: 0.62, ease: ARRIVE }, 24.55);
+      tl.set("#s4-rail", { scaleY: 0, transformOrigin: "center top" }, 23.46);
+      tl.to("#s4-rail", { opacity: 1, scaleY: 1, duration: 0.5, ease: CONSUME }, 24.92);
 
       /* The briefing notices you. One blink, nothing else. */
-      tl.to(".s4-eye", { attr: { height: 1.92, y: 49.04, rx: 0.96 }, duration: 0.09, ease: CONSUME }, 23.35);
-      tl.to(".s4-eye", { attr: { height: 24, y: 38, rx: 6 }, duration: 0.16, ease: ARRIVE }, 23.44);
+      tl.to(".s4-eye", { attr: { height: 1.92, y: 49.04, rx: 0.96 }, duration: 0.09, ease: CONSUME }, 24.97);
+      tl.to(".s4-eye", { attr: { height: 24, y: 38, rx: 6 }, duration: 0.16, ease: ARRIVE }, 25.06);
 
-      /* SECTION A — what happened while you were gone. One marker at a time,
-         then held as a set so it can actually be read.
-         // beat-grid: 23.46, 24.02, 24.56 */
-      tl.to("#s4-lbl-a", { opacity: 1, duration: 0.3, ease: ARRIVE }, 23.3);
-      var MARKS = [["#s4-m1", 23.46], ["#s4-m2", 24.02], ["#s4-m3", 24.56]];
+      /* SECTION A — the week you were out, one marker at a time, then held as
+         a set so it can actually be read. // beat-grid: 25.09, 25.64, 26.19 */
+      tl.to("#s4-lbl-a", { opacity: 1, duration: 0.3, ease: ARRIVE }, 24.92);
+      var MARKS = [["#s4-m1", 25.09], ["#s4-m2", 25.64], ["#s4-m3", 26.19]];
       for (var m = 0; m < MARKS.length; m++) {
         tl.fromTo(MARKS[m][0], { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.4, ease: ARRIVE }, MARKS[m][1]);
       }
 
-      /* The call is being transcribed as it happens. // beat-grid: 24.02, 24.56 */
-      tl.fromTo("#s4-tr1", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.36, ease: ARRIVE }, 24.02);
-      tl.fromTo("#s4-tr2", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.36, ease: ARRIVE }, 24.56);
+      /* The call is being transcribed as it happens. */
+      tl.fromTo("#s4-tr1", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.36, ease: ARRIVE }, 25.64);
+      tl.fromTo("#s4-tr2", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.36, ease: ARRIVE }, 26.19);
 
-      /* SECTION B — what you have to settle before you hang up. This is the
-         half that makes the call efficient rather than merely informed. The
-         call steps back so the briefing is the subject. // beat: 25.66 */
-      tl.to("#s4-call", { opacity: 0.5, duration: 0.6, ease: CONSUME }, 26.2);
-      tl.to("#s4-div", { opacity: 1, duration: 0.35, ease: CONSUME }, 25.66);
-      tl.to("#s4-lbl-b", { opacity: 1, duration: 0.3, ease: ARRIVE }, 25.8);
+      /* SECTION B — what David is about to ask. The half that makes the call
+         efficient rather than merely informed. The call steps back so the
+         briefing is the subject. // beat-grid: 26.73 */
+      tl.to("#s4-call", { opacity: 0.5, duration: 0.6, ease: CONSUME }, 26.73);
+      tl.to("#s4-div", { opacity: 1, duration: 0.35, ease: CONSUME }, 26.73);
+      tl.to("#s4-lbl-b", { opacity: 1, duration: 0.3, ease: ARRIVE }, 26.87);
 
-      /* // beat-grid: 26.20, 26.75, 27.29 — highest priority first, in accent. */
-      var CLAR = [["#s4-c1", 26.2], ["#s4-c2", 26.75], ["#s4-c3", 27.29]];
+      /* // beat-grid: 27.28, 27.82, 28.37 — highest priority first, in accent. */
+      var CLAR = [["#s4-c1", 27.28], ["#s4-c2", 27.82], ["#s4-c3", 28.37]];
       for (var c = 0; c < CLAR.length; c++) {
         tl.fromTo(CLAR[c][0], { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.4, ease: ARRIVE }, CLAR[c][1]);
       }
 
-      /* The bookend to "You know nothing." // beat: 28.39 */
-      tl.fromTo("#s4-l2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.44, ease: ARRIVE }, 28.39);
+      /* The bookend to "You know nothing." // beat-grid: 28.92 */
+      tl.fromTo("#s4-l2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.44, ease: ARRIVE }, 28.92);
 
-      tl.to("#s4", { opacity: 0, duration: 0.45, ease: CONSUME }, 30.02);
+      /* --- DISPERSE (⌘⇧D). The keystroke is the cause; the burst starts on
+         the same frame. The panel breaks into edge-docked islands and the call
+         comes back to full strength, which is the entire point of the feature:
+         you keep the briefing and you stop covering the faces. */
+      tl.to("#s4-l2", { opacity: 0, duration: 0.3, ease: CONSUME }, 29.68);
+      tl.set("#s4-l2", { opacity: 0 }, 30.01);
+      tl.fromTo("#s4-hint", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.22, ease: ARRIVE }, 29.68);
+      tl.to("#s4-hint", { opacity: 0, duration: 0.3, ease: CONSUME }, 30.24);
 
-      /* ============ SCENE 5 — outro (30.20 → 33.30) ============ */
-      tl.fromTo("#s5-mark", { opacity: 0, scale: 0.84 }, { opacity: 1, scale: 1, duration: 0.55, ease: ARRIVE }, 30.2);
+      tl.to("#s4-island", { opacity: 0, scale: 0.88, duration: 0.3, ease: "power3.in" }, 30.01);
+      tl.to("#s4-call", { opacity: 1, x: 310, duration: 0.62, ease: CONSUME }, 30.01);
+
+      /* x and y decomposed, ~45ms stagger, blur-free materialise (scale +
+         opacity). Each island flies from where the panel was to where it docks. */
+      var ISL = [["#s4-i1", 1134, 370, 30.01], ["#s4-i2", -190, 109, 30.055], ["#s4-i3", 530, -463, 30.1]];
+      for (var il = 0; il < ISL.length; il++) {
+        tl.fromTo(ISL[il][0],
+          { opacity: 0, x: ISL[il][1], y: ISL[il][2], scale: 0.82 },
+          { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.62, ease: "back.out(1.35)" }, ISL[il][3]);
+      }
+
+      /* Out by pulling BACK, so the outro's mark can arrive by pulling back
+         through the same cut — one continuous move, not a mirrored one. */
+      tl.to("#s4-call, #s4-i1, #s4-i2, #s4-i3, #s4-l2", { opacity: 0, scale: 0.86, duration: 0.36, ease: "power2.in" }, 32.38);
+      tl.set("#s4-call, #s4-i1, #s4-i2, #s4-i3, #s4-l2", { opacity: 0 }, 32.74);
+
+      /* ================= SCENE 5 — outro (32.74 → 36.01) ================= */
+      tl.fromTo("#s5-mark", { opacity: 0.4, scale: 1.13 }, { opacity: 1, scale: 1, duration: 0.66, ease: "power4.out" }, 32.74);
 
       /* The eye-bars are the entire character rig. Heights come from the app's
          own mark: resting 24, closed 0.08x, wide 1.35x — never below ~0.7x, or
          the 12x24 pills go square and read as round dots (a different logo). */
-      var EYES = ".eye";
-      tl.to(EYES, { attr: { height: 1.92, y: 49.04, rx: 0.96 }, duration: 0.1, ease: CONSUME }, 30.6);
-      tl.to(EYES, { attr: { height: 24, y: 38, rx: 6 }, duration: 0.14, ease: ARRIVE }, 30.72);
-      tl.to(EYES, { attr: { height: 32.4, y: 33.8, rx: 6 }, duration: 0.3, ease: ARRIVE }, 31.3);
+      var EYES = "#s5-eye-l, #s5-eye-r";
+      tl.to(EYES, { attr: { height: 1.92, y: 49.04, rx: 0.96 }, duration: 0.1, ease: CONSUME }, 33.2);
+      tl.to(EYES, { attr: { height: 24, y: 38, rx: 6 }, duration: 0.14, ease: ARRIVE }, 33.32);
+      tl.to(EYES, { attr: { height: 32.4, y: 33.8, rx: 6 }, duration: 0.3, ease: ARRIVE }, 33.9);
 
-      tl.fromTo("#s5-l1", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.42, ease: ARRIVE }, 30.7);
-      tl.fromTo("#s5-l2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.38, ease: ARRIVE }, 31.45);
-      tl.to("#s5-wordmark", { opacity: 1, duration: 0.4, ease: ARRIVE }, 32.05);
+      tl.fromTo("#s5-l1", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.42, ease: ARRIVE }, 33.28);
+      tl.fromTo("#s5-l2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.38, ease: ARRIVE }, 34.0);
+      tl.to("#s5-wordmark", { opacity: 1, duration: 0.4, ease: ARRIVE }, 34.6);
 
       /* ===================== AUDIO MIX =====================
-         The bed is presence, never a hook. It ducks under the typing and is
-         fully out before the last two lines, which land dry. */
+         The bed is presence, never a hook. It steps up as the day builds,
+         ducks under the typing, and is fully out before the last two lines,
+         which land dry. Where a beat and a readable line disagreed, the line
+         won. */
       tl.fromTo("#bgm", { volume: 0 }, { volume: 0.15, duration: 0.9, ease: "none" }, 0);
       tl.to("#bgm", { volume: 0.22, duration: 0.5, ease: "none" }, 8.74);
-      tl.to("#bgm", { volume: 0.11, duration: 0.4, ease: "none" }, 12.9);
-      tl.to("#bgm", { volume: 0.2, duration: 0.5, ease: "none" }, 15.84);
-      tl.to("#bgm", { volume: 0.24, duration: 0.5, ease: "none" }, 22.93);
-      tl.to("#bgm", { volume: 0.12, duration: 1, ease: "none" }, 28.39);
-      tl.to("#bgm", { volume: 0, duration: 1.2, ease: "none" }, 30.2);
+      tl.to("#bgm", { volume: 0.26, duration: 0.5, ease: "none" }, 12.55);
+      tl.to("#bgm", { volume: 0.19, duration: 0.6, ease: "none" }, 14.9);
+      tl.to("#bgm", { volume: 0.11, duration: 0.4, ease: "none" }, 17.86);
+      tl.to("#bgm", { volume: 0.2, duration: 0.5, ease: "none" }, 20.73);
+      tl.to("#bgm", { volume: 0.24, duration: 0.5, ease: "none" }, 24.55);
+      tl.to("#bgm", { volume: 0.27, duration: 0.4, ease: "none" }, 30.01);
+      tl.to("#bgm", { volume: 0.12, duration: 1, ease: "none" }, 31.2);
+      tl.to("#bgm", { volume: 0, duration: 1.2, ease: "none" }, 32.74);
 
       /* ============== AUDIO-REACTIVE (subtle, per-frame) ==============
          Pre-extracted RMS / bass drive three existing elements only: the two
@@ -1119,7 +1673,7 @@
         var halo5 = document.getElementById("s5-halo");
         var vig = document.getElementById("vignette");
         var last = A.totalFrames - 1;
-        var frames = Math.round(33.3 * A.fps);
+        var frames = Math.round(36 * A.fps);
 
         /* Linear 0→1 ramp — a pure function of time, so every frame is
            reproducible from its own timestamp alone. */
@@ -1135,9 +1689,9 @@
             var t = i / A.fps;
             var rms = A.rms[k];
             var bass = A.bass[k];
-            gsap.set(halo2, { opacity: gate(t, 8.74, 0.4) * (0.5 + rms * 0.5), scale: 0.92 + bass * 0.14 });
+            gsap.set(halo2, { opacity: gate(t, 8.74, 0.4) * (1 - gate(t, 10.86, 0.34)) * (0.5 + rms * 0.5), scale: 0.92 + bass * 0.14 });
             gsap.set(halo3, { opacity: 0.55 + rms * 0.45, scale: 0.92 + bass * 0.16 });
-            gsap.set(halo5, { opacity: gate(t, 30.2, 0.4) * (0.5 + rms * 0.5), scale: 0.94 + rms * 0.12 });
+            gsap.set(halo5, { opacity: gate(t, 32.74, 0.4) * (0.5 + rms * 0.5), scale: 0.94 + rms * 0.12 });
             gsap.set(vig, { opacity: VIG * (1 + bass * 0.26) });
           };
         }

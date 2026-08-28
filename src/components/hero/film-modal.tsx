@@ -26,9 +26,14 @@ import { X } from "lucide-react";
 
   White card on a blurred ground, not a black full-bleed stage. The page is
   ledger white and stays that way. A bounded card also solves what the film
-  looked like embedded in the page: its sparse acts (Act 3 is a small centred
-  terminal, Act 5 a small centred mark) read as a hole when the white runs to
-  the edge of the viewport, and as frame padding when it has a visible edge.
+  looked like embedded in the page: its sparse acts read as a hole when the
+  white runs to the edge of the viewport, and as frame padding when it has a
+  visible edge.
+
+  Since v2 the file is the INK cut, not the paper one. The card stays white —
+  a dark 16:9 rectangle inside a white card is a screen, which is what the
+  film is a recording of, and it needs no hairline to separate it from its
+  own padding the way the near-white paper cut did.
 */
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -131,14 +136,11 @@ export function FilmModal({
               controls
               playsInline
               preload="auto"
-              className="block w-full rounded-[12px] bg-ledger-white"
-              /* Hairline ring: the film's paper ground and the card are both
-                 near-white, so without an edge the frame dissolves into its
-                 own padding. */
-              style={{
-                aspectRatio: "16 / 9",
-                boxShadow: "rgba(95,99,106,0.16) 0px 0px 0px 1px",
-              }}
+              className="block w-full rounded-[12px]"
+              /* #0A0A0B is Theme.bg — the film's own ground, to the byte — so
+                 the frame is already the right colour before anything has
+                 decoded and there is no white flash before the first frame. */
+              style={{ aspectRatio: "16 / 9", backgroundColor: "#0A0A0B" }}
             />
           </motion.div>
         </motion.div>

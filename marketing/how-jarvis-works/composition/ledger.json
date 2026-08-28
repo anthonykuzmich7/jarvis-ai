@@ -1,0 +1,26 @@
+{
+  "fps": 30,
+  "seams": [
+    {
+      "id": "focus→claude",
+      "cut": 17.46,
+      "technique": "zoom-through (the camera drives into the 09:00 block)",
+      "exit": { "selector": "#sf-cam", "axis": "z", "dir": 1 },
+      "entry": { "selector": "#s3-term", "axis": "z", "dir": 1, "scanRoot": "#s3-term" }
+    },
+    {
+      "id": "claude→call",
+      "cut": 23.46,
+      "technique": "cut-the-curve LEFT (the current)",
+      "exit": { "selector": "#s3-term", "axis": "x", "dir": -1 },
+      "entry": { "selector": "#s4-call", "axis": "x", "dir": -1 }
+    },
+    {
+      "id": "call→outro",
+      "cut": 32.74,
+      "technique": "inverse zoom-through (arrival)",
+      "exit": { "selector": "#s4-call", "axis": "z", "dir": -1 },
+      "entry": { "selector": "#s5-mark", "axis": "z", "dir": -1, "scanRoot": "#s5-mark" }
+    }
+  ]
+}
