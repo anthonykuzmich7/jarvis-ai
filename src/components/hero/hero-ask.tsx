@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { KineticHeadline } from "@/components/hero/kinetic-headline";
 import { FilmModal } from "@/components/hero/film-modal";
 import { MeetingAssistStage } from "@/components/hero/meeting-assist-stage";
+import { FocusDayStage } from "@/components/hero/focus-day-stage";
 import {
   ClaudeCodeTerminal,
   type ClaudeCodeSource,
@@ -48,20 +49,36 @@ import {
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-/* Body height shared by both tabs, so the tab row below never moves.
-   A compromise: the terminal alone wanted 286 (its content plus a little
-   dark room, which is what a terminal looks like) and the meeting stage
-   wanted 380 to have somewhere to burst into. 320 keeps the stage legible
-   without turning the terminal into a mostly-empty box. */
-const CARD_BODY = 320;
-/* Phone. Measured at 390x844 the beat comes to 273, and the hero has a
-   whole viewport to land in now that nothing is fixed over the bottom of
-   it. 332 is the beat plus about 60px of dark room, which is what the
-   desktop card spends its slack on too. */
-const CARD_BODY_SM = 332;
-/* Below 360px the question, the tool call and the answer each pick up
-   another line: measured, the beat is 371 tall there. */
-const CARD_BODY_XS = 386;
+/* One reserved SLOT, sized to the tallest tab, with each card sitting at
+   the top of it at its own natural height. The tab row hangs off the bottom
+   of the slot, so it never moves when you switch, which is the thing that
+   must not happen: press a tab and the row you are pressing walks out from
+   under the cursor.
+
+   The three cards were the same height until Focus arrived. Padding a
+   terminal out to a whole day's height is 170px of dead black inside the
+   card, which reads as a window that failed to finish loading; 50px of page
+   air under a card that is simply shorter does not read as anything. So the
+   slack moved outside the cards.
+
+   Focus is what sets these numbers: its plate, then seven hours at a
+   readable ~34 each. It measures the slot and fills it, so the day stretches
+   or tightens with these rather than needing to be told twice. */
+const SLOT = 528;
+/* Phone. The focus sentence wraps to five lines in a 350px card instead of
+   three, and the terminal's answer picks up a line as well. */
+const SLOT_SM = 604;
+/* Below 360px the sentence takes a sixth line. */
+const SLOT_XS = 630;
+
+/* Terminal and meeting-stage body: their own content plus a little dark
+   room, which is what a terminal is supposed to look like and what the
+   meeting stage bursts into. Chosen so the air left under them inside the
+   slot stays about 50px at every width rather than swinging from 30 to 80,
+   which would read as a different gap on every device. */
+const CARD_BODY = 448;
+const CARD_BODY_SM = 524;
+const CARD_BODY_XS = 550;
 
 type Ask = {
   question: string;
@@ -72,13 +89,16 @@ type Ask = {
 
 /* The tabs switch capability, not example. They used to hold three
    variations of the same trick (three questions, one terminal), which
-   sold the hero short: retrieval is one of two things Jarvis does, and
-   the other one has no terminal in it at all.
+   sold the hero short: retrieval is one of three things Jarvis does, and
+   the other two have no terminal in them at all.
 
-   Both labels are verb-first. "Assist on the call" is also the wording
-   of the app's own menu item, and the second tab stages what that menu
-   item actually opens. */
-const TABS = ["Pull context", "Assist on the call"] as const;
+   Every label is verb-first. "Assist on the call" is also the wording of
+   the app's own menu item, and that tab stages what the menu item opens.
+
+   Focus leads, because it is the first thing that happens: Jarvis has read
+   everything by the time you sit down, and the day is what it hands you.
+   Retrieval and the meeting are what you reach for later in that day. */
+const TABS = ["Start your day", "Pull context", "Assist on the call"] as const;
 
 /* Demo fixtures, consistent with the ones StrugglesSection and the film
    already use (#eng, PR #142, David Park, the payments bug). Do not invent a
@@ -194,19 +214,41 @@ export function HeroAsk() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.3, ease: EASE }}
         >
-          {/* `height` rather than `minHeight`, and the same number on both
-              tabs: the card must not resize when you switch, or the whole
-              page jumps under the cursor that just clicked. The meeting
-              stage needs the taller box to choreograph in, so the terminal
-              takes the same one and spends the extra as dark room below the
-              prompt, which is what a terminal is supposed to look like. */}
-          {/* Swapped outright, not crossfaded. Both tabs are the same dark
-              window at the same size, so a fade between them reads as a
+          {/* The reserved slot. Every card is top-aligned in it and keeps
+              its own height, so the tab row below sits at a fixed distance
+              from the headline whichever tab is open.
+
+              Focus resizes ITSELF inside this box: it opens as the plate
+              alone and grows into the day, which is the argument the tab is
+              making. Because the box was already reserved, nothing below it
+              moves while that happens. */}
+          {/* Swapped outright, not crossfaded. Every tab is the same dark
+              window on the same ground, so a fade between them reads as a
               flicker rather than a transition, and `mode="wait"` would hold
               the new card back until the old one finished leaving: press a
               tab, watch nothing happen. The motion that matters is inside
               each card, and it starts on mount. */}
+          {/* Centred, not top-aligned. Focus opens as a sentence and only
+              grows into the day a beat later, so at the top of the box it
+              spent that beat as a small card marooned above a field of
+              empty paper. Centred, the short state reads as a card with air
+              around it and the growth opens from the middle. */}
+          <div
+            className="flex items-center h-[var(--slot-xs)] min-[360px]:h-[var(--slot-sm)] sm:h-[var(--slot)]"
+            style={
+              {
+                "--slot": `${SLOT}px`,
+                "--slot-sm": `${SLOT_SM}px`,
+                "--slot-xs": `${SLOT_XS}px`,
+              } as React.CSSProperties
+            }
+          >
+          {/* `w-full`: a flex item shrinks to its content, and every card
+              here is a block that expects the column's whole width. */}
+          <div className="w-full">
           {tab === 0 ? (
+            <FocusDayStage active />
+          ) : tab === 1 ? (
             <ClaudeCodeTerminal
               question={ASK.question}
               answer={ASK.answer}
@@ -226,6 +268,8 @@ export function HeroAsk() {
               mobileHeight={CARD_BODY_SM + 40}
             />
           )}
+          </div>
+          </div>
 
           <div
             role="tablist"
