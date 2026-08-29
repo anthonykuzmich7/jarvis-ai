@@ -4,7 +4,7 @@ import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { JarvisMark } from "@/components/jarvis-mark";
 import { ColorBrandMark } from "@/components/brand-marks";
-import { Calendar } from "lucide-react";
+import { Video } from "lucide-react";
 
 /*
   Focus — the hero's first capability, and the newest one.
@@ -41,25 +41,51 @@ import { Calendar } from "lucide-react";
   how long something takes, and everything inside a block is centred against
   it — title and reason as one group, the mark against the same middle.
 
-  Every block is outlined in ash and goes to smolder while the reader is
-  pointing at it. Nothing on the day is coloured at rest: an hour is marked
-  by attention, not by category.
+  A meeting is filled and the work Jarvis placed is not. Pressed parchment
+  against white paper, and it is the whole of what tells the two apart: the
+  day's shape is countable before a word of it is read, which is the one
+  thing the card could not do while every entry was the same object.
 
-  A meeting was outlined in smolder permanently for a while, and it worked,
-  but it left two blocks burning under a sentence that is the card's actual
-  argument. What kind of hour it is is already said twice without colour: a
-  meeting is semibold and carries the calendar glyph, work Jarvis found is
-  medium and carries the logo it came from.
-
-  The outline, and not a fill, a wash or a texture. A tint under the block
+  The fill was rejected here once, on the grounds that a tint under a block
   reads as a different KIND of paper when the point is that it is the same
-  paper. A diagonal hatch was worse than wrong: strokes across a calendar
-  block mean CANCELLED in every calendar anyone has used.
+  paper. That objection is right about a tint and wrong about this one, and
+  it turns entirely on warmth: #efeae0 is parchment with the light knocked
+  out of it, the same warm family the card and the page already sit in, so
+  the block reads as paper that has been pressed rather than as paper from
+  another app. Anything cooler and the old objection lands.
 
-  Nor a bar beside the block. A rail in the margin was an earlier answer and
-  it never once rendered, because the margin it sat in is outside the
+  Not a hatch: strokes across a calendar block mean CANCELLED in every
+  calendar anyone has used. Not a permanent smolder outline either — that
+  was tried, and it left two blocks burning under a sentence that is the
+  card's actual argument. Nor a bar beside the block: a rail in the margin
+  never once rendered, because the margin it sat in is outside the
   overflow-hidden wrapper that animates the day open. Everything that marks
-  a block now paints inside it, where nothing can clip it.
+  a block paints inside it, where nothing can clip it.
+
+  Colour still means one thing and only one: you are pointing at this. Every
+  block, filled or not, keeps a 1.5-point outline that goes to smolder while
+  the reader is on it, and the fill is not a colour in that sense — it is a
+  value, the same neutral family as the paper under it. The moment a block
+  keeps a permanent colour of its own, the ring and the marker become two
+  colours arguing about one object.
+
+  A block is three columns, and the two on the right are fixed: 96 points of
+  meta, 68 of mark, both right-aligned. A logo, a stack of two faces and a
+  stack of four therefore end on one line. Before that they sat wherever the
+  title stopped pushing them, and the day had a ragged right edge.
+
+  The clock and the button share one box. A meeting prints its hours at rest
+  and turns them into Join while the reader is on it, so the hour you can
+  attend becomes the way to attend it, and nothing in the block moves
+  between the two states. Work prints no clock, because Jarvis placed it and
+  it can move; the empty slot says that as clearly as the printed one says
+  the opposite, and it fills with the way into the tool instead.
+
+  The mark says who, or what. A meeting carries the people in it, work
+  carries the tool it came out of. The calendar glyph is gone: it named a
+  category the fill already names, where faces answer a question the card
+  could not answer at all — which of these hours costs six other people
+  theirs.
 
   Blocks are flush with their own hours and therefore with each other: a
   review that ends at ten and a 1:1 that starts at ten share one edge,
@@ -121,19 +147,22 @@ import { Calendar } from "lucide-react";
   at": the underline a hovered phrase draws — the same rule the hero headline
   strikes under its own word — and the outline around the hour that phrase
   belongs to. Nothing on the card is orange until somebody asks. Everything
-  else is ink:
+  else is ink or paper:
 
-    coal-ink       what Jarvis is telling you to do
+    coal-ink       what Jarvis is telling you to do, and the Join pill
     graphite       what your calendar already owns
     slate-mid      why a task is where it is
-    stone          the hours themselves
+    stone          the hours themselves, and the clock inside a meeting
+    booked         the hour your calendar already owns, as a surface
 
   The only other colour is the real product logos, which are coloured
   because they are logos.
 
   Copy is the app's own demo state (jarvis-ai-core,
   `Sources/JarvisGuideApp/TodayUI/TodayContent.swift`), so the app, the film
-  and this card never disagree about what the day looks like.
+  and this card never disagree about what the day looks like. The attendees
+  are the only thing here the demo state does not carry: they are the people
+  the copy already names — David for the 1:1, Tom and Sarah in the sync.
 */
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -173,6 +202,15 @@ const PAD = 8;
    numbers. Everything else on the card is the site's sans. */
 const LANE = { time: 40, content: 56 } as const;
 
+/** Parchment with the light knocked out of it, and the whole of what marks
+    an hour your calendar already owns.
+
+    Not a Panxo token: the system has no surface between #f7f3eb and #f1f1f1,
+    and this has to sit on white card stock and still read as the same warm
+    paper. Anything cooler reads as a card from another app, which is the
+    exact objection a fill was rejected on here once. */
+const BOOKED = "#efeae0";
+
 /** Top of an hour inside the day. */
 const yOf = (hour: number) => (hour - DAY_START) * ROW + PAD;
 
@@ -206,6 +244,21 @@ type Row = {
       the same call Calendar makes in a half-height slot. */
   note?: string;
   source?: Source;
+  /** Who is in the room, as initials, on a meeting. The last entry may be
+      an overflow count — "+4" — which is the point of the stack: Launch
+      sync costing seven people an hour is the reason that hour is worth
+      protecting, and no glyph can say it. */
+  people?: string[];
+};
+
+/** What a task's hover offers, by where Jarvis read the work out of. The
+    verb is the second half of the classifier: a meeting is something you
+    join, work is something you open. */
+const VERB: Record<Source, string> = {
+  github: "Open PR",
+  linear: "Open issue",
+  slack: "Open thread",
+  gmail: "Open email",
 };
 
 const ROWS: Row[] = [
@@ -225,6 +278,7 @@ const ROWS: Row[] = [
     hours: 1,
     title: "1:1 with David Park",
     note: "weekly, and he owes leadership a number",
+    people: ["DP"],
   },
   {
     kind: "task",
@@ -242,6 +296,7 @@ const ROWS: Row[] = [
     hours: 1,
     title: "Launch sync",
     note: "the whole team, no agenda yet",
+    people: ["TM", "SA", "DP", "+4"],
   },
   {
     kind: "task",
@@ -342,6 +397,182 @@ function SourceMark({ name }: { name: Source }) {
   );
 }
 
+/** The people in the room, as initials on the booked surface.
+
+    White discs ringed in the fill they sit on, so the stack overlaps
+    cleanly without a second colour: the ring is the paper showing through,
+    not a border drawn around a face. The overflow count is the last one and
+    reads a step quieter, because it is a number rather than a person. */
+function Faces({ names }: { names: string[] }) {
+  return (
+    <span className="flex items-center">
+      {names.map((name, i) => (
+        <span
+          key={name}
+          className="flex h-[19px] w-[19px] items-center justify-center rounded-full border-[1.5px] bg-white text-[8.5px] font-semibold"
+          style={{
+            /* Three points, not six. A photo can be half-covered and still
+               read; two letters cannot, and at six the disc in front ate the
+               last character of the one behind it. */
+            marginLeft: i === 0 ? 0 : -3,
+            borderColor: BOOKED,
+            color: name.startsWith("+")
+              ? "var(--color-stone)"
+              : "var(--color-graphite)",
+          }}
+        >
+          {name}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/* ── The mark, awake ─────────────────────────────────────────────
+
+   The disc is a face and the two bars are its eyes, which the mark has
+   always implied and never once used. It uses it here for the length of
+   one card:
+
+     it thinks   — while the sentence is the only thing on the paper, the
+                   mark reads left, reads right, blinks, and looks down at
+                   the hours a beat before they open. That is the claim of
+                   the card acted out rather than stated: the day was
+                   worked out before you sat down, and you are watching the
+                   last second of it.
+
+     it watches  — after that, the eyes go wherever the pointer is, for as
+                   long as the pointer is on the card. The rest of the card
+                   already answers the reader (a phrase underlines, an hour
+                   lights); this is the same rule applied to the only thing
+                   on the paper that is supposed to be alive.
+
+   The pointer always wins. Once the reader has moved inside the card the
+   script is abandoned mid-glance and never resumes, because a mark that
+   went back to performing after being looked at would read as a loop.
+
+   None of it runs under reduced motion, where the mark is simply still. */
+
+/** How far the bars travel, in MARK units — hundredths of the disc. The
+    pair spans 36 wide and 24 tall on a 100 disc, so at 12 and 10 the far
+    corner still sits ~12 units inside the rim: a glance, never a wander. */
+const GAZE = { x: 12, y: 10 } as const;
+
+/** How far the pointer has to be, in CSS pixels, for a full glance. Wider
+    than it is tall because the card is: the pointer spends its whole life
+    below the mark and rarely far to either side. */
+const REACH = { x: 250, y: 200 } as const;
+
+/** The thinking, in ms after mount. It has to be finished by OPEN_AT, when
+    the day starts growing and the reader's eye leaves the mark for good. */
+const THINK: { at: number; x: number; y: number; blink?: boolean }[] = [
+  { at: 420, x: -GAZE.x, y: 1 },
+  { at: 760, x: GAZE.x, y: 1 },
+  { at: 1020, x: 0, y: 0, blink: true },
+  { at: 1180, x: 0, y: GAZE.y },
+  { at: 2000, x: 0, y: 0 },
+];
+
+/** How long the bars stay shut. Long enough to see, short enough that it
+    reads as a blink rather than as the mark switching off. */
+const BLINK_MS = 110;
+
+function LookingMark({
+  areaRef,
+  active,
+}: {
+  /** The card. The pointer is tracked over this whole box, not over the
+      mark, because the question the mark is answering is "where are you on
+      my day", not "are you on me". */
+  areaRef: React.RefObject<HTMLDivElement | null>;
+  active: boolean;
+}) {
+  const reduce = useReducedMotion();
+  const markRef = React.useRef<HTMLSpanElement>(null);
+  const [look, setLook] = React.useState({ x: 0, y: 0 });
+  const [blink, setBlink] = React.useState(false);
+  /** Set the first time the pointer moves on the card, and never unset. */
+  const watched = React.useRef(false);
+
+  /* The script. */
+  React.useEffect(() => {
+    if (!active || reduce) return;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    for (const beat of THINK) {
+      timers.push(
+        setTimeout(() => {
+          if (watched.current) return;
+          setLook({ x: beat.x, y: beat.y });
+          if (!beat.blink) return;
+          setBlink(true);
+          timers.push(setTimeout(() => setBlink(false), BLINK_MS));
+        }, beat.at),
+      );
+    }
+    return () => timers.forEach(clearTimeout);
+  }, [active, reduce]);
+
+  /* The pointer. Listened for on the card rather than handled in React, so
+     a mouse crossing the day re-renders the mark and nothing else — the
+     day below it is five absolutely-positioned rows that have no reason to
+     re-render sixty times a second. One frame's worth of moves is
+     collapsed into one measurement. */
+  React.useEffect(() => {
+    const area = areaRef.current;
+    if (!area || reduce) return;
+
+    let frame = 0;
+    let at: { x: number; y: number } | null = null;
+
+    const apply = () => {
+      frame = 0;
+      const el = markRef.current;
+      if (!at || !el) return;
+      const r = el.getBoundingClientRect();
+      const dx = at.x - (r.left + r.width / 2);
+      const dy = at.y - (r.top + r.height / 2);
+      const unit = (v: number, over: number) =>
+        Math.max(-1, Math.min(1, v / over));
+      setLook({
+        x: unit(dx, REACH.x) * GAZE.x,
+        y: unit(dy, REACH.y) * GAZE.y,
+      });
+    };
+
+    const move = (e: PointerEvent) => {
+      watched.current = true;
+      at = { x: e.clientX, y: e.clientY };
+      if (!frame) frame = requestAnimationFrame(apply);
+    };
+    /* Back to centre, not back to the script: the mark is done performing
+       once it has been looked at. */
+    const leave = () => {
+      at = null;
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+      setLook({ x: 0, y: 0 });
+    };
+
+    area.addEventListener("pointermove", move);
+    area.addEventListener("pointerleave", leave);
+    return () => {
+      area.removeEventListener("pointermove", move);
+      area.removeEventListener("pointerleave", leave);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [areaRef, reduce]);
+
+  return (
+    <span ref={markRef} className="relative flex h-7 w-7">
+      <JarvisMark
+        className="h-7 w-7"
+        look={reduce ? undefined : look}
+        blink={blink}
+      />
+    </span>
+  );
+}
+
 /* ── Stage ───────────────────────────────────────────────────────── */
 
 export function FocusDayStage({
@@ -354,6 +585,8 @@ export function FocusDayStage({
 }) {
   const reduce = useReducedMotion();
   const date = useToday();
+  /** The box the mark watches for a pointer. */
+  const cardRef = React.useRef<HTMLDivElement>(null);
 
   /* Three flags, one per beat after the first. Derived under reduced
      motion so the very first paint is already the finished card. */
@@ -392,6 +625,7 @@ export function FocusDayStage({
           slot would sit as a tall empty sheet for the first beat and a band
           of dead paper under the last hour for the rest. */}
       <div
+        ref={cardRef}
         className="relative overflow-hidden rounded-[20px] border border-ash bg-white px-6 py-6 sm:px-7"
         style={{ boxShadow: CARD_SHADOW }}
       >
@@ -428,7 +662,7 @@ export function FocusDayStage({
                 transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
               />
             )}
-            <JarvisMark className="relative h-7 w-7" />
+            <LookingMark areaRef={cardRef} active={active} />
           </motion.div>
           <motion.span
             className="absolute right-0 text-[12px] text-slate-mid"
@@ -598,25 +832,26 @@ export function FocusDayStage({
                       points of air between every block, which put a visible
                       gap where the day has none.
 
-                      Every block is outlined the same way at rest, in ash,
-                      and goes to smolder for as long as the reader is
-                      pointing at it — from the block itself, or from the
-                      phrase in the sentence that named the work.
+                      A meeting is filled and a task is not, and that alone
+                      is what tells the two apart: pressed parchment against
+                      white paper, so the day's shape can be counted before a
+                      word of it has been read.
 
-                      The accent is spent on attention, not on category. A
-                      standing smolder outline on the two meetings marked
-                      them permanently, which is a lot of colour to leave
-                      burning on a card whose whole argument is the sentence
-                      above the day. What kind of hour it is, the card still
-                      says twice over: a meeting is set in semibold and
-                      carries the calendar glyph, where work Jarvis found is
-                      medium and carries the logo it came out of.
+                      Both keep the same 1.5-point outline, at rest and lit,
+                      so the border only ever changes COLOUR. At ash 1 and
+                      smolder 1.5 the block's inside would shrink half a point
+                      on hover and nudge the text, which is a twitch on a card
+                      that is otherwise still. A filled block is outlined in
+                      its own fill for the same reason: the ring has to exist
+                      in order to change.
 
-                      1.5 points at rest as well as lit, so the border only
-                      ever changes COLOUR. At one point ash and 1.5 smolder
-                      the block's inside would shrink half a point on hover
-                      and nudge the text, which is a twitch on a card that is
-                      otherwise still.
+                      Smolder is still spent on attention and never on
+                      category. A standing orange outline on the two meetings
+                      was tried and marked them permanently, which is a lot of
+                      colour to leave burning on a card whose whole argument
+                      is the sentence above the day. Nothing here keeps a
+                      colour of its own — the fill is a value, not a colour —
+                      so the ring is free to mean one thing.
 
                       Inside the block, not beside it. An earlier marker was
                       a 3-point bar in the right-hand margin at right:-9, and
@@ -624,13 +859,35 @@ export function FocusDayStage({
                       overflow-hidden wrapper that animates the day open, so
                       the bar was clipped on every paint. */}
                   <div
-                    className={
-                      "absolute inset-x-0 flex items-center gap-3 rounded-[6px] border-[1.5px] bg-white px-3 transition-colors duration-200 " +
-                      (lit === row.id ? "border-smolder" : "border-ash")
-                    }
-                    style={{ top: 0, bottom: 0 }}
+                    /* Two fixed columns on the right, both right-aligned, so
+                       a 15-point logo and a stack of four faces end on the
+                       same line — the alternative is a mark that sits
+                       wherever the title stopped pushing it, which gave the
+                       day a ragged right edge. 96 is set by the widest thing
+                       that goes in the meta slot, "13:00–14:00" in mono.
+
+                       The meta column is gone below `sm`. A phone has no
+                       hover, so the slot could only ever hold the clock, and
+                       96 points spent on it left the titles truncated to two
+                       characters. The mark goes to `auto` there for the same
+                       reason — it still ends flush with the right padding,
+                       because it is the last column. The values are literal
+                       because Tailwind scans for class names and cannot see
+                       a template. */
+                    className="absolute inset-x-0 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 rounded-[6px] border-[1.5px] px-3 transition-colors duration-200 sm:grid-cols-[minmax(0,1fr)_96px_68px]"
+                    style={{
+                      top: 0,
+                      bottom: 0,
+                      background: isTask ? "#ffffff" : BOOKED,
+                      borderColor:
+                        lit === row.id
+                          ? "var(--color-smolder)"
+                          : isTask
+                            ? "var(--color-ash)"
+                            : BOOKED,
+                    }}
                   >
-                    <span className="flex min-w-0 flex-1 flex-col justify-center">
+                    <span className="flex min-w-0 flex-col justify-center">
                       <span
                         className={
                           "truncate leading-[1.25] text-coal-ink " +
@@ -651,20 +908,71 @@ export function FocusDayStage({
                         </span>
                       ) : null}
                     </span>
-                    {/* Where the hour came from. Colour means Jarvis read
-                        the work out of GitHub, Linear or Slack; the grey
-                        glyph means it was already on your calendar. */}
-                    {row.source ? (
-                      <span className="h-[15px] w-[15px] shrink-0">
-                        <SourceMark name={row.source} />
-                      </span>
-                    ) : (
-                      <Calendar
-                        className="h-[15px] w-[15px] shrink-0 text-graphite"
-                        strokeWidth={1.75}
+
+                    {/* The clock and the button, one on top of the other in
+                        one fixed box. A meeting prints the hours it owns and
+                        turns them into Join while the reader is on it, so the
+                        hour you can attend becomes the way to attend it and
+                        nothing in the block moves between the two states.
+
+                        Work prints no clock, because Jarvis placed it and it
+                        can move; the empty slot says that as plainly as the
+                        printed one says the opposite, and it fills with the
+                        way into the tool the work came out of. */}
+                    <span className="relative hidden h-6 sm:block">
+                      {isTask ? null : (
+                        <span
+                          className="absolute top-1/2 right-0 -translate-y-1/2 font-mono text-[10.5px] tabular-nums text-stone transition-opacity"
+                          style={{
+                            opacity: lit === row.id ? 0 : 1,
+                            transitionDuration: reduce ? "0ms" : "180ms",
+                          }}
+                        >
+                          {`${hhmm(row.at)}–${hhmm(row.at + row.hours)}`}
+                        </span>
+                      )}
+                      <span
                         aria-hidden
-                      />
-                    )}
+                        className={
+                          "absolute top-1/2 right-0 flex -translate-y-1/2 cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold whitespace-nowrap transition-opacity " +
+                          (isTask
+                            ? "border border-ash bg-white text-graphite"
+                            : "bg-coal-ink text-white")
+                        }
+                        style={{
+                          opacity: lit === row.id ? 1 : 0,
+                          transitionDuration: reduce ? "0ms" : "200ms",
+                        }}
+                      >
+                        {isTask ? (
+                          row.source ? VERB[row.source] : null
+                        ) : (
+                          <>
+                            <Video className="h-3 w-3" strokeWidth={2.25} aria-hidden />
+                            Join
+                          </>
+                        )}
+                      </span>
+                    </span>
+
+                    {/* Who, or what. A meeting carries the people in it; work
+                        carries the tool Jarvis read it out of, in that tool's
+                        own colours. The calendar glyph that used to sit here
+                        named a category the fill already names, where faces
+                        answer a question the card could not answer at all —
+                        which of these hours costs six other people theirs.
+
+                        Right-aligned inside a fixed column, so a 15-point
+                        logo and a stack of four faces end on one line. */}
+                    <span className="flex items-center justify-end">
+                      {row.source ? (
+                        <span className="h-[15px] w-[15px]">
+                          <SourceMark name={row.source} />
+                        </span>
+                      ) : row.people ? (
+                        <Faces names={row.people} />
+                      ) : null}
+                    </span>
                   </div>
                 </motion.div>
               );
