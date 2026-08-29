@@ -61,24 +61,36 @@ export function JarvisMark({
   className,
   tone = "ink",
   shape = "circle",
+  look,
+  blink = false,
 }: {
   className?: string;
   tone?: Tone;
   shape?: Shape;
+  /** Where the bars are pointing, offset from the disc centre in MARK units
+      — hundredths of the diameter, the same space every number above is in,
+      so a caller can say `{ x: 12 }` at any rendered size and mean the same
+      glance.
+
+      The bars are the only thing that moves. The disc is the head and it
+      stays where it is; shifting the whole mark would read as the logo
+      sliding rather than as the thing behind it looking at you.
+
+      Omit it and the mark renders exactly as it always has, with no extra
+      groups in the SVG — the still version is what most of the site wants,
+      and what any renderer without CSS transforms needs. */
+  look?: { x: number; y: number };
+  /** Shuts the bars for as long as it is true. A blink is scaleY, not
+      opacity: the mark closes, it does not vanish. */
+  blink?: boolean;
 }) {
   const disc = tone === "ink" ? MARK_INK : MARK_PAPER;
   const bars = tone === "ink" ? MARK_PAPER : MARK_INK;
   // Drawn on a 100-unit disc so every number below reads as a percentage of D.
   const b = markBars(100);
 
-  return (
-    <svg viewBox="0 0 100 100" fill="none" aria-hidden className={className}>
-      {shape === "circle" ? (
-        <circle cx="50" cy="50" r="50" fill={disc} />
-      ) : (
-        // Squircle-ish tile, matching the macOS app-icon lockup.
-        <rect width="100" height="100" rx="22" fill={disc} />
-      )}
+  const slits = (
+    <>
       <rect
         x={50 + b.leftX}
         y={50 + b.y}
@@ -95,6 +107,47 @@ export function JarvisMark({
         rx={b.corner}
         fill={bars}
       />
+    </>
+  );
+
+  /* Two groups, because the two movements are not the same movement: a
+     glance is slow and eased, a blink is fast and mechanical, and one
+     transition cannot be both. `fill-box` puts the origin at the centre of
+     the bar pair, which is the disc centre, so a blink shuts on the middle
+     and a glance leaves from it. */
+  const alive = Boolean(look) || blink;
+
+  return (
+    <svg viewBox="0 0 100 100" fill="none" aria-hidden className={className}>
+      {shape === "circle" ? (
+        <circle cx="50" cy="50" r="50" fill={disc} />
+      ) : (
+        // Squircle-ish tile, matching the macOS app-icon lockup.
+        <rect width="100" height="100" rx="22" fill={disc} />
+      )}
+      {alive ? (
+        <g
+          style={{
+            transformBox: "fill-box",
+            transformOrigin: "center",
+            transform: `translate(${look?.x ?? 0}px, ${look?.y ?? 0}px)`,
+            transition: "transform 320ms cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
+        >
+          <g
+            style={{
+              transformBox: "fill-box",
+              transformOrigin: "center",
+              transform: `scaleY(${blink ? 0.1 : 1})`,
+              transition: "transform 90ms ease-out",
+            }}
+          >
+            {slits}
+          </g>
+        </g>
+      ) : (
+        slits
+      )}
     </svg>
   );
 }
