@@ -41,18 +41,24 @@ import { Video } from "lucide-react";
   how long something takes, and everything inside a block is centred against
   it — title and reason as one group, the mark against the same middle.
 
-  A meeting is filled and the work Jarvis placed is not. Pressed parchment
-  against white paper, and it is the whole of what tells the two apart: the
-  day's shape is countable before a word of it is read, which is the one
-  thing the card could not do while every entry was the same object.
+  A meeting is filled and the work Jarvis placed is not, and that alone is
+  what tells the two apart: the day's shape is countable before a word of it
+  is read, which is the one thing the card could not do while every entry
+  was the same object.
 
-  The fill was rejected here once, on the grounds that a tint under a block
-  reads as a different KIND of paper when the point is that it is the same
-  paper. That objection is right about a tint and wrong about this one, and
-  it turns entirely on warmth: #efeae0 is parchment with the light knocked
-  out of it, the same warm family the card and the page already sit in, so
-  the block reads as paper that has been pressed rather than as paper from
-  another app. Anything cooler and the old objection lands.
+  The fill is periwinkle, and it is the calendar's colour rather than the
+  card's. Signal Violet at seven per cent, edged a step deeper, so a booked
+  hour reads as a card lifted out of your calendar and quoted here — which
+  is precisely what it is. Jarvis's own work stays on the card's own paper
+  because Jarvis wrote it. The type on both is the same ink, because the
+  card is speaking in one voice about two kinds of hour.
+
+  A fill was rejected here once on the grounds that a tint reads as a
+  different KIND of paper when the point is that it is the same paper. That
+  objection was answered for a while with warmth, and the answer was wrong:
+  #efeae0 had so little chroma that it did not read as another surface at
+  all, it read as this one, dirty. The right answer is to agree with the
+  objection. A meeting IS from somewhere else.
 
   Not a hatch: strokes across a calendar block mean CANCELLED in every
   calendar anyone has used. Not a permanent smolder outline either — that
@@ -62,12 +68,13 @@ import { Video } from "lucide-react";
   overflow-hidden wrapper that animates the day open. Everything that marks
   a block paints inside it, where nothing can clip it.
 
-  Colour still means one thing and only one: you are pointing at this. Every
-  block, filled or not, keeps a 1.5-point outline that goes to smolder while
-  the reader is on it, and the fill is not a colour in that sense — it is a
-  value, the same neutral family as the paper under it. The moment a block
-  keeps a permanent colour of its own, the ring and the marker become two
-  colours arguing about one object.
+  Two colours, and they never mean the same kind of thing. Periwinkle is a
+  SOURCE — this hour came from your calendar — and it is permanent, because
+  where an hour came from does not change. Smolder is ATTENTION — you are
+  pointing at this — and it is never permanent. Every block, filled or not,
+  keeps a 1.5-point outline that goes to smolder while the reader is on it,
+  and orange over violet is far enough apart that the ring reads instantly
+  without the fill having to get out of its way.
 
   A block is three columns, and the two on the right are fixed: 96 points of
   meta, 68 of mark, both right-aligned. A logo, a stack of two faces and a
@@ -146,14 +153,19 @@ import { Video } from "lucide-react";
   One accent, smolder, and it only ever means "this is what you are pointing
   at": the underline a hovered phrase draws — the same rule the hero headline
   strikes under its own word — and the outline around the hour that phrase
-  belongs to. Nothing on the card is orange until somebody asks. Everything
-  else is ink or paper:
+  belongs to. Nothing on the card is orange until somebody asks.
 
-    coal-ink       what Jarvis is telling you to do, and the Join pill
-    graphite       what your calendar already owns
+  Every word on the card is ink or grey. Periwinkle is a SURFACE colour and
+  never a type colour, which is the whole of what keeps two tinted blocks
+  from outranking the sentence above them:
+
+    coal-ink       what Jarvis is telling you to do, the Join pill, and the
+                   title of an hour your calendar owns
+    graphite       why a meeting is where it is
     slate-mid      why a task is where it is
-    stone          the hours themselves, and the clock inside a meeting
-    booked         the hour your calendar already owns, as a surface
+    stone          the hours down the left margin, and a meeting's clock
+    booked-fill    an hour your calendar already owns, as a surface
+    booked-edge    its edge, and the ring around every face in it
 
   The only other colour is the real product logos, which are coloured
   because they are logos.
@@ -202,14 +214,42 @@ const PAD = 8;
    numbers. Everything else on the card is the site's sans. */
 const LANE = { time: 40, content: 56 } as const;
 
-/** Parchment with the light knocked out of it, and the whole of what marks
-    an hour your calendar already owns.
+/** The calendar's own colour, and the whole of what marks an hour you
+    cannot move.
 
-    Not a Panxo token: the system has no surface between #f7f3eb and #f1f1f1,
-    and this has to sit on white card stock and still read as the same warm
-    paper. Anything cooler reads as a card from another app, which is the
-    exact objection a fill was rejected on here once. */
-const BOOKED = "#efeae0";
+    Signal Violet, #777eff, laid down at about seven per cent, with the two
+    strengths of itself the block needs in order to set type. Panxo gives
+    that token one job — it signals machine intelligence rather than human
+    action — and a meeting is the opposite of that, so the borrowing is of
+    the hue and not the meaning.
+
+    A booked hour is a card from somewhere else, quoted into this document.
+    Two things say it: a pale fill, and an edge one step deeper than the
+    fill. Nothing else.
+
+    The title said it too for one pass — violet rather than ink, which is
+    what the calendar apps this is borrowed from do, and what makes their
+    blocks read as objects with a colour of their own rather than as ink
+    laid on a coloured rectangle. It is the better idea and the wrong one
+    here. Those apps give a block the whole screen; this card gives it
+    forty-four points under a sentence that is the card's actual argument,
+    and coloured type at that size does not read as a quotation, it reads as
+    a highlight. Two meetings in violet took the eye before the sentence
+    did.
+
+    So the colour stops at the edge of the type. Every word on this card is
+    ink or grey; only surfaces are allowed a hue.
+
+    The fill carries a faint top-to-bottom gradient. It is most of why the
+    block reads as soft rather than flat, and it is the only gradient
+    anywhere on the card.
+
+    What was here before was #efeae0: parchment with the light knocked out
+    of it, and a value belonging to no token. The objection to it is not
+    that it was warm. It is that at that chroma a fill does not read as a
+    different SURFACE, it reads as the same surface, dirty. */
+const BOOKED_FILL = "linear-gradient(180deg,#f4f5fe 0%,#eceefb 100%)";
+const BOOKED_EDGE = "#d9dcf7";
 
 /** Top of an hour inside the day. */
 const yOf = (hour: number) => (hour - DAY_START) * ROW + PAD;
@@ -399,10 +439,11 @@ function SourceMark({ name }: { name: Source }) {
 
 /** The people in the room, as initials on the booked surface.
 
-    White discs ringed in the fill they sit on, so the stack overlaps
-    cleanly without a second colour: the ring is the paper showing through,
-    not a border drawn around a face. The overflow count is the last one and
-    reads a step quieter, because it is a number rather than a person. */
+    White discs ringed in the block's own edge, so the stack overlaps
+    cleanly and the ring is the one line already drawn around everything
+    else in the block rather than a second idea. Initials are ink like every
+    other word here; the overflow count reads a step quieter, because it is
+    a number rather than a person. */
 function Faces({ names }: { names: string[] }) {
   return (
     <span className="flex items-center">
@@ -415,10 +456,10 @@ function Faces({ names }: { names: string[] }) {
                read; two letters cannot, and at six the disc in front ate the
                last character of the one behind it. */
             marginLeft: i === 0 ? 0 : -3,
-            borderColor: BOOKED,
+            borderColor: BOOKED_EDGE,
             color: name.startsWith("+")
               ? "var(--color-stone)"
-              : "var(--color-graphite)",
+              : "var(--color-coal-ink)",
           }}
         >
           {name}
@@ -833,9 +874,13 @@ export function FocusDayStage({
                       gap where the day has none.
 
                       A meeting is filled and a task is not, and that alone
-                      is what tells the two apart: pressed parchment against
-                      white paper, so the day's shape can be counted before a
-                      word of it has been read.
+                      is what tells the two apart: your calendar's periwinkle
+                      against the card's own paper, so the day's shape can be
+                      counted before a word of it has been read. The fill and
+                      its edge are the whole of it — the type in a booked hour
+                      is the same ink as the type in a task, because a tint
+                      under forty-four points of text is a surface, and tinted
+                      text at that size is a highlighter.
 
                       Both keep the same 1.5-point outline, at rest and lit,
                       so the border only ever changes COLOUR. At ash 1 and
@@ -849,9 +894,11 @@ export function FocusDayStage({
                       category. A standing orange outline on the two meetings
                       was tried and marked them permanently, which is a lot of
                       colour to leave burning on a card whose whole argument
-                      is the sentence above the day. Nothing here keeps a
-                      colour of its own — the fill is a value, not a colour —
-                      so the ring is free to mean one thing.
+                      is the sentence above the day. The fill is allowed to be
+                      permanent because it says where an hour came FROM, which
+                      never changes; the ring says where the reader is, which
+                      changes constantly. Orange over violet keeps them apart
+                      without either one having to shout.
 
                       Inside the block, not beside it. An earlier marker was
                       a 3-point bar in the right-hand margin at right:-9, and
@@ -878,31 +925,34 @@ export function FocusDayStage({
                     style={{
                       top: 0,
                       bottom: 0,
-                      background: isTask ? "#ffffff" : BOOKED,
+                      background: isTask ? "#ffffff" : BOOKED_FILL,
                       borderColor:
                         lit === row.id
                           ? "var(--color-smolder)"
                           : isTask
                             ? "var(--color-ash)"
-                            : BOOKED,
+                            : BOOKED_EDGE,
                     }}
                   >
                     <span className="flex min-w-0 flex-col justify-center">
                       <span
                         className={
-                          "truncate leading-[1.25] text-coal-ink " +
+                          "truncate leading-[1.25] " +
                           (compact ? "text-[13px] " : "text-[14px] ") +
                           (isTask ? "font-medium" : "font-semibold")
                         }
+                        style={{ color: "var(--color-coal-ink)" }}
                       >
                         {row.title}
                       </span>
                       {row.note && !compact ? (
                         <span
-                          className={
-                            "mt-[2px] truncate text-[12px] leading-[1.25] " +
-                            (isTask ? "text-slate-mid" : "text-graphite")
-                          }
+                          className="mt-[2px] truncate text-[12px] leading-[1.25]"
+                          style={{
+                            color: isTask
+                              ? "var(--color-slate-mid)"
+                              : "var(--color-graphite)",
+                          }}
                         >
                           {row.note}
                         </span>
@@ -922,8 +972,9 @@ export function FocusDayStage({
                     <span className="relative hidden h-6 sm:block">
                       {isTask ? null : (
                         <span
-                          className="absolute top-1/2 right-0 -translate-y-1/2 font-mono text-[10.5px] tabular-nums text-stone transition-opacity"
+                          className="absolute top-1/2 right-0 -translate-y-1/2 font-mono text-[10.5px] tabular-nums transition-opacity"
                           style={{
+                            color: "var(--color-stone)",
                             opacity: lit === row.id ? 0 : 1,
                             transitionDuration: reduce ? "0ms" : "180ms",
                           }}
