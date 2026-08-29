@@ -97,8 +97,16 @@ type Ask = {
 
    Focus leads, because it is the first thing that happens: Jarvis has read
    everything by the time you sit down, and the day is what it hands you.
-   Retrieval and the meeting are what you reach for later in that day. */
-const TABS = ["Start your day", "Pull context", "Assist on the call"] as const;
+   The meeting follows it, because the day it just handed you has two of them
+   in it and a Join sitting on each — the second tab is the first tab's own
+   10:00, opened. Retrieval comes last: it is the only one of the three with
+   no hour attached, the thing you reach for at any point in that day.
+
+   "Focus your day" rather than "Start your day". Starting is what a clock
+   does; the claim is that Jarvis sorted the day before you got to it. It
+   stays a verb because the other two are, and it is not "Today's focus" —
+   that is the card's own eyebrow, printed directly above this row. */
+const TABS = ["Focus your day", "Assist on the call", "Pull context"] as const;
 
 /* Demo fixtures, consistent with the ones StrugglesSection and the film
    already use (#eng, PR #142, David Park, the payments bug). Do not invent a
@@ -249,6 +257,12 @@ export function HeroAsk() {
           {tab === 0 ? (
             <FocusDayStage active />
           ) : tab === 1 ? (
+            <MeetingAssistStage
+              active
+              height={CARD_BODY + 40}
+              mobileHeight={CARD_BODY_SM + 40}
+            />
+          ) : (
             <ClaudeCodeTerminal
               question={ASK.question}
               answer={ASK.answer}
@@ -260,12 +274,6 @@ export function HeroAsk() {
               height={CARD_BODY}
               mobileHeight={CARD_BODY_SM}
               narrowHeight={CARD_BODY_XS}
-            />
-          ) : (
-            <MeetingAssistStage
-              active
-              height={CARD_BODY + 40}
-              mobileHeight={CARD_BODY_SM + 40}
             />
           )}
           </div>
