@@ -41,14 +41,25 @@ import { Calendar } from "lucide-react";
   how long something takes, and everything inside a block is centred against
   it — title and reason as one group, the mark against the same middle.
 
-  Every block is outlined the same way. An hour your calendar owns is marked
-  by a straight orange line in the right-hand MARGIN, running its exact
-  length: something you have to turn up to, flagged the way you would flag a
-  paragraph in a book. On the block itself, as a border or laid over one, it
-  recoloured the box and read as an alarm on two of five rows; in the left
-  margin it read as a second time gutter. On the right it lands in the
-  column where the card already answers what kind of hour this is, beside
-  the grey calendar glyph that says the same thing.
+  Every block is outlined in ash and goes to smolder while the reader is
+  pointing at it. Nothing on the day is coloured at rest: an hour is marked
+  by attention, not by category.
+
+  A meeting was outlined in smolder permanently for a while, and it worked,
+  but it left two blocks burning under a sentence that is the card's actual
+  argument. What kind of hour it is is already said twice without colour: a
+  meeting is semibold and carries the calendar glyph, work Jarvis found is
+  medium and carries the logo it came from.
+
+  The outline, and not a fill, a wash or a texture. A tint under the block
+  reads as a different KIND of paper when the point is that it is the same
+  paper. A diagonal hatch was worse than wrong: strokes across a calendar
+  block mean CANCELLED in every calendar anyone has used.
+
+  Nor a bar beside the block. A rail in the margin was an earlier answer and
+  it never once rendered, because the margin it sat in is outside the
+  overflow-hidden wrapper that animates the day open. Everything that marks
+  a block now paints inside it, where nothing can clip it.
 
   Blocks are flush with their own hours and therefore with each other: a
   review that ends at ten and a 1:1 that starts at ten share one edge,
@@ -56,18 +67,32 @@ import { Calendar } from "lucide-react";
 
   ── The motion ───────────────────────────────────────────────────────
 
-  Four movements, and each one says something:
+  Three movements, and each one says something:
 
     1. Jarvis speaks.   The mark, the title, the date and the sentence
                         arrive as one object.
-    2. The work is marked. Three underlines draw at once, in the accent the
-                        hero headline underlines its own word in.
-    3. The day opens.   The card grows and the empty hours are ruled.
-    4. The day fills.   Your calendar, then Jarvis's work in the gaps.
+    2. The day opens.   The card grows and the empty hours are ruled.
+    3. The day fills.   Your calendar, then Jarvis's work in the gaps.
 
-  That is the whole product in four beats, and the last two are the claim:
+  That is the whole product in three beats, and the last two are the claim:
   Jarvis fitted work into a day that already existed. Reversed or
   interleaved, the card would say it invented one.
+
+  There was a fourth beat between the first and the second: three smolder
+  underlines drawing at once under the named work. They are still here, but
+  they are drawn by the READER now, one at a time, on hover. Standing by
+  default they marked every task the moment the card opened, which is a lot
+  of accent spent saying what the bold weight already said, and it left the
+  card with four orange elements before the day had even appeared. On hover
+  the same rule earns its colour: it answers one question, asked by one
+  person, about one phrase.
+
+  Hovering a phrase also lights its hour in the day below, and hovering an
+  hour draws the underline back up in the sentence. The link runs both ways
+  because the claim runs both ways: the sentence is the day, sorted. Meetings
+  light too, since the outline means attention rather than category, and a
+  block that ignored the pointer on a card where every other block answers it
+  would read as broken rather than as different.
 
   Everything else that used to move has been cut, because "more animation"
   and "more legible" stopped pointing the same way a long way back. What
@@ -92,9 +117,11 @@ import { Calendar } from "lucide-react";
 
   ── The palette ──────────────────────────────────────────────────────
 
-  One accent, smolder: the three underlines in the sentence — the same rule
-  the hero headline strikes under its own word — and the right-margin line
-  beside the hours you cannot move. Everything else is ink:
+  One accent, smolder, and it only ever means "this is what you are pointing
+  at": the underline a hovered phrase draws — the same rule the hero headline
+  strikes under its own word — and the outline around the hour that phrase
+  belongs to. Nothing on the card is orange until somebody asks. Everything
+  else is ink:
 
     coal-ink       what Jarvis is telling you to do
     graphite       what your calendar already owns
@@ -330,10 +357,17 @@ export function FocusDayStage({
 
   /* Three flags, one per beat after the first. Derived under reduced
      motion so the very first paint is already the finished card. */
+  /* Which piece of named work the reader is pointing at, by row id. Set
+     from either end: the phrase in the sentence, or the hour in the day.
+     Null on a touch device, which has no hover and therefore just gets the
+     card at rest. */
+  const [lit, setLit] = React.useState<string | null>(null);
+
   const [opened, setOpened] = React.useState(false);
   const [calIn, setCalIn] = React.useState(false);
   const [workIn, setWorkIn] = React.useState(false);
   const open = opened || Boolean(reduce);
+  const litRow = ROWS.find((r) => r.id === lit) ?? null;
   const calShown = calIn || Boolean(reduce);
   const workShown = workIn || Boolean(reduce);
 
@@ -414,9 +448,9 @@ export function FocusDayStage({
 
             In ink rather than the eyebrow's usual smolder: the sentence
             directly under it carries three orange underlines and the day
-            below that carries orange bars, so a fourth orange element on
-            the line between them left the accent meaning nothing in
-            particular. Uppercase, tracked and semibold is already enough
+            below that carries two orange outlines, so a fourth orange
+            element on the line between them left the accent meaning
+            nothing in particular. Uppercase, tracked and semibold is already enough
             to read as a heading; it does not need the colour as well. */}
         <motion.p
           className="mt-4 text-[11px] font-semibold uppercase tracking-[0.1em] text-coal-ink"
@@ -427,11 +461,14 @@ export function FocusDayStage({
           Today&rsquo;s focus
         </motion.p>
 
-        {/* Beat one, and beat two. The sentence arrives as ONE object —
-            it used to fade up in seven pieces fifty milliseconds apart,
-            which is a typewriter impression of something Jarvis knew before
-            you sat down — and then the three underlines draw together, in
-            the accent the hero headline underlines its own word in. */}
+        {/* Beat one. The sentence arrives as ONE object — it used to fade
+            up in seven pieces fifty milliseconds apart, which is a
+            typewriter impression of something Jarvis knew before you sat
+            down.
+
+            The named work is bold and nothing else. Its underline is drawn
+            on hover, in the accent the hero headline underlines its own
+            word in, and hovering it lights the hour that work sits in. */}
         <motion.p
           className="mt-2 text-[15.5px] leading-[1.55] tracking-[-0.12px] sm:text-[16px]"
           initial={reduce ? false : { opacity: 0, y: 5 }}
@@ -443,14 +480,16 @@ export function FocusDayStage({
               <span
                 key={i}
                 className="relative inline-block font-semibold text-coal-ink"
+                onMouseEnter={() => setLit(seg.task ?? null)}
+                onMouseLeave={() => setLit(null)}
               >
                 {seg.text}
                 <motion.span
                   aria-hidden
                   className="absolute bottom-[-1px] left-0 block h-[2px] w-full origin-left rounded-full bg-smolder"
-                  initial={reduce ? false : { scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.5, delay: reduce ? 0 : 0.5, ease: EASE }}
+                  initial={false}
+                  animate={{ scaleX: lit === seg.task ? 1 : 0 }}
+                  transition={reduce ? { duration: 0 } : { duration: 0.34, ease: EASE }}
                 />
               </span>
             ) : (
@@ -490,7 +529,16 @@ export function FocusDayStage({
               {HOUR_LINES.map((hour) => (
                 <span
                   key={hour}
-                  className="absolute font-mono text-[10.5px] text-stone"
+                  /* The hours a lit row actually occupies go to ink, so the
+                     highlight reaches the column that measures the day and
+                     not just the box sitting in it. A two-hour review lights
+                     both of its numerals. */
+                  className={
+                    "absolute font-mono text-[10.5px] " +
+                    (litRow && hour >= litRow.at && hour <= litRow.at + litRow.hours
+                      ? "text-coal-ink"
+                      : "text-stone")
+                  }
                   style={{
                     left: 0,
                     width: LANE.time,
@@ -525,6 +573,8 @@ export function FocusDayStage({
                     top: yOf(row.at),
                     height: row.hours * ROW,
                   }}
+                  onMouseEnter={() => setLit(row.id)}
+                  onMouseLeave={() => setLit(null)}
                   initial={reduce ? false : { opacity: 0, y: 4 }}
                   animate={{ opacity: shown ? 1 : 0, y: shown ? 0 : 4 }}
                   transition={{ duration: reduce ? 0.2 : 0.42, ease: EASE }}
@@ -548,35 +598,36 @@ export function FocusDayStage({
                       points of air between every block, which put a visible
                       gap where the day has none.
 
-                      Every block is outlined the same way. What marks a
-                      meeting is a straight orange line in the margin beside
-                      it, running its exact length: something you have to
-                      turn up to, flagged the way you would flag a paragraph
-                      in a book you were about to be tested on.
+                      Every block is outlined the same way at rest, in ash,
+                      and goes to smolder for as long as the reader is
+                      pointing at it — from the block itself, or from the
+                      phrase in the sentence that named the work.
 
-                      Outside the block rather than on it. As the block's own
-                      left border it recoloured the box, which read as an
-                      alarm on two of five rows; laid over that border it
-                      still had to dodge the corner radius. In the margin it
-                      is simply a mark next to a thing, and every block on
-                      the card keeps one outline.
+                      The accent is spent on attention, not on category. A
+                      standing smolder outline on the two meetings marked
+                      them permanently, which is a lot of colour to leave
+                      burning on a card whose whole argument is the sentence
+                      above the day. What kind of hour it is, the card still
+                      says twice over: a meeting is set in semibold and
+                      carries the calendar glyph, where work Jarvis found is
+                      medium and carries the logo it came out of.
 
-                      On the RIGHT margin, not the left. On the left it sat
-                      between the times and the blocks, where it read as a
-                      second time gutter and put a coloured mark on the edge
-                      the eye starts every row from. On the right it lands
-                      after the title, in the same column as the source
-                      marks, which is where the card already answers "what
-                      kind of hour is this". */}
-                  {isTask ? null : (
-                    <span
-                      className="absolute bg-smolder"
-                      style={{ right: -9, top: 0, bottom: 0, width: 3 }}
-                      aria-hidden
-                    />
-                  )}
+                      1.5 points at rest as well as lit, so the border only
+                      ever changes COLOUR. At one point ash and 1.5 smolder
+                      the block's inside would shrink half a point on hover
+                      and nudge the text, which is a twitch on a card that is
+                      otherwise still.
+
+                      Inside the block, not beside it. An earlier marker was
+                      a 3-point bar in the right-hand margin at right:-9, and
+                      it never rendered once: the margin is outside the
+                      overflow-hidden wrapper that animates the day open, so
+                      the bar was clipped on every paint. */}
                   <div
-                    className="absolute inset-x-0 flex items-center gap-3 rounded-[6px] border border-ash bg-white px-3"
+                    className={
+                      "absolute inset-x-0 flex items-center gap-3 rounded-[6px] border-[1.5px] bg-white px-3 transition-colors duration-200 " +
+                      (lit === row.id ? "border-smolder" : "border-ash")
+                    }
                     style={{ top: 0, bottom: 0 }}
                   >
                     <span className="flex min-w-0 flex-1 flex-col justify-center">
