@@ -98,11 +98,30 @@ If you ever move regions, the rewrite destinations are the thing to change, and
 
 ## 6. Session replay
 
-Off (`disable_session_recording: true`). The page has one form and it collects
-work email addresses; recording strangers typing into it is not worth the
-insight, and leaving it off keeps the site clear of needing a consent banner it
-does not have. To turn it on later, drop that line and add masking:
+On, with every input masked (`maskAllInputs: true`). Replay records that a field
+was filled, never what was typed into it, so no waitlist email ever reaches
+PostHog through a recording.
+
+Free up to 5,000 recordings a month, then $0.005 each falling to $0.0035 above
+15,000. This site does not come close, so no sampling is configured — every
+session is recorded. If traffic grows past the free allowance, add a sample rate
+rather than turning it off:
 
 ```ts
-session_recording: { maskAllInputs: true },
+session_recording: { maskAllInputs: true, sampleRate: 0.25 },
 ```
+
+A billing limit in PostHog (Settings → Billing) is the belt-and-braces version:
+it caps spend even if traffic spikes overnight.
+
+Two caveats worth carrying forward:
+
+- The masking option set in `posthog.init` **overrides** the project's "Privacy
+  and masking" dashboard setting. Change it here, in code, not there.
+- rrweb records `hidden` inputs **unmasked**. The only one on the page today
+  carries the role dropdown's value, which is not sensitive. If a hidden field
+  ever holds something that is, wrap it in an element with `ph-no-capture`.
+
+Replay is also the part of this setup a privacy regulator would look at hardest.
+Masked inputs and no consent banner is a defensible position for a landing page,
+not a settled one — revisit it if the site starts collecting more than an email.

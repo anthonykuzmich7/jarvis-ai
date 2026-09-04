@@ -21,9 +21,21 @@ import { PostHogProvider } from "@posthog/react";
   pageviews on history changes (which is what App Router navigation is), and
   scripts injected into <head> so nothing mutates the DOM mid-hydration.
 
-  Session recording is off. The page has one form and it collects a work email;
-  replaying strangers typing their address into it is not worth the insight, and
-  keeping it off means nothing here needs a consent banner it does not have.
+  Session replay is on, with every input masked. Watching where a real visitor
+  hesitates on a scroll-driven page is worth more than any aggregate, and 5,000
+  recordings a month are free — far more than this site produces.
+
+  Masked means the email someone types into the waitlist never leaves their
+  browser: replay records that a field was filled, not what went into it. That
+  is the default, but it is written out anyway, because a `session_recording`
+  option set here overrides the project's "Privacy and masking" setting, and a
+  privacy guarantee should not depend on a dashboard toggle nobody in this repo
+  can see.
+
+  One rrweb quirk worth knowing if this form grows: `hidden` inputs are recorded
+  unmasked. The only one today carries the role dropdown's value, which is not
+  sensitive. Anything sensitive in a hidden field needs `ph-no-capture` on a
+  wrapping element.
 
   The key arrives as a prop from the server layout rather than being read from
   `process.env` here. A project API key has to reach the browser for any of this
@@ -59,7 +71,9 @@ export function PostHogAnalytics({
       // worth having.
       capture_heatmaps: true,
 
-      disable_session_recording: true,
+      // Every session, no sampling — the traffic is nowhere near the free 5,000
+    // recordings a month. Add `sampleRate: 0.25` here if that stops being true.
+    session_recording: { maskAllInputs: true },
 
       // Only people who hand over an email get a stored profile; everyone else
       // stays an anonymous event stream.

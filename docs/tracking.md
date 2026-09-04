@@ -28,8 +28,9 @@ route change on its own, plus click maps and scroll depth, plus a short list of
 named funnel events — `waitlist_submitted`, `waitlist_signup`,
 `waitlist_error`, `film_opened`, `hero_tab_selected`, `nav_cta_clicked`.
 
-Session replay is off, and it stays off while the only form on the page collects
-work email addresses.
+Session replay is on, with every input masked — recordings show that the
+waitlist field was filled, never what was typed into it. Free up to 5,000
+recordings a month, which this site does not come close to.
 
 Provisioning, the env vars, and the reverse proxy that keeps ad blockers from
 eating the traffic are all in **[docs/posthog-setup.md](./posthog-setup.md)**.
