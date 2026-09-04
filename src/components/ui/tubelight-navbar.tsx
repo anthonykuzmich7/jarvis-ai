@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { capture } from "@/lib/analytics";
 
 interface NavItem {
   name: string;
@@ -290,6 +291,14 @@ export function NavBar({ items, className, cta, brand }: NavBarProps) {
               <Link
                 href={cta.url}
                 onClick={(e) => {
+                  /* Named rather than left to autocapture: this button and the
+                     desktop one below are the same CTA with different classes,
+                     and a funnel wants them counted as one thing that knows
+                     which breakpoint it was pressed at. */
+                  capture("nav_cta_clicked", {
+                    label: cta.label,
+                    placement: "mobile_bar",
+                  });
                   setMenuOpen(false);
                   goToSection(e, cta.url);
                 }}
@@ -467,7 +476,13 @@ export function NavBar({ items, className, cta, brand }: NavBarProps) {
             {cta && (
               <Link
                 href={cta.url}
-                onClick={(e) => goToSection(e, cta.url)}
+                onClick={(e) => {
+                  capture("nav_cta_clicked", {
+                    label: cta.label,
+                    placement: "desktop_bar",
+                  });
+                  goToSection(e, cta.url);
+                }}
                 className="cta-shine relative shrink-0 cursor-pointer overflow-hidden whitespace-nowrap rounded-full bg-coal-ink px-5 py-2.5 text-[13.5px] font-semibold tracking-[-0.14px] text-white transition-colors hover:bg-graphite active:scale-[0.98]"
               >
                 {cta.label}

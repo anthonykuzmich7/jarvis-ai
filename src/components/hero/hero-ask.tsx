@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { KineticHeadline } from "@/components/hero/kinetic-headline";
 import { FilmModal } from "@/components/hero/film-modal";
+import { capture } from "@/lib/analytics";
 import { MeetingAssistStage } from "@/components/hero/meeting-assist-stage";
 import { FocusDayStage } from "@/components/hero/focus-day-stage";
 import {
@@ -204,7 +205,10 @@ export function HeroAsk() {
             </a>
             <button
               type="button"
-              onClick={() => setFilmOpen(true)}
+              onClick={() => {
+                capture("film_opened");
+                setFilmOpen(true);
+              }}
               className="group inline-flex cursor-pointer items-center gap-2 text-sm font-medium leading-none tracking-[-0.14px] text-graphite transition-colors hover:text-coal-ink"
             >
               Watch how it works
@@ -292,7 +296,13 @@ export function HeroAsk() {
                   type="button"
                   role="tab"
                   aria-selected={selected}
-                  onClick={() => setTab(n)}
+                  /* Which pitch a visitor reaches for is the one signal the
+                     hero gives that a click map cannot: the three tabs are the
+                     same button in the same place. */
+                  onClick={() => {
+                    capture("hero_tab_selected", { tab: label, index: n });
+                    setTab(n);
+                  }}
                   className={
                     "cursor-pointer rounded-full px-4 py-2 text-[13px] font-medium leading-none tracking-[-0.13px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coal-ink " +
                     (selected

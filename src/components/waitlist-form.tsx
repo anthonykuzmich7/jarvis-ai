@@ -2,7 +2,7 @@
 
 import { useActionState, useRef, useState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
-import { track } from "@vercel/analytics/react";
+import { capture, identifyLead } from "@/lib/analytics";
 import { joinWaitlist, type WaitlistState } from "@/app/actions";
 import { ArrowRightIcon } from "@/components/icons";
 import { ROLE_OPTIONS } from "@/lib/roles";
@@ -99,14 +99,40 @@ function SubmitButton() {
 export function WaitlistForm() {
   const [state, formAction] = useActionState(joinWaitlist, initialState);
 
+  /* The action only echoes the email back, but the properties worth putting on
+     the conversion — role, campaign, which page they were standing on — were
+     all on the submission. Carry them across the round trip. */
+  const submitted = useRef<Record<string, string>>({});
+
   useEffect(() => {
-    if (state.status === "success") track("waitlist_signup");
-  }, [state.status]);
+    if (state.status === "success") {
+      /* Everything this browser did anonymously before the form was filled in
+         gets stitched onto the person the moment we have an address for them. */
+      if (state.email) identifyLead(state.email, submitted.current);
+      capture("waitlist_signup", submitted.current);
+    } else if (state.status === "error") {
+      capture("waitlist_error", {
+        ...submitted.current,
+        message: state.message,
+      });
+    }
+  }, [state]);
 
   const submit = (formData: FormData) => {
-    for (const [name, value] of Object.entries(attributionFields())) {
+    const attribution = attributionFields();
+    for (const [name, value] of Object.entries(attribution)) {
       formData.set(name, value);
     }
+
+    submitted.current = {
+      role: String(formData.get("role") ?? ""),
+      ...attribution,
+    };
+
+    // Fired before the server answers, so the funnel has a denominator: how
+    // many people pressed the button, not just how many rows reached the sheet.
+    capture("waitlist_submitted", submitted.current);
+
     formAction(formData);
   };
 

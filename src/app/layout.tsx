@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter, Lato } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
+import { PostHogAnalytics } from "@/components/posthog-provider";
 import { AttributionCapture } from "@/components/attribution-capture";
 import {
   SITE_DESCRIPTION,
@@ -92,9 +92,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${lato.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-ledger-white">
-        {children}
-        <AttributionCapture />
-        <Analytics />
+        {/* Read here, in a server component, because the variable is a plain
+            secret rather than a NEXT_PUBLIC_ one — see the provider. */}
+        <PostHogAnalytics apiKey={process.env.POSTHOG_KEY}>
+          {children}
+          <AttributionCapture />
+        </PostHogAnalytics>
       </body>
     </html>
   );

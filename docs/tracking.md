@@ -15,20 +15,27 @@ identity when they hand it to you by joining the waitlist. So the model is:
 
 | Question | Where to look |
 | --- | --- |
-| How many people came, and from where? | Vercel Web Analytics |
+| How many people came, and from where? | PostHog |
+| What they did on the page — clicks, scroll depth, tabs, the film | PostHog |
 | Who specifically is interested? | the Google Sheet |
-| Which channel produces actual leads? | the Sheet's UTM columns |
+| Which channel produces actual leads? | PostHog funnels, or the Sheet's UTM columns |
 
-## 1. Turn on Web Analytics — one click, and it's yours to make
+## 1. PostHog
 
-The code is already deployed (`<Analytics />` in `src/app/layout.tsx`, plus a
-`waitlist_signup` event on every successful submission). It records nothing
-until you enable it:
+Analytics runs on PostHog (EU cloud), wired up in
+`src/components/posthog-provider.tsx`. It captures every click, form submit and
+route change on its own, plus click maps and scroll depth, plus a short list of
+named funnel events — `waitlist_submitted`, `waitlist_signup`,
+`waitlist_error`, `film_opened`, `hero_tab_selected`, `nav_cta_clicked`.
 
-> Vercel dashboard → project `jarvis-ai-ahm7` → **Analytics** tab → **Enable**
+Session replay is off, and it stays off while the only form on the page collects
+work email addresses.
 
-It's cookieless, so it needs no consent banner. The Hobby tier is free and
-covers far more traffic than a pre-launch landing page produces.
+Provisioning, the env vars, and the reverse proxy that keeps ad blockers from
+eating the traffic are all in **[docs/posthog-setup.md](./posthog-setup.md)**.
+Nothing records until `POSTHOG_KEY` is set.
+
+This replaced Vercel Web Analytics, which is uninstalled.
 
 ## 2. Use tagged links everywhere you post
 
@@ -110,10 +117,14 @@ behaviour as before, never an error.
 **Which channel actually produces leads** is a pivot on the Sheet's `UTM Source`
 column — that's your real answer, since it counts signups rather than clicks.
 
-**Visits per channel** is the Vercel Analytics referrer/UTM breakdown. Divide
-signups by visits and you have conversion per channel: if Instagram sends 400
-visits and 2 signups while LinkedIn sends 40 and 6, LinkedIn is the better
-channel despite being a tenth of the traffic.
+**Visits per channel** is PostHog's referrer / UTM breakdown. Divide signups by
+visits and you have conversion per channel: if Instagram sends 400 visits and 2
+signups while LinkedIn sends 40 and 6, LinkedIn is the better channel despite
+being a tenth of the traffic.
+
+PostHog can do that division for you: build a funnel from `$pageview` to
+`waitlist_signup` and break it down by `utm_source`. The named events carry the
+same first-touch attribution the Sheet gets, so the two agree.
 
 ## 5. Test rows
 
