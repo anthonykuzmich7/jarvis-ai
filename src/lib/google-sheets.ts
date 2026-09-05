@@ -27,6 +27,9 @@ export const SHEET_COLUMNS = [
   "UTM Medium",
   "UTM Campaign",
   "Country",
+  // Added after Country, not beside the other UTM columns: the sheet already
+  // holds rows in the old order and inserting mid-row would shift them.
+  "UTM Content",
 ] as const;
 
 export type SheetsConfig = {

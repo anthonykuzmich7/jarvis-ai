@@ -67,6 +67,7 @@ export async function joinWaitlist(
       utmSource: attribution(formData, "utm_source"),
       utmMedium: attribution(formData, "utm_medium"),
       utmCampaign: attribution(formData, "utm_campaign"),
+      utmContent: attribution(formData, "utm_content"),
       country,
     });
   } catch (error) {

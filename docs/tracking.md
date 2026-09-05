@@ -45,42 +45,54 @@ the referrer, so untagged Instagram traffic lands in your analytics as
 **direct** — indistinguishable from someone typing the URL. Tagged links are the
 only reliable way to know Instagram sent them.
 
-Base URL: `https://jarvis-ai-ahm7.vercel.app/`
+Base URL: `https://www.jarviscontext.com/`
 
 ### Instagram — paste these
 
-**Link in bio** (the one to set now):
+`utm_source=ig`, not `instagram`. Both are fine in the abstract; what is not
+fine is using each of them once, because they become two rows that never merge.
+`ig` is what the live links already carry, so `ig` is the house spelling.
+
+The placement lives in `utm_content`, not in `utm_campaign`. Campaign is *what
+you are promoting* and stays stable across a push; content is *which slot the
+click came from*. Keeping them separate is what lets you ask "did the reel or
+the bio do the work" without splitting the campaign in two.
+
+**Link in bio:**
 
 ```
-https://jarvis-ai-ahm7.vercel.app/?utm_source=instagram&utm_medium=social&utm_campaign=bio
+https://www.jarviscontext.com/?utm_source=ig&utm_medium=social&utm_campaign=waitlist&utm_content=bio
 ```
 
 **Story link sticker:**
 
 ```
-https://jarvis-ai-ahm7.vercel.app/?utm_source=instagram&utm_medium=social&utm_campaign=story
+https://www.jarviscontext.com/?utm_source=ig&utm_medium=social&utm_campaign=waitlist&utm_content=story
 ```
 
-**A specific post or reel** — swap `launch` for the post's own name so you can
-tell posts apart:
+**A specific post or reel** — name the post, so posts are tellable apart:
 
 ```
-https://jarvis-ai-ahm7.vercel.app/?utm_source=instagram&utm_medium=social&utm_campaign=launch
+https://www.jarviscontext.com/?utm_source=ig&utm_medium=social&utm_campaign=waitlist&utm_content=reel-focus-day
 ```
 
 **DMs:**
 
 ```
-https://jarvis-ai-ahm7.vercel.app/?utm_source=instagram&utm_medium=dm&utm_campaign=outreach
+https://www.jarviscontext.com/?utm_source=ig&utm_medium=dm&utm_campaign=waitlist&utm_content=outreach
 ```
+
+Instagram adds its own `igsh` parameter to shared links and strips the referrer
+on every outbound tap. It does **not** add `utm_*` — anything you see in those
+columns is a link you tagged yourself.
 
 ### Other channels
 
 | Channel | Link |
 | --- | --- |
-| LinkedIn profile | `...?utm_source=linkedin&utm_medium=social&utm_campaign=profile` |
-| LinkedIn post | `...?utm_source=linkedin&utm_medium=social&utm_campaign=post` |
-| X / Twitter bio | `...?utm_source=x&utm_medium=social&utm_campaign=bio` |
+| LinkedIn profile | `...?utm_source=linkedin&utm_medium=social&utm_campaign=waitlist&utm_content=profile` |
+| LinkedIn post | `...?utm_source=linkedin&utm_medium=social&utm_campaign=waitlist&utm_content=post` |
+| X / Twitter bio | `...?utm_source=x&utm_medium=social&utm_campaign=waitlist&utm_content=bio` |
 | Cold email | `...?utm_source=email&utm_medium=outbound&utm_campaign=<list-name>` |
 | Newsletter | `...?utm_source=newsletter&utm_medium=email&utm_campaign=<issue>` |
 | Product Hunt | `...?utm_source=producthunt&utm_medium=referral&utm_campaign=launch` |
@@ -89,10 +101,12 @@ https://jarvis-ai-ahm7.vercel.app/?utm_source=instagram&utm_medium=dm&utm_campai
 
 1. **Always lowercase.** `Instagram` and `instagram` become two separate rows in
    every report, and they never merge back.
-2. **Keep the vocabulary small.** `utm_source` is the platform (instagram,
-   linkedin, email). `utm_medium` is the kind of placement (social, dm, email,
-   referral). `utm_campaign` is the specific thing you posted. Inventing a new
-   word each time makes the report unreadable within a month.
+2. **Keep the vocabulary small.** `utm_source` is the platform (ig, linkedin,
+   email). `utm_medium` is the kind of placement (social, dm, email, referral).
+   `utm_campaign` is what you are promoting, and should barely change.
+   `utm_content` is the individual slot the click came from — `bio`, `story`,
+   a named reel. Inventing a new word each time makes the report unreadable
+   within a month.
 
 ## 3. How attribution survives the visit
 
@@ -100,7 +114,8 @@ UTM params only exist on the URL of the first page someone lands on. If a
 visitor arrives from Instagram, browses to `/compare`, and signs up from a clean
 URL, the params are long gone.
 
-So `src/lib/attribution.ts` snapshots the source on the first page of the visit
+All four `utm_*` params are captured, plus the referrer. So
+`src/lib/attribution.ts` snapshots the source on the first page of the visit
 and keeps it in `sessionStorage` for the rest of the session. **First touch
 wins** — later internal navigation never overwrites the original source, so the
 Sheet credits Instagram rather than recording direct traffic.
@@ -134,8 +149,10 @@ from those environments are labelled in the `Source` column
 (`landing-waitlist:local`, `landing-waitlist:preview`) so they're easy to spot
 and filter out. Real leads are plain `landing-waitlist`.
 
-## Worth doing eventually
+## The canonical host
 
-A **custom domain** — `jarvis-ai-ahm7.vercel.app` is fine for testing but hurts
-trust in an Instagram bio, and a memorable domain is itself a small conversion
-gain. Add one under project → Settings → Domains, then update the links above.
+`www.jarviscontext.com`, not the apex and not the `.vercel.app` URL. The apex
+308-redirects to www at the Vercel edge, and the old deployment URL still serves
+the same HTML — see `src/lib/site.ts`. Always post the www form: a redirect hop
+costs nothing in analytics terms but loses the query string on some in-app
+browsers, and UTM params are the whole point of a tagged link.

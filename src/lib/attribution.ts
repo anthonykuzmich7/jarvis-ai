@@ -22,6 +22,10 @@ export type Attribution = {
   utm_source: string;
   utm_medium: string;
   utm_campaign: string;
+  /* The placement inside a channel — bio vs story vs a named reel. It is the
+     parameter the live Instagram links actually vary, so a lead row without it
+     can say "instagram, launch campaign" but not which post did the work. */
+  utm_content: string;
 };
 
 const EMPTY: Attribution = {
@@ -29,6 +33,7 @@ const EMPTY: Attribution = {
   utm_source: "",
   utm_medium: "",
   utm_campaign: "",
+  utm_content: "",
 };
 
 /** Reads what the *current* URL and referrer say about where this visitor came from. */
@@ -51,11 +56,14 @@ function readCurrent(): Attribution {
     utm_source: params.get("utm_source") ?? "",
     utm_medium: params.get("utm_medium") ?? "",
     utm_campaign: params.get("utm_campaign") ?? "",
+    utm_content: params.get("utm_content") ?? "",
   };
 }
 
 function hasSignal(a: Attribution): boolean {
-  return Boolean(a.referrer || a.utm_source || a.utm_medium || a.utm_campaign);
+  return Boolean(
+    a.referrer || a.utm_source || a.utm_medium || a.utm_campaign || a.utm_content,
+  );
 }
 
 /**
@@ -94,5 +102,6 @@ export function attributionFields(): Record<string, string> {
     utm_source: source.utm_source,
     utm_medium: source.utm_medium,
     utm_campaign: source.utm_campaign,
+    utm_content: source.utm_content,
   };
 }

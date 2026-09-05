@@ -134,6 +134,7 @@ One row per signup:
 | UTM Medium | `social` | from `?utm_medium=` |
 | UTM Campaign | `launch` | from `?utm_campaign=` |
 | Country | `PL` | two-letter code, from Vercel's edge — blank locally |
+| UTM Content | `bio` | from `?utm_content=` — which placement, not which channel |
 
 Values are written with `valueInputOption=RAW`, so a submission starting with
 `=` is stored as text rather than executed as a formula.

@@ -23,6 +23,8 @@ export type Lead = {
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
+  /** Placement within the channel — which post or placement, not which channel. */
+  utmContent?: string;
   /** Two-letter country from Vercel's edge geo header. */
   country?: string;
 };
@@ -40,6 +42,11 @@ function toRow(lead: Lead): string[] {
     lead.utmMedium ?? "",
     lead.utmCampaign ?? "",
     lead.country ?? "",
+    /* Appended after Country rather than filed beside the other UTM columns.
+       The sheet already holds rows written in the old order, and inserting a
+       column mid-row would shift every historical Country value one cell to
+       the right. New columns go on the end. */
+    lead.utmContent ?? "",
   ];
 }
 
