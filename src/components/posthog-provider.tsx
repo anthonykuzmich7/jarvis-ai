@@ -46,6 +46,60 @@ import { PostHogProvider } from "@posthog/react";
   without keeping a second, differently-named copy of it around.
 */
 
+/** Marks this browser as ours: visit any page with `?internal=1`. `?internal=0` undoes it. */
+const INTERNAL_PARAM = "internal";
+
+/**
+ * Reads the internal flag off the URL and strips it, returning what it said.
+ *
+ * Stripping matters twice over. The parameter would otherwise ride along in
+ * anything you copy out of the address bar — and a shared link that silently
+ * marks the recipient as internal is a quiet way to lose real visitors from
+ * every report. It would also sit on `$current_url` for the whole visit.
+ *
+ * Call this BEFORE `posthog.init`. The SDK captures pageviews on history
+ * changes, so a `replaceState` after init would book a second `$pageview` for
+ * a page nobody navigated to.
+ */
+function takeInternalFlag(): boolean | null {
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get(INTERNAL_PARAM);
+  if (raw === null) return null;
+
+  params.delete(INTERNAL_PARAM);
+  const query = params.toString();
+  window.history.replaceState(
+    null,
+    "",
+    window.location.pathname + (query ? `?${query}` : "") + window.location.hash,
+  );
+
+  return raw !== "0" && raw !== "false";
+}
+
+/**
+ * Records — or clears — "this browser is one of ours".
+ *
+ * `register` is the half that matters. It persists the flag to localStorage as
+ * a super property, so it rides on *every* later event from this browser,
+ * including the anonymous pageviews that make up nearly all of our own
+ * traffic. A person property alone could never do that: we are anonymous until
+ * we fill in the waitlist, which we never do.
+ *
+ * `setPersonProperties` is the other half, and only exists so PostHog's stock
+ * "Internal / Test users" cohort — which matches on the person property —
+ * starts working. It creates a person profile where none existed, which is the
+ * one place we deliberately step outside `identified_only`.
+ */
+function setInternal(internal: boolean): void {
+  if (internal) {
+    posthog.register({ $internal_or_test_user: true });
+  } else {
+    posthog.unregister("$internal_or_test_user");
+  }
+  posthog.setPersonProperties({ $internal_or_test_user: internal });
+}
+
 export function PostHogAnalytics({
   apiKey,
   children,
@@ -57,6 +111,9 @@ export function PostHogAnalytics({
   useEffect(() => {
     // No key is the normal state locally and in any fork. Stay silent.
     if (!apiKey || posthog.__loaded) return;
+
+    // Read before init — see takeInternalFlag on why the order is load-bearing.
+    const internal = takeInternalFlag();
 
     posthog.init(apiKey, {
       api_host: "/ingest",
@@ -72,8 +129,8 @@ export function PostHogAnalytics({
       capture_heatmaps: true,
 
       // Every session, no sampling — the traffic is nowhere near the free 5,000
-    // recordings a month. Add `sampleRate: 0.25` here if that stops being true.
-    session_recording: { maskAllInputs: true },
+      // recordings a month. Add `sampleRate: 0.25` here if that stops being true.
+      session_recording: { maskAllInputs: true },
 
       // Only people who hand over an email get a stored profile; everyone else
       // stays an anonymous event stream.
@@ -86,6 +143,12 @@ export function PostHogAnalytics({
     posthog.register({
       environment: process.env.NEXT_PUBLIC_VERCEL_ENV ?? "development",
     });
+
+    /* Only on the visit that carries the parameter. Every visit after it reads
+       the flag back out of persistence during init, before the first pageview
+       is captured — so the one event that misses the flag is the pageview on
+       the marking visit itself. */
+    if (internal !== null) setInternal(internal);
   }, [apiKey]);
 
   return <PostHogProvider client={posthog}>{children}</PostHogProvider>;

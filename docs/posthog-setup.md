@@ -125,3 +125,49 @@ Two caveats worth carrying forward:
 Replay is also the part of this setup a privacy regulator would look at hardest.
 Masked inputs and no consent banner is a defensible position for a landing page,
 not a settled one — revisit it if the site starts collecting more than an email.
+
+## 7. Keeping your own traffic out
+
+You load this site more than any visitor does, and nearly all of it is
+anonymous — you never fill in your own waitlist. A rule about email addresses
+can therefore never catch it, because there is no person to attach an address
+to. The flag is the answer.
+
+Visit any page once per browser with the parameter:
+
+```
+https://www.jarviscontext.com/?internal=1
+```
+
+That registers `$internal_or_test_user: true` as a **super property**, persisted
+in localStorage, so every later event from that browser carries it — anonymous
+pageviews included. It also sets the matching person property, which is what
+PostHog's stock **Internal / Test users** cohort matches on. `?internal=0`
+clears both.
+
+The parameter is stripped from the URL immediately, so it cannot ride along in
+a link you copy out of the address bar. A shared link that silently marks the
+recipient as internal would quietly delete real visitors from every report.
+
+Do it once on each browser and device you browse from. It survives until the
+site's localStorage is cleared.
+
+### The PostHog side
+
+In **Settings → Product analytics → Filter out internal and test users**, the
+stock chip `User not in Internal / Test users` is all you need — the cohort
+matches the person property the flag sets.
+
+Two traps in that screen:
+
+- The filters are **inclusive**. `Email address = someone@example.com` shows you
+  *only* that person, which is the opposite of filtering them out. Exclusive
+  operators (`does not equal`, `does not contain`) or the cohort's `not in` are
+  what you want.
+- Turning on **Enable this filter on all new insights**, and clicking **Turn on
+  for existing insights**, is what actually applies any of it. The toggle alone
+  does nothing if no rule matches.
+
+Filtering is analysis-only: the events are still ingested, and the **Activity
+tab keeps showing them**. Judge whether it works on an insight or the Web
+Analytics dashboard, never on Activity.

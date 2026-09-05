@@ -28,6 +28,10 @@ route change on its own, plus click maps and scroll depth, plus a short list of
 named funnel events — `waitlist_submitted`, `waitlist_signup`,
 `waitlist_error`, `film_opened`, `hero_tab_selected`, `nav_cta_clicked`.
 
+Your own visits should not be in any of these numbers: load the site once per
+browser with `?internal=1` and every event from it is flagged for exclusion.
+See [docs/posthog-setup.md](./posthog-setup.md#7-keeping-your-own-traffic-out).
+
 Session replay is on, with every input masked — recordings show that the
 waitlist field was filled, never what was typed into it. Free up to 5,000
 recordings a month, which this site does not come close to.
