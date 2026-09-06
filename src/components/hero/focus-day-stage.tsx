@@ -50,8 +50,9 @@ import { Video } from "lucide-react";
   it out of. It sits right beside the title, not floated to the card's far
   edge.
 
-  Hover offers the way in beside the title — Join a meeting, open the tool a
-  task came from. Nothing there at rest.
+  Hover offers the way in at the row's right edge — Join a meeting, open the
+  tool a task came from. It parks out there rather than beside the title,
+  where it kept nudging the title sideways as it faded in. Nothing at rest.
 
   ── The motion ───────────────────────────────────────────────────────
 
@@ -583,15 +584,18 @@ export function FocusDayStage({
           </motion.div>
         </div>
 
-        {/* The card's dateline: what it is on the left, when it is on the
-            right, one row. The eyebrow is the site's section-title treatment
-            — semibold, uppercase, tracked — set in ink rather than the
+        {/* The card's dateline: label then date, joined on one line by a
+            hairline middot rather than pushed to opposite margins. "Today's
+            focus" is the eyebrow — the site's section-title treatment,
+            semibold, uppercase, tracked — set in ink rather than the
             eyebrow's usual smolder, because the sentence right below carries
             the one orange underline this part of the card is allowed. The
-            date is the demo's own, resolved after hydration so a prerendered
-            page is never stale. */}
+            date rides behind the middot as a quiet tail: context for the
+            sentence, not a second headline competing from the far edge. It
+            is the demo's own, resolved after hydration so a prerendered page
+            is never stale. */}
         <motion.div
-          className="mt-4 flex items-baseline justify-between gap-4"
+          className="mt-4 flex flex-wrap items-baseline gap-x-1.5"
           initial={reduce ? false : { opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.06, ease: EASE }}
@@ -599,7 +603,10 @@ export function FocusDayStage({
           <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-coal-ink">
             Today&rsquo;s focus
           </p>
-          <p className="shrink-0 text-[12px] text-slate-mid">{date}</p>
+          <span aria-hidden className="text-[11px] leading-none text-fossil">
+            &middot;
+          </span>
+          <p className="text-[11px] text-stone">{date}</p>
         </motion.div>
 
         {/* Beat one. The sentence arrives as ONE object — it used to fade
@@ -710,8 +717,10 @@ export function FocusDayStage({
                   }}
                 />
 
-                {/* Content. */}
-                <div className="relative flex min-w-0 flex-1 flex-col">
+                {/* Content. Holds a constant right inset so the hover pill
+                    can park at the row's edge without ever landing on top of
+                    a note — reserved always, so nothing reflows on hover. */}
+                <div className="relative flex min-w-0 flex-1 flex-col pr-24">
                   <span className="flex items-center gap-1.5 leading-none">
                     <span
                       className="text-[9px] font-bold uppercase tracking-[0.08em]"
@@ -754,30 +763,6 @@ export function FocusDayStage({
                         <MeetMark />
                       )}
                     </span>
-
-                    {/* Nothing at rest; hover offers the way in. */}
-                    <span
-                      aria-hidden
-                      className={
-                        "hidden items-center gap-1 whitespace-nowrap rounded-full px-2 py-[2px] text-[10.5px] font-semibold sm:flex " +
-                        (isTask
-                          ? "border border-ash bg-white text-graphite"
-                          : "bg-coal-ink text-white")
-                      }
-                      style={{
-                        opacity: isLit ? 1 : 0,
-                        transition: reduce ? "none" : "opacity 160ms ease",
-                      }}
-                    >
-                      {isTask ? (
-                        row.source ? VERB[row.source] : null
-                      ) : (
-                        <>
-                          <Video className="h-3 w-3" strokeWidth={2.25} aria-hidden />
-                          Join
-                        </>
-                      )}
-                    </span>
                   </span>
 
                   {row.note ? (
@@ -793,6 +778,33 @@ export function FocusDayStage({
                     </span>
                   ) : null}
                 </div>
+
+                {/* Nothing at rest; on hover the way in fades in at the
+                    row's right edge, parked clear of the title instead of
+                    tucked against it. Centred on the row, out of flow, so it
+                    never shifts a word. */}
+                <span
+                  aria-hidden
+                  className={
+                    "pointer-events-none absolute right-2 top-1/2 hidden -translate-y-1/2 items-center gap-1 whitespace-nowrap rounded-full px-2 py-[2px] text-[10.5px] font-semibold sm:flex " +
+                    (isTask
+                      ? "border border-ash bg-white text-graphite"
+                      : "bg-coal-ink text-white")
+                  }
+                  style={{
+                    opacity: isLit ? 1 : 0,
+                    transition: reduce ? "none" : "opacity 160ms ease",
+                  }}
+                >
+                  {isTask ? (
+                    row.source ? VERB[row.source] : null
+                  ) : (
+                    <>
+                      <Video className="h-3 w-3" strokeWidth={2.25} aria-hidden />
+                      Join
+                    </>
+                  )}
+                </span>
               </motion.div>
             );
           })}

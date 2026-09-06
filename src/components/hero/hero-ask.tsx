@@ -51,10 +51,11 @@ import {
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 /* One reserved SLOT, sized to the tallest tab, with each card sitting at
-   the top of it at its own natural height. The tab row hangs off the bottom
-   of the slot, so it never moves when you switch, which is the thing that
-   must not happen: press a tab and the row you are pressing walks out from
-   under the cursor.
+   the top of it at its own natural height. The tab row sits ABOVE the slot
+   now, so it never moves when you switch — which is the thing that must not
+   happen: press a tab and the row you are pressing walks out from under the
+   cursor. Focus grows downward inside the slot; the tabs are above that
+   growth and hold still regardless.
 
    The three cards were the same height until Focus arrived. Padding a
    terminal out to a whole day's height is 170px of dead black inside the
@@ -232,9 +233,72 @@ export function HeroAsk() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.3, ease: EASE }}
         >
+          {/* The tabs, ABOVE the card and styled as tabs, not buttons.
+
+              They used to be a row of pills below the card: the selected one
+              filled coal-ink — the exact treatment of the "Get early access"
+              CTA a column to the left — and the rest were ghost outlines, so
+              the hero showed five things shaped like calls to action and
+              only two were. This is the nav's own idiom instead: a bare
+              label, ink when live and stone when not, with a 2px smolder
+              rule that slides to the active one, all riding a single ash
+              hairline. Nothing here is filled or bordered, so nothing here
+              reads as a button.
+
+              Above the card, not below: a control the reader has not found
+              yet belongs before the thing it changes, and up here it never
+              moves — Focus grows DOWNWARD inside the slot, so a tab row
+              beneath it needed the slot's whole reserved height just to
+              hold still. */}
+          <div
+            role="tablist"
+            aria-label="What Jarvis does"
+            className="relative mb-5 flex flex-wrap gap-x-6 gap-y-1 border-b border-ash sm:mb-6"
+          >
+            {TABS.map((label, n) => {
+              const selected = n === tab;
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  /* Which pitch a visitor reaches for is the one signal the
+                     hero gives that a click map cannot: the three tabs are
+                     the same control in the same place. */
+                  onClick={() => {
+                    capture("hero_tab_selected", { tab: label, index: n });
+                    setTab(n);
+                  }}
+                  className={
+                    "relative cursor-pointer pb-2.5 text-[13px] font-medium leading-none tracking-[-0.13px] transition-colors focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-coal-ink " +
+                    (selected
+                      ? "text-coal-ink"
+                      : "text-stone hover:text-coal-ink")
+                  }
+                >
+                  {label}
+                  {selected ? (
+                    <motion.span
+                      aria-hidden
+                      layoutId="hero-tab-rule"
+                      className="absolute -bottom-px left-0 right-0 block h-[2px] rounded-full bg-smolder"
+                      transition={
+                        reduce
+                          ? { duration: 0 }
+                          : { type: "spring", stiffness: 400, damping: 32 }
+                      }
+                    />
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+
           {/* The reserved slot. Every card is top-aligned in it and keeps
-              its own height, so the tab row below sits at a fixed distance
-              from the headline whichever tab is open.
+              its own height; with the tabs now above it, the slot only has
+              to keep whatever sits BELOW the card from jumping as Focus
+              grows.
 
               Focus resizes ITSELF inside this box: it opens as the plate
               alone and grows into the day, which is the argument the tab is
@@ -287,39 +351,6 @@ export function HeroAsk() {
             />
           )}
           </div>
-          </div>
-
-          <div
-            role="tablist"
-            aria-label="What Jarvis does"
-            className="mt-6 flex flex-wrap gap-2 sm:mt-14"
-          >
-            {TABS.map((label, n) => {
-              const selected = n === tab;
-              return (
-                <button
-                  key={label}
-                  type="button"
-                  role="tab"
-                  aria-selected={selected}
-                  /* Which pitch a visitor reaches for is the one signal the
-                     hero gives that a click map cannot: the three tabs are the
-                     same button in the same place. */
-                  onClick={() => {
-                    capture("hero_tab_selected", { tab: label, index: n });
-                    setTab(n);
-                  }}
-                  className={
-                    "cursor-pointer rounded-full px-4 py-2 text-[13px] font-medium leading-none tracking-[-0.13px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coal-ink " +
-                    (selected
-                      ? "bg-coal-ink text-white"
-                      : "border border-black/10 text-coal-ink/70 hover:border-black/20 hover:text-coal-ink")
-                  }
-                >
-                  {label}
-                </button>
-              );
-            })}
           </div>
         </motion.div>
       </div>
