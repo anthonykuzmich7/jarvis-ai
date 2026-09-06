@@ -286,7 +286,7 @@ export function HeroAsk() {
           <div
             role="tablist"
             aria-label="What Jarvis does"
-            className="mt-4 flex flex-wrap gap-2"
+            className="mt-6 flex flex-wrap gap-2 sm:mt-14"
           >
             {TABS.map((label, n) => {
               const selected = n === tab;
