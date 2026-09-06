@@ -21,82 +21,37 @@ import { Video } from "lucide-react";
   into (a terminal, a video call) are dark, which is why the other two hero
   tabs are and this one is not.
 
-  The day is drawn to scale: the hours down the left, and every entry as
-  tall as the time it actually takes. A two-hour review is twice a one-hour
-  one, a thirty-minute 1:1 is half of it and drops its second line because
-  there is no room for one, and the hours nobody has taken are simply empty.
-  That is the whole reason the day has a shape.
+  An agenda, not a scale drawing. The day was drawn to scale for a while —
+  every entry as tall as the hours it took — and a two-hour review next to
+  a one-hour 1:1 read as one big card and one small one, with a hand of
+  empty paper between them. That is honest and it is also a mess to scan.
+  Now it is a uniform list: one row per entry, every row the same height,
+  hairline-divided the way the FAQ and the overlay section divide theirs.
+  The rows are still in clock order and each still prints its start time, so
+  the sequence of the day survives; the drawing-to-scale did not.
 
-  No hour rules. They were there until every entry became an outlined block,
-  at which point the card was drawing its structure twice over: a grid
-  saying where the hours are, and a set of boxes saying the same thing again
-  and more precisely.
+  Three columns, and the left two are fixed so the whole list aligns down a
+  single edge: a start time in the mono face, then a short rail in the
+  entry's colour, then everything the entry says.
 
-  Rows were one hour each for a long time, which made the card a stack of
-  identical bands alternating task, meeting, task, meeting — a diagram of a
-  day rather than anybody's actual Thursday.
+  The rail is the one place a colour is allowed. A meeting's rail is the
+  calendar's periwinkle — Signal Violet, the hour is quoted from a calendar
+  Jarvis could not move — and a task's rail is ink at low strength, because
+  Jarvis placed it and it can still move. Both brighten under the pointer.
 
-  Every entry is an outlined block running the exact length of the thing.
-  The outline is not decoration: it is the only thing on the card that says
-  how long something takes, and everything inside a block is centred against
-  it — title and reason as one group, the mark against the same middle.
+  A small kind label — "Task" or "Meeting" — sits over every title, in the
+  rail's own colour, the fastest answer to "what kind of hour is this" for
+  someone scanning before they read. Anything running longer than an hour
+  says so beside the label ("Task · 2h"); the row height no longer carries
+  that, so a word does.
 
-  A meeting is filled and the work Jarvis placed is not, and that alone is
-  what tells the two apart: the day's shape is countable before a word of it
-  is read, which is the one thing the card could not do while every entry
-  was the same object.
+  The mark says what, never who. A meeting carries the video tool it will
+  open in (Google Meet's mark, today) and work carries the tool Jarvis read
+  it out of. It sits right beside the title, not floated to the card's far
+  edge.
 
-  The fill is periwinkle, and it is the calendar's colour rather than the
-  card's. Signal Violet at seven per cent, edged a step deeper, so a booked
-  hour reads as a card lifted out of your calendar and quoted here — which
-  is precisely what it is. Jarvis's own work stays on the card's own paper
-  because Jarvis wrote it. The type on both is the same ink, because the
-  card is speaking in one voice about two kinds of hour.
-
-  A fill was rejected here once on the grounds that a tint reads as a
-  different KIND of paper when the point is that it is the same paper. That
-  objection was answered for a while with warmth, and the answer was wrong:
-  #efeae0 had so little chroma that it did not read as another surface at
-  all, it read as this one, dirty. The right answer is to agree with the
-  objection. A meeting IS from somewhere else.
-
-  Not a hatch: strokes across a calendar block mean CANCELLED in every
-  calendar anyone has used. Not a permanent smolder outline either — that
-  was tried, and it left two blocks burning under a sentence that is the
-  card's actual argument. Nor a bar beside the block: a rail in the margin
-  never once rendered, because the margin it sat in is outside the
-  overflow-hidden wrapper that animates the day open. Everything that marks
-  a block paints inside it, where nothing can clip it.
-
-  Two colours, and they never mean the same kind of thing. Periwinkle is a
-  SOURCE — this hour came from your calendar — and it is permanent, because
-  where an hour came from does not change. Smolder is ATTENTION — you are
-  pointing at this — and it is never permanent. Every block, filled or not,
-  keeps a 1.5-point outline that goes to smolder while the reader is on it,
-  and orange over violet is far enough apart that the ring reads instantly
-  without the fill having to get out of its way.
-
-  A block is three columns, and the two on the right are fixed: 96 points of
-  meta, 68 of mark, both right-aligned. A logo, a stack of two faces and a
-  stack of four therefore end on one line. Before that they sat wherever the
-  title stopped pushing them, and the day had a ragged right edge.
-
-  The clock and the button share one box. A meeting prints its hours at rest
-  and turns them into Join while the reader is on it, so the hour you can
-  attend becomes the way to attend it, and nothing in the block moves
-  between the two states. Work prints no clock, because Jarvis placed it and
-  it can move; the empty slot says that as clearly as the printed one says
-  the opposite, and it fills with the way into the tool instead.
-
-  The mark says who, or what. A meeting carries the people in it, work
-  carries the tool it came out of. The calendar glyph is gone: it named a
-  category the fill already names, where faces answer a question the card
-  could not answer at all — which of these hours costs six other people
-  theirs.
-
-  Blocks are flush with their own hours and therefore with each other: a
-  review that ends at ten and a 1:1 that starts at ten share one edge,
-  because the day has no gap there.
+  Hover offers the way in beside the title — Join a meeting, open the tool a
+  task came from. Nothing there at rest.
 
   ── The motion ───────────────────────────────────────────────────────
 
@@ -104,8 +59,8 @@ import { Video } from "lucide-react";
 
     1. Jarvis speaks.   The mark, the title, the date and the sentence
                         arrive as one object.
-    2. The day opens.   The card grows and the empty hours are ruled.
-    3. The day fills.   Your calendar, then Jarvis's work in the gaps.
+    2. The day opens.   The agenda fades in under the sentence.
+    3. The day fills.   Your calendar, then Jarvis's work between it.
 
   That is the whole product in three beats, and the last two are the claim:
   Jarvis fitted work into a day that already existed. Reversed or
@@ -115,17 +70,22 @@ import { Video } from "lucide-react";
   underlines drawing at once under the named work. They are still here, but
   they are drawn by the READER now, one at a time, on hover. Standing by
   default they marked every task the moment the card opened, which is a lot
-  of accent spent saying what the bold weight already said, and it left the
-  card with four orange elements before the day had even appeared. On hover
-  the same rule earns its colour: it answers one question, asked by one
-  person, about one phrase.
+  of accent spent saying what the bold weight already said. On hover the
+  same rule earns its colour: it answers one question, asked by one person,
+  about one phrase.
 
-  Hovering a phrase also lights its hour in the day below, and hovering an
-  hour draws the underline back up in the sentence. The link runs both ways
-  because the claim runs both ways: the sentence is the day, sorted. Meetings
-  light too, since the outline means attention rather than category, and a
-  block that ignored the pointer on a card where every other block answers it
-  would read as broken rather than as different.
+  Hovering a phrase also lights its row in the agenda below, and hovering a
+  row draws the underline back up in the sentence. The link runs both ways
+  because the claim runs both ways: the sentence is the day, sorted. A row
+  lights three ways at once — a faint wash behind it, its rail brightening,
+  an ink underline under its title — none of them a border, so a hovered
+  row never boxes itself. Meetings light too, so a row that ignored the
+  pointer on a card where every other one answers it does not read as
+  broken.
+
+  The two ends of that link do not share a colour. The sentence keeps
+  smolder, the same rule the hero headline strikes under its own word; the
+  day's echo of it is ink, a quieter rule for a quieter part of the card.
 
   Everything else that used to move has been cut, because "more animation"
   and "more legible" stopped pointing the same way a long way back. What
@@ -138,43 +98,40 @@ import { Video } from "lucide-react";
   COPY already makes, since the row says the same words the sentence does.
   A demo-reel stunt dressed as an argument.
 
-  A stagger on every list. Seven sentence fragments 50ms apart, eight hour
-  rules drawing one after another, rows arriving one by one. Each was
-  defensible alone; together the card never stopped moving for three
-  seconds. A drip feed also says the plan is being computed while you watch,
-  when the point is that it was finished before you sat down.
-
-  A timer inside every row. Bar, title, line and mark each had their own
-  beat, so an hour assembled itself in front of the reader instead of simply
-  being there. A row is one object and arrives as one.
+  A stagger on every list. Seven sentence fragments 50ms apart, hour rules
+  drawing one after another, rows arriving one by one. Each was defensible
+  alone; together the card never stopped moving for three seconds. A drip
+  feed also says the plan is being computed while you watch, when the point
+  is that it was finished before you sat down. The agenda now arrives in two
+  gestures, not ten: the meetings, then the work between them.
 
   ── The palette ──────────────────────────────────────────────────────
 
-  One accent, smolder, and it only ever means "this is what you are pointing
-  at": the underline a hovered phrase draws — the same rule the hero headline
-  strikes under its own word — and the outline around the hour that phrase
-  belongs to. Nothing on the card is orange until somebody asks.
+  Smolder means "this is what you are pointing at" exactly once on the card:
+  the underline a hovered phrase draws in the sentence, the same rule the
+  hero headline strikes under its own word. It never appears in the agenda
+  below.
 
-  Every word on the card is ink or grey. Periwinkle is a SURFACE colour and
-  never a type colour, which is the whole of what keeps two tinted blocks
-  from outranking the sentence above them:
+  Signal Violet is the one deliberate exception to "every word on the card
+  is ink or grey": the rail beside a meeting and the "Meeting" label above
+  it. Panxo reserves the hue for machine-classification, which is exactly
+  the job here — Jarvis marking the hours your calendar already owns.
+  Nothing periwinkle on the card responds to a click.
 
-    coal-ink       what Jarvis is telling you to do, the Join pill, and the
-                   title of an hour your calendar owns
+    coal-ink       what Jarvis is telling you to do, the Join pill, a
+                   hovered title's underline, an entry's title
     graphite       why a meeting is where it is
     slate-mid      why a task is where it is
-    stone          the hours down the left margin, and a meeting's clock
-    booked-fill    an hour your calendar already owns, as a surface
-    booked-edge    its edge, and the ring around every face in it
+    stone          the start times down the left, the "Task" label
+    signal-violet  a meeting's rail and its "Meeting" label
+    ink low-alpha  a task's rail
 
-  The only other colour is the real product logos, which are coloured
-  because they are logos.
+  The only other colour is the real product logos (GitHub, Linear, Slack,
+  Google Meet), which are coloured because they are logos.
 
   Copy is the app's own demo state (jarvis-ai-core,
   `Sources/JarvisGuideApp/TodayUI/TodayContent.swift`), so the app, the film
-  and this card never disagree about what the day looks like. The attendees
-  are the only thing here the demo state does not carry: they are the people
-  the copy already names — David for the 1:1, Tom and Sarah in the sync.
+  and this card never disagree about what the day looks like.
 */
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -183,76 +140,21 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 const CARD_SHADOW =
   "rgba(95,99,106,0.10) 0px 0px 0px 1px, rgba(43,43,48,0.12) 0px 4px 20px 0px";
 
-const DAY_START = 8;
-const DAY_END = 15;
-const HOURS = DAY_END - DAY_START;
+/** The rail colours — the one place a hue is allowed on the card.
 
-/** One hour, in pixels. The only vertical measurement the day has: a row is
-    its duration times this, so nothing on the card can lie about how long
-    anything takes.
-
-    44 is set by the shortest thing on the day. An hour has to hold a title
-    and a reason inside its own outline, which is 33 points of text plus the
-    room to sit in.
-
-    Nothing here runs under an hour any more. A 30-minute 1:1 was tried and
-    read as a floating strip rather than as half an hour, because at this
-    scale half an hour is 22 points: one line of text, its outline, and no
-    way to tell "short" from "clipped". The `compact` path below survives in
-    case a shorter thing is ever right, but the day no longer uses it.
-
-    Rows used to be one hour each, always, which made the day a stack of
-    identical bands alternating task, meeting, task, meeting. That reads as
-    a diagram of a day rather than as anybody's actual Thursday. */
-const ROW = 44;
-const TRACK = HOURS * ROW;
-/** Room above the first hour rule for its numeral, which straddles the line
-    the way an hour label does in Calendar. */
-const PAD = 8;
-
-/* The hour numerals take the mono face, because they are a column of
-   numbers. Everything else on the card is the site's sans. */
-const LANE = { time: 40, content: 56 } as const;
-
-/** The calendar's own colour, and the whole of what marks an hour you
-    cannot move.
-
-    Signal Violet, #777eff, laid down at about seven per cent, with the two
-    strengths of itself the block needs in order to set type. Panxo gives
-    that token one job — it signals machine intelligence rather than human
-    action — and a meeting is the opposite of that, so the borrowing is of
-    the hue and not the meaning.
-
-    A booked hour is a card from somewhere else, quoted into this document.
-    Two things say it: a pale fill, and an edge one step deeper than the
-    fill. Nothing else.
-
-    The title said it too for one pass — violet rather than ink, which is
-    what the calendar apps this is borrowed from do, and what makes their
-    blocks read as objects with a colour of their own rather than as ink
-    laid on a coloured rectangle. It is the better idea and the wrong one
-    here. Those apps give a block the whole screen; this card gives it
-    forty-four points under a sentence that is the card's actual argument,
-    and coloured type at that size does not read as a quotation, it reads as
-    a highlight. Two meetings in violet took the eye before the sentence
-    did.
-
-    So the colour stops at the edge of the type. Every word on this card is
-    ink or grey; only surfaces are allowed a hue.
-
-    The fill carries a faint top-to-bottom gradient. It is most of why the
-    block reads as soft rather than flat, and it is the only gradient
-    anywhere on the card.
-
-    What was here before was #efeae0: parchment with the light knocked out
-    of it, and a value belonging to no token. The objection to it is not
-    that it was warm. It is that at that chroma a fill does not read as a
-    different SURFACE, it reads as the same surface, dirty. */
-const BOOKED_FILL = "linear-gradient(180deg,#f4f5fe 0%,#eceefb 100%)";
-const BOOKED_EDGE = "#d9dcf7";
-
-/** Top of an hour inside the day. */
-const yOf = (hour: number) => (hour - DAY_START) * ROW + PAD;
+    Signal Violet, #777eff, for a meeting: Panxo gives that token one job,
+    it signals machine classification rather than human action, which is
+    exactly the job here — Jarvis marking the hours your calendar already
+    owns. Ink at low strength for a task, because Jarvis placed it and it
+    can still move. Both brighten under the pointer. */
+const MEETING_RAIL = "rgba(119,126,255,0.85)";
+const MEETING_RAIL_LIT = "#777eff";
+const TASK_RAIL = "rgba(28,26,23,0.32)";
+const TASK_RAIL_LIT = "rgba(28,26,23,0.6)";
+/** The wash a hovered row lays down behind itself, the echo of the
+    underline a hovered phrase draws in the sentence. */
+const MEETING_WASH = "rgba(119,126,255,0.07)";
+const TASK_WASH = "rgba(28,26,23,0.04)";
 
 /* ── Beats, in ms after mount ─────────────────────────────────────
 
@@ -284,11 +186,6 @@ type Row = {
       the same call Calendar makes in a half-height slot. */
   note?: string;
   source?: Source;
-  /** Who is in the room, as initials, on a meeting. The last entry may be
-      an overflow count — "+4" — which is the point of the stack: Launch
-      sync costing seven people an hour is the reason that hour is worth
-      protecting, and no glyph can say it. */
-  people?: string[];
 };
 
 /** What a task's hover offers, by where Jarvis read the work out of. The
@@ -318,7 +215,6 @@ const ROWS: Row[] = [
     hours: 1,
     title: "1:1 with David Park",
     note: "weekly, and he owes leadership a number",
-    people: ["DP"],
   },
   {
     kind: "task",
@@ -336,7 +232,6 @@ const ROWS: Row[] = [
     hours: 1,
     title: "Launch sync",
     note: "the whole team, no agenda yet",
-    people: ["TM", "SA", "DP", "+4"],
   },
   {
     kind: "task",
@@ -363,10 +258,6 @@ const SENTENCE: Segment[] = [
   { text: "sign off Sarah’s redesign", task: "sign" },
   { text: "." },
 ];
-
-/** Every hour rule, 09:00 through 16:00 inclusive, so the last one closes
-    the column instead of leaving it cut off. */
-const HOUR_LINES = Array.from({ length: HOURS + 1 }, (_, i) => DAY_START + i);
 
 /* ── Clock ───────────────────────────────────────────────────────
    The page is prerendered, so a date baked at build time is the wrong date
@@ -437,35 +328,25 @@ function SourceMark({ name }: { name: Source }) {
   );
 }
 
-/** The people in the room, as initials on the booked surface.
+/** A meeting's mark: the video tool it opens in, not who is in the room.
+    Attendee initials sat here for a while; a name nobody visiting the site
+    recognises answered a question this card was never trying to ask.
 
-    White discs ringed in the block's own edge, so the stack overlaps
-    cleanly and the ring is the one line already drawn around everything
-    else in the block rather than a second idea. Initials are ink like every
-    other word here; the overflow count reads a step quieter, because it is
-    a number rather than a person. */
-function Faces({ names }: { names: string[] }) {
+    Same artwork as `scrub-hero.tsx`'s `GoogleMeetIcon`, copied rather than
+    imported because that component isn't exported for reuse and this is
+    four short paths. Google Meet is a trademark of Google, used here to
+    depict integration, same note `brand-marks.tsx` carries for its marks. */
+function MeetMark() {
   return (
-    <span className="flex items-center">
-      {names.map((name, i) => (
-        <span
-          key={name}
-          className="flex h-[19px] w-[19px] items-center justify-center rounded-full border-[1.5px] bg-white text-[8.5px] font-semibold"
-          style={{
-            /* Three points, not six. A photo can be half-covered and still
-               read; two letters cannot, and at six the disc in front ate the
-               last character of the one behind it. */
-            marginLeft: i === 0 ? 0 : -3,
-            borderColor: BOOKED_EDGE,
-            color: name.startsWith("+")
-              ? "var(--color-stone)"
-              : "var(--color-coal-ink)",
-          }}
-        >
-          {name}
-        </span>
-      ))}
-    </span>
+    <svg viewBox="0 0 622 512" aria-hidden className="h-full w-full">
+      <path d="M351.419 255.568L411.978 324.79L493.418 376.827L507.584 256.005L493.418 137.908L410.418 183.621L351.419 255.568Z" fill="#00832D" />
+      <path d="M0.00283051 365.583V468.541C0.00283051 492.049 19.0851 511.136 42.5983 511.136H145.556L166.876 433.344L145.556 365.583L74.9198 344.263L0.00283051 365.583Z" fill="#0066DA" />
+      <path d="M145.556 0L0.00283051 145.554L74.9247 166.822L145.556 145.554L166.488 78.7145L145.556 0Z" fill="#E94235" />
+      <path d="M0.00526047 365.629H145.556V145.551H0.00526047V365.629Z" fill="#2684FC" />
+      <path d="M586.398 61.6293L493.416 137.91V376.827L586.782 453.404C600.758 464.352 621.204 454.374 621.204 436.607V78.0861C621.204 60.1224 600.271 50.193 586.396 61.6317" fill="#00AC47" />
+      <path d="M351.419 255.568V365.583H145.556V511.136H450.825C474.338 511.136 493.418 492.049 493.418 468.541V376.827L351.419 255.568Z" fill="#00AC47" />
+      <path d="M450.825 0H145.556V145.554H351.419V255.568L493.42 137.905V42.5979C493.42 19.0847 474.338 0 450.825 0" fill="#FFBA00" />
+    </svg>
   );
 }
 
@@ -641,7 +522,6 @@ export function FocusDayStage({
   const [calIn, setCalIn] = React.useState(false);
   const [workIn, setWorkIn] = React.useState(false);
   const open = opened || Boolean(reduce);
-  const litRow = ROWS.find((r) => r.id === lit) ?? null;
   const calShown = calIn || Boolean(reduce);
   const workShown = workIn || Boolean(reduce);
 
@@ -678,11 +558,7 @@ export function FocusDayStage({
             moving: one slow breath, slower and shallower than resting human
             breathing, which is enough to say the thing is running without
             ever asking to be watched. It is deliberately the only loop on
-            the card.
-
-            The date keeps the corner. Absolutely placed, so the mark is
-            centred against the CARD rather than against the space left
-            over beside a date of unpredictable width. */}
+            the card. */}
         <div className="relative flex h-7 items-center justify-center">
           <motion.div
             className="relative flex h-7 w-7 items-center justify-center"
@@ -705,36 +581,26 @@ export function FocusDayStage({
             )}
             <LookingMark areaRef={cardRef} active={active} />
           </motion.div>
-          <motion.span
-            className="absolute right-0 text-[12px] text-slate-mid"
-            initial={reduce ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.06, ease: EASE }}
-          >
-            {date}
-          </motion.span>
         </div>
 
-        {/* What the card is, in the site's own section-title treatment:
-            semibold, uppercase, tracked, smolder. The same eyebrow
-            `content/primitives.tsx` and the comparison pages set their
-            headings in, so the hero is titled the way every other section
-            on the site is.
-
-            In ink rather than the eyebrow's usual smolder: the sentence
-            directly under it carries three orange underlines and the day
-            below that carries two orange outlines, so a fourth orange
-            element on the line between them left the accent meaning
-            nothing in particular. Uppercase, tracked and semibold is already enough
-            to read as a heading; it does not need the colour as well. */}
-        <motion.p
-          className="mt-4 text-[11px] font-semibold uppercase tracking-[0.1em] text-coal-ink"
+        {/* The card's dateline: what it is on the left, when it is on the
+            right, one row. The eyebrow is the site's section-title treatment
+            — semibold, uppercase, tracked — set in ink rather than the
+            eyebrow's usual smolder, because the sentence right below carries
+            the one orange underline this part of the card is allowed. The
+            date is the demo's own, resolved after hydration so a prerendered
+            page is never stale. */}
+        <motion.div
+          className="mt-4 flex items-baseline justify-between gap-4"
           initial={reduce ? false : { opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.06, ease: EASE }}
         >
-          Today&rsquo;s focus
-        </motion.p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-coal-ink">
+            Today&rsquo;s focus
+          </p>
+          <p className="shrink-0 text-[12px] text-slate-mid">{date}</p>
+        </motion.div>
 
         {/* Beat one. The sentence arrives as ONE object — it used to fade
             up in seven pieces fifty milliseconds apart, which is a
@@ -775,260 +641,161 @@ export function FocusDayStage({
           )}
         </motion.p>
 
-        {/* Beat three. The card grows and the hours appear, as one
-            movement.
+        {/* Beat three, then four. The agenda fades in under the sentence,
+            and its rows fill in two gestures: the meetings first (your
+            calendar), then the work Jarvis fitted between them.
 
-            Numerals only. A hairline ran beside each of them until every
-            entry became an outlined block, at which point the card was
-            drawing its structure twice: a grid saying where the hours are
-            and a set of boxes saying the same thing again, more precisely.
-            The times down the left are enough to place a block, and the
-            block's own outline is enough to size it. */}
+            One uniform list — every row the same height, hairline-divided
+            the way the FAQ divides its questions. Three columns, the left
+            two fixed so the whole thing aligns down one edge: start time,
+            colour rail, content. The list used to be drawn to scale, every
+            entry as tall as its hours, which made a two-hour task and a
+            one-hour meeting read as a big card and a small one. */}
         <motion.div
-          className="overflow-hidden"
-          initial={{ height: 0 }}
-          animate={{ height: open ? TRACK + PAD + 40 : 0 }}
-          transition={
-            reduce
-              ? { duration: 0.2, ease: EASE }
-              : { type: "spring", stiffness: 160, damping: 24 }
-          }
+          className="mt-4 divide-y divide-ash"
+          initial={reduce ? false : { opacity: 0, y: 6 }}
+          animate={{ opacity: open ? 1 : 0, y: open ? 0 : 6 }}
+          transition={{ duration: reduce ? 0.2 : 0.5, ease: EASE }}
           aria-hidden={!open}
         >
-          <div className="relative" style={{ height: TRACK + PAD + 16, marginTop: 24 }}>
-            <motion.div
-              initial={reduce ? false : { opacity: 0 }}
-              animate={{ opacity: open ? 1 : 0 }}
-              transition={{ duration: reduce ? 0.2 : 0.4, delay: reduce ? 0 : 0.1, ease: EASE }}
-            >
-              {HOUR_LINES.map((hour) => (
+          {ROWS.map((row) => {
+            const isTask = row.kind === "task";
+            const shown = isTask ? workShown : calShown;
+            const isLit = lit === row.id;
+            const rail = isTask
+              ? isLit
+                ? TASK_RAIL_LIT
+                : TASK_RAIL
+              : isLit
+                ? MEETING_RAIL_LIT
+                : MEETING_RAIL;
+
+            return (
+              <motion.div
+                key={row.id}
+                className="relative flex items-start gap-3 py-2.5"
+                onMouseEnter={() => setLit(row.id)}
+                onMouseLeave={() => setLit(null)}
+                initial={reduce ? false : { opacity: 0, y: 6 }}
+                animate={{ opacity: shown ? 1 : 0, y: shown ? 0 : 6 }}
+                transition={{ duration: reduce ? 0.2 : 0.42, ease: EASE }}
+              >
+                {/* A hovered row lights the way a hovered phrase does — a
+                    faint wash behind it, no border. */}
                 <span
-                  key={hour}
-                  /* The hours a lit row actually occupies go to ink, so the
-                     highlight reaches the column that measures the day and
-                     not just the box sitting in it. A two-hour review lights
-                     both of its numerals. */
-                  className={
-                    "absolute font-mono text-[10.5px] " +
-                    (litRow && hour >= litRow.at && hour <= litRow.at + litRow.hours
-                      ? "text-coal-ink"
-                      : "text-stone")
-                  }
+                  aria-hidden
+                  className="pointer-events-none absolute inset-y-[1px] -left-2 -right-2 rounded-lg"
                   style={{
-                    left: 0,
-                    width: LANE.time,
-                    top: yOf(hour) - 7,
-                    textAlign: "right",
+                    background: isLit
+                      ? isTask
+                        ? TASK_WASH
+                        : MEETING_WASH
+                      : "transparent",
+                    transition: reduce ? "none" : "background 180ms ease",
                   }}
-                >
-                  {hhmm(hour)}
+                />
+
+                {/* Start time — fixed column, mono, aligned to the label. */}
+                <span className="relative w-9 shrink-0 pt-[1px] text-right font-mono text-[10px] leading-none text-stone">
+                  {hhmm(row.at)}
                 </span>
-              ))}
-            </motion.div>
 
-            {/* Beat four, in two halves. Your calendar, then the work in
-                the gaps it left. Each half is one movement over its whole
-                group: a row is one object, a group is one gesture, and
-                nothing inside either has a timer of its own. */}
-            {ROWS.map((row) => {
-              const isTask = row.kind === "task";
-              const shown = isTask ? workShown : calShown;
-              /* Anything under an hour carries its title and nothing else.
-                 There is no room for a second line in half a row, and
-                 squeezing one in would be the card pretending a 30-minute
-                 1:1 is as substantial as a two-hour review. */
-              const compact = row.hours < 1;
-
-              return (
-                <motion.div
-                  key={row.id}
-                  className="absolute right-0"
+                {/* Colour rail — meeting vs task, the one hue on the card. */}
+                <span
+                  aria-hidden
+                  className="relative mb-[1px] mt-[1px] w-[3px] shrink-0 self-stretch rounded-full"
                   style={{
-                    left: LANE.content,
-                    top: yOf(row.at),
-                    height: row.hours * ROW,
+                    background: rail,
+                    transition: reduce ? "none" : "background 180ms ease",
                   }}
-                  onMouseEnter={() => setLit(row.id)}
-                  onMouseLeave={() => setLit(null)}
-                  initial={reduce ? false : { opacity: 0, y: 4 }}
-                  animate={{ opacity: shown ? 1 : 0, y: shown ? 0 : 4 }}
-                  transition={{ duration: reduce ? 0.2 : 0.42, ease: EASE }}
-                >
-                  {/* The block. An outline on solid paper, running the exact
-                      length of the thing, and the only thing on the card
-                      that says how long something takes.
+                />
 
-                      Everything in it is centred against the BLOCK, not
-                      stacked at its top: title and reason as one group, the
-                      mark on its own against the same middle. A two-hour
-                      review used to set its text at the top, which was the
-                      right answer while hour rules crossed the card and the
-                      wrong one now that the outline draws the extent — top
-                      alignment just left an hour of blank paper hanging
-                      under the title.
-
-                      It fills its hours exactly: top and bottom flush with
-                      the time it runs, so a review that ends at ten and a
-                      1:1 that starts at ten share one edge. There was two
-                      points of air between every block, which put a visible
-                      gap where the day has none.
-
-                      A meeting is filled and a task is not, and that alone
-                      is what tells the two apart: your calendar's periwinkle
-                      against the card's own paper, so the day's shape can be
-                      counted before a word of it has been read. The fill and
-                      its edge are the whole of it — the type in a booked hour
-                      is the same ink as the type in a task, because a tint
-                      under forty-four points of text is a surface, and tinted
-                      text at that size is a highlighter.
-
-                      Both keep the same 1.5-point outline, at rest and lit,
-                      so the border only ever changes COLOUR. At ash 1 and
-                      smolder 1.5 the block's inside would shrink half a point
-                      on hover and nudge the text, which is a twitch on a card
-                      that is otherwise still. A filled block is outlined in
-                      its own fill for the same reason: the ring has to exist
-                      in order to change.
-
-                      Smolder is still spent on attention and never on
-                      category. A standing orange outline on the two meetings
-                      was tried and marked them permanently, which is a lot of
-                      colour to leave burning on a card whose whole argument
-                      is the sentence above the day. The fill is allowed to be
-                      permanent because it says where an hour came FROM, which
-                      never changes; the ring says where the reader is, which
-                      changes constantly. Orange over violet keeps them apart
-                      without either one having to shout.
-
-                      Inside the block, not beside it. An earlier marker was
-                      a 3-point bar in the right-hand margin at right:-9, and
-                      it never rendered once: the margin is outside the
-                      overflow-hidden wrapper that animates the day open, so
-                      the bar was clipped on every paint. */}
-                  <div
-                    /* Two fixed columns on the right, both right-aligned, so
-                       a 15-point logo and a stack of four faces end on the
-                       same line — the alternative is a mark that sits
-                       wherever the title stopped pushing it, which gave the
-                       day a ragged right edge. 96 is set by the widest thing
-                       that goes in the meta slot, "13:00–14:00" in mono.
-
-                       The meta column is gone below `sm`. A phone has no
-                       hover, so the slot could only ever hold the clock, and
-                       96 points spent on it left the titles truncated to two
-                       characters. The mark goes to `auto` there for the same
-                       reason — it still ends flush with the right padding,
-                       because it is the last column. The values are literal
-                       because Tailwind scans for class names and cannot see
-                       a template. */
-                    className="absolute inset-x-0 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 rounded-[6px] border-[1.5px] px-3 transition-colors duration-200 sm:grid-cols-[minmax(0,1fr)_96px_68px]"
-                    style={{
-                      top: 0,
-                      bottom: 0,
-                      background: isTask ? "#ffffff" : BOOKED_FILL,
-                      borderColor:
-                        lit === row.id
-                          ? "var(--color-smolder)"
-                          : isTask
-                            ? "var(--color-ash)"
-                            : BOOKED_EDGE,
-                    }}
-                  >
-                    <span className="flex min-w-0 flex-col justify-center">
-                      <span
-                        className={
-                          "truncate leading-[1.25] " +
-                          (compact ? "text-[13px] " : "text-[14px] ") +
-                          (isTask ? "font-medium" : "font-semibold")
-                        }
-                        style={{ color: "var(--color-coal-ink)" }}
-                      >
-                        {row.title}
+                {/* Content. */}
+                <div className="relative flex min-w-0 flex-1 flex-col">
+                  <span className="flex items-center gap-1.5 leading-none">
+                    <span
+                      className="text-[9px] font-bold uppercase tracking-[0.08em]"
+                      style={{
+                        color: isTask
+                          ? "var(--color-stone)"
+                          : "var(--color-signal-violet)",
+                      }}
+                    >
+                      {isTask ? "Task" : "Meeting"}
+                    </span>
+                    {row.hours > 1 ? (
+                      <span className="text-[9px] font-medium tracking-[0.03em] text-stone">
+                        &middot; {row.hours}h
                       </span>
-                      {row.note && !compact ? (
-                        <span
-                          className="mt-[2px] truncate text-[12px] leading-[1.25]"
-                          style={{
-                            color: isTask
-                              ? "var(--color-slate-mid)"
-                              : "var(--color-graphite)",
-                          }}
-                        >
-                          {row.note}
-                        </span>
-                      ) : null}
+                    ) : null}
+                  </span>
+
+                  <span className="mt-[4px] flex items-center gap-2">
+                    {/* No hover underline on the title here — that rule
+                        belongs to the sentence above the agenda, where a
+                        hovered phrase strikes smolder the way the hero
+                        headline does. Down in the rows the wash and the rail
+                        brightening are the hover feedback; a second mark
+                        under every title was one too many. */}
+                    <span
+                      className={
+                        "inline-block max-w-full truncate text-[14px] leading-[1.25] " +
+                        (isTask ? "font-medium" : "font-semibold")
+                      }
+                      style={{ color: "var(--color-coal-ink)" }}
+                    >
+                      {row.title}
                     </span>
 
-                    {/* The clock and the button, one on top of the other in
-                        one fixed box. A meeting prints the hours it owns and
-                        turns them into Join while the reader is on it, so the
-                        hour you can attend becomes the way to attend it and
-                        nothing in the block moves between the two states.
-
-                        Work prints no clock, because Jarvis placed it and it
-                        can move; the empty slot says that as plainly as the
-                        printed one says the opposite, and it fills with the
-                        way into the tool the work came out of. */}
-                    <span className="relative hidden h-6 sm:block">
-                      {isTask ? null : (
-                        <span
-                          className="absolute top-1/2 right-0 -translate-y-1/2 font-mono text-[10.5px] tabular-nums transition-opacity"
-                          style={{
-                            color: "var(--color-stone)",
-                            opacity: lit === row.id ? 0 : 1,
-                            transitionDuration: reduce ? "0ms" : "180ms",
-                          }}
-                        >
-                          {`${hhmm(row.at)}–${hhmm(row.at + row.hours)}`}
-                        </span>
+                    <span className="h-[14px] w-[14px] shrink-0 translate-y-[0.5px] opacity-90">
+                      {isTask ? (
+                        row.source ? <SourceMark name={row.source} /> : null
+                      ) : (
+                        <MeetMark />
                       )}
-                      <span
-                        aria-hidden
-                        className={
-                          "absolute top-1/2 right-0 flex -translate-y-1/2 cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold whitespace-nowrap transition-opacity " +
-                          (isTask
-                            ? "border border-ash bg-white text-graphite"
-                            : "bg-coal-ink text-white")
-                        }
-                        style={{
-                          opacity: lit === row.id ? 1 : 0,
-                          transitionDuration: reduce ? "0ms" : "200ms",
-                        }}
-                      >
-                        {isTask ? (
-                          row.source ? VERB[row.source] : null
-                        ) : (
-                          <>
-                            <Video className="h-3 w-3" strokeWidth={2.25} aria-hidden />
-                            Join
-                          </>
-                        )}
-                      </span>
                     </span>
 
-                    {/* Who, or what. A meeting carries the people in it; work
-                        carries the tool Jarvis read it out of, in that tool's
-                        own colours. The calendar glyph that used to sit here
-                        named a category the fill already names, where faces
-                        answer a question the card could not answer at all —
-                        which of these hours costs six other people theirs.
-
-                        Right-aligned inside a fixed column, so a 15-point
-                        logo and a stack of four faces end on one line. */}
-                    <span className="flex items-center justify-end">
-                      {row.source ? (
-                        <span className="h-[15px] w-[15px]">
-                          <SourceMark name={row.source} />
-                        </span>
-                      ) : row.people ? (
-                        <Faces names={row.people} />
-                      ) : null}
+                    {/* Nothing at rest; hover offers the way in. */}
+                    <span
+                      aria-hidden
+                      className={
+                        "hidden items-center gap-1 whitespace-nowrap rounded-full px-2 py-[2px] text-[10.5px] font-semibold sm:flex " +
+                        (isTask
+                          ? "border border-ash bg-white text-graphite"
+                          : "bg-coal-ink text-white")
+                      }
+                      style={{
+                        opacity: isLit ? 1 : 0,
+                        transition: reduce ? "none" : "opacity 160ms ease",
+                      }}
+                    >
+                      {isTask ? (
+                        row.source ? VERB[row.source] : null
+                      ) : (
+                        <>
+                          <Video className="h-3 w-3" strokeWidth={2.25} aria-hidden />
+                          Join
+                        </>
+                      )}
                     </span>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
+                  </span>
+
+                  {row.note ? (
+                    <span
+                      className="mt-[3px] truncate text-[12px] leading-[1.3]"
+                      style={{
+                        color: isTask
+                          ? "var(--color-slate-mid)"
+                          : "var(--color-graphite)",
+                      }}
+                    >
+                      {row.note}
+                    </span>
+                  ) : null}
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
     </div>
