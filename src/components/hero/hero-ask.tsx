@@ -52,35 +52,36 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 
 /* One reserved SLOT, sized to the tallest tab, with each card sitting at
    the top of it at its own natural height. The tab row sits ABOVE the slot
-   now, so it never moves when you switch — which is the thing that must not
-   happen: press a tab and the row you are pressing walks out from under the
-   cursor. Focus grows downward inside the slot; the tabs are above that
-   growth and hold still regardless.
+   now (BELOW it on a phone), so it never moves when you switch — which is
+   the thing that must not happen: press a tab and the row you are pressing
+   walks out from under the cursor.
 
+   ── Desktop ──
    The three cards were the same height until Focus arrived. Padding a
    terminal out to a whole day's height is 170px of dead black inside the
    card, which reads as a window that failed to finish loading; 50px of page
    air under a card that is simply shorter does not read as anything. So the
-   slack moved outside the cards.
+   slack moved outside the cards, and Focus sets the number: its plate, then
+   seven hours. The terminal and meeting bodies then take CARD_BODY, their
+   own content plus a little dark room.
 
-   Focus is what sets these numbers: its plate, then seven hours at a
-   readable ~34 each. It measures the slot and fills it, so the day stretches
-   or tightens with these rather than needing to be told twice. */
+   ── Phone (below sm) ──
+   Every tab is trimmed to the SAME height, SLOT_MOBILE, so the slot never
+   resizes when you switch and the tab row beneath it never jumps. The
+   focus card sets it: content-height at ~498 across the 320–414 band with
+   its shortened phone sentence. The meeting stage and the terminal are
+   told to fill exactly that same box rather than carrying their desktop
+   dark-room, which on a phone was just a tall band of empty black. */
 const SLOT = 528;
-/* Phone. The focus sentence wraps to five lines in a 350px card instead of
-   three, and the terminal's answer picks up a line as well. */
-const SLOT_SM = 604;
-/* Below 360px the sentence takes a sixth line. */
-const SLOT_XS = 630;
+const SLOT_MOBILE = 504;
 
-/* Terminal and meeting-stage body: their own content plus a little dark
-   room, which is what a terminal is supposed to look like and what the
-   meeting stage bursts into. Chosen so the air left under them inside the
-   slot stays about 50px at every width rather than swinging from 30 to 80,
-   which would read as a different gap on every device. */
+/* Terminal and meeting-stage body on DESKTOP: their own content plus a
+   little dark room. On a phone both are driven by SLOT_MOBILE instead. */
 const CARD_BODY = 448;
-const CARD_BODY_SM = 524;
-const CARD_BODY_XS = 550;
+/* The terminal's own title bar (h-10 + a hairline), added on top of its
+   body — so the body has to be SLOT_MOBILE minus this to make the whole
+   window match the other two tabs. */
+const TERMINAL_CHROME = 41;
 
 type Ask = {
   question: string;
@@ -167,8 +168,14 @@ export function HeroAsk() {
       className="relative flex min-h-[100dvh] w-full items-start overflow-hidden scroll-mt-16 xl:items-center"
     >
       <div className="relative mx-auto grid w-full max-w-[1400px] items-center gap-10 px-5 pb-14 pt-[84px] sm:px-6 sm:gap-14 xl:grid-cols-[0.92fr_1.08fr] xl:gap-16 xl:pb-8 xl:pt-[92px]">
-        {/* Left — the claim */}
-        <div>
+        {/* Left — the claim.
+
+            `min-w-0`: a grid track's floor is its content's min-content
+            width, and this column's is wider than a phone. Without it the
+            column refuses to shrink below ~450px in a 375px viewport and
+            the page's `overflow-x-clip` slices the headline and subheading
+            off at the right edge. */}
+        <div className="min-w-0">
           <motion.div
             initial={reduce ? false : { opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
@@ -227,11 +234,18 @@ export function HeroAsk() {
           </motion.div>
         </div>
 
-        {/* Right — ask it something */}
+        {/* Right — ask it something.
+
+            A flex column so the tab row can be reordered under the card on
+            a phone (see the `order-*` classes below): the control sits
+            above the thing it changes on desktop, but on a narrow screen
+            the card is the hero and the tabs ride beneath it. `min-w-0`
+            for the same grid-track reason as the left column. */}
         <motion.div
           initial={reduce ? false : { opacity: 0, y: 26 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.3, ease: EASE }}
+          className="flex min-w-0 flex-col"
         >
           {/* The tabs, ABOVE the card and styled as tabs, not buttons.
 
@@ -250,10 +264,14 @@ export function HeroAsk() {
               moves — Focus grows DOWNWARD inside the slot, so a tab row
               beneath it needed the slot's whole reserved height just to
               hold still. */}
+          {/* On a phone this row is ordered under the card and carries its
+              gap on top (`order-2 mt-7`); from `sm` up it returns to its
+              place above the card with the gap below (`sm:order-1
+              sm:mt-0 sm:mb-6`). */}
           <div
             role="tablist"
             aria-label="What Jarvis does"
-            className="relative mb-5 flex flex-wrap gap-x-6 gap-y-1 border-b border-ash sm:mb-6"
+            className="relative order-2 mt-7 flex flex-wrap gap-x-6 gap-y-1 border-b border-ash sm:order-1 sm:mt-0 sm:mb-6"
           >
             {TABS.map((label, n) => {
               const selected = n === tab;
@@ -316,12 +334,11 @@ export function HeroAsk() {
               empty paper. Centred, the short state reads as a card with air
               around it and the growth opens from the middle. */}
           <div
-            className="flex items-center h-[var(--slot-xs)] min-[360px]:h-[var(--slot-sm)] sm:h-[var(--slot)]"
+            className="order-1 flex items-center h-[var(--slot-mobile)] sm:order-2 sm:h-[var(--slot)]"
             style={
               {
                 "--slot": `${SLOT}px`,
-                "--slot-sm": `${SLOT_SM}px`,
-                "--slot-xs": `${SLOT_XS}px`,
+                "--slot-mobile": `${SLOT_MOBILE}px`,
               } as React.CSSProperties
             }
           >
@@ -334,7 +351,7 @@ export function HeroAsk() {
             <MeetingAssistStage
               active
               height={CARD_BODY + 40}
-              mobileHeight={CARD_BODY_SM + 40}
+              mobileHeight={SLOT_MOBILE}
             />
           ) : (
             <ClaudeCodeTerminal
@@ -346,8 +363,8 @@ export function HeroAsk() {
               toolDelay={700}
               toolResultDelay={1500}
               height={CARD_BODY}
-              mobileHeight={CARD_BODY_SM}
-              narrowHeight={CARD_BODY_XS}
+              mobileHeight={SLOT_MOBILE - TERMINAL_CHROME}
+              narrowHeight={SLOT_MOBILE - TERMINAL_CHROME}
             />
           )}
           </div>

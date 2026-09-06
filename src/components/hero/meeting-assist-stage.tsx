@@ -70,7 +70,14 @@ const PARTICIPANTS = [
 
 function CallSurface({ speaking }: { speaking: number }) {
   return (
-    <div aria-hidden className="grid h-full grid-cols-2 gap-3">
+    /* Two tiles. On a phone they stack — a row of two half-width tiles in a
+       tall phone slot came out as two skinny vertical strips; one over the
+       other, each is a calm landscape cell the way a call actually looks on
+       a phone. Side by side from `sm` up. */
+    <div
+      aria-hidden
+      className="grid h-full grid-cols-1 grid-rows-2 gap-2.5 sm:grid-cols-2 sm:grid-rows-1 sm:gap-3"
+    >
       {PARTICIPANTS.map((p, i) => (
         <div
           key={p.initials}
@@ -88,7 +95,7 @@ function CallSurface({ speaking }: { speaking: number }) {
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <div className="relative">
               <span
-                className="flex h-14 w-14 items-center justify-center rounded-full text-[15px] font-semibold text-white"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-[13px] font-semibold text-white sm:h-14 sm:w-14 sm:text-[15px]"
                 style={{ background: p.tint }}
               >
                 {p.initials}
