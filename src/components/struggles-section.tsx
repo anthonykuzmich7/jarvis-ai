@@ -3,6 +3,7 @@
 import * as React from "react";
 import { motion, useInView } from "framer-motion";
 import { LaptopIcon, MessageCircleIcon } from "@/components/icons";
+import { capture } from "@/lib/analytics";
 import {
   ClaudeCodeTerminal,
   TypedMention,
@@ -291,6 +292,12 @@ export function StrugglesSection() {
             </motion.p>
             <a
               href="#waitlist"
+              onClick={() =>
+                capture("early_access_clicked", {
+                  label: "Get early access",
+                  placement: "struggles",
+                })
+              }
               className="mt-6 inline-flex items-center rounded-full border border-black/10 px-7 py-3.5 text-[15px] font-medium leading-none text-coal-ink transition-colors hover:border-black/20"
             >
               Get early access

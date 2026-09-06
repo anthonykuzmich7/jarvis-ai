@@ -291,11 +291,11 @@ export function NavBar({ items, className, cta, brand }: NavBarProps) {
               <Link
                 href={cta.url}
                 onClick={(e) => {
-                  /* Named rather than left to autocapture: this button and the
-                     desktop one below are the same CTA with different classes,
-                     and a funnel wants them counted as one thing that knows
-                     which breakpoint it was pressed at. */
-                  capture("nav_cta_clicked", {
+                  /* Named rather than left to autocapture: this button, the
+                     desktop one below and the CTAs down the page are the same
+                     ask with different classes, and a funnel wants them
+                     counted as one thing that knows where it was pressed. */
+                  capture("early_access_clicked", {
                     label: cta.label,
                     placement: "mobile_bar",
                   });
@@ -477,7 +477,7 @@ export function NavBar({ items, className, cta, brand }: NavBarProps) {
               <Link
                 href={cta.url}
                 onClick={(e) => {
-                  capture("nav_cta_clicked", {
+                  capture("early_access_clicked", {
                     label: cta.label,
                     placement: "desktop_bar",
                   });

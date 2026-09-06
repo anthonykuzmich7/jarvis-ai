@@ -25,8 +25,14 @@ export type AnalyticsEvent =
   | "film_opened"
   /** A hero tab was chosen, which says which pitch the visitor wanted. */
   | "hero_tab_selected"
-  /** The nav's "Get early access" button, on either breakpoint. */
-  | "nav_cta_clicked";
+  /**
+   * A "Get early access" button, wherever it sits — the nav at either
+   * breakpoint, the hero, the struggles section, or the closing band on a
+   * content page. One event rather than one per surface: the question is
+   * almost always "how many people asked for access", and `placement` is
+   * there for the rarer times you want to know which button earned it.
+   */
+  | "early_access_clicked";
 
 /**
  * Records an event, or does nothing at all when PostHog never initialised.

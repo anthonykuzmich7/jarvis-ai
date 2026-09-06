@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { CtaBandLink } from "@/components/content/cta-band-link";
 
 /*
   Shared furniture for the content pages.
@@ -235,12 +236,7 @@ export function CtaBand({
         <p className="mx-auto mt-4 max-w-[52ch] text-[15px] leading-[1.6] tracking-[-0.12px] text-graphite">
           {body}
         </p>
-        <Link
-          href="/#waitlist"
-          className="cta-shine relative mt-8 inline-flex cursor-pointer overflow-hidden whitespace-nowrap rounded-full bg-coal-ink px-6 py-3 text-[14px] font-semibold tracking-[-0.14px] text-white transition-colors hover:bg-graphite active:scale-[0.98]"
-        >
-          Get early access
-        </Link>
+        <CtaBandLink />
       </div>
     </section>
   );

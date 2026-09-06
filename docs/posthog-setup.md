@@ -73,7 +73,12 @@ change, which is what App Router navigation is), click maps and scroll depth.
 | `waitlist_error` | on a failed save | same, plus `message` |
 | `film_opened` | "Watch how it works" | — |
 | `hero_tab_selected` | the three hero tabs | `tab`, `index` |
-| `nav_cta_clicked` | "Get early access" in the nav | `label`, `placement` |
+| `early_access_clicked` | every "Get early access" button | `label`, `placement` |
+
+`placement` on that last one is `desktop_bar`, `mobile_bar`, `hero`,
+`struggles` or `cta_band`. One event across all five so the plain question —
+how many people asked for access — is a single number, with the breakdown
+there when you want to know which button earned it.
 
 On a successful signup the visitor is identified by email, which stitches their
 earlier anonymous events onto the lead. `person_profiles` stays on
