@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useInView } from "framer-motion";
-import { LaptopIcon, MessageCircleIcon } from "@/components/icons";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { capture } from "@/lib/analytics";
 import {
   ClaudeCodeTerminal,
@@ -230,6 +229,7 @@ function SlackWindow({ active }: { active: boolean }) {
 
 export function StrugglesSection() {
   const [tabId, setTabId] = React.useState<TabId>("non-technical");
+  const reduce = useReducedMotion();
   const ref = React.useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.35 });
   const tab = TABS.find((t) => t.id === tabId)!;
@@ -248,11 +248,20 @@ export function StrugglesSection() {
           </p>
         </div>
 
-        {/* Tabs — centered above everything, the section's primary control */}
-        <div role="tablist" aria-label="Team struggles" className="mt-8 grid grid-cols-2 gap-2 sm:mt-10 sm:flex sm:justify-center">
+        {/* Tabs — the section's primary control, and the same idiom as the
+            hero's capability row: a bare label, ink when live and stone when
+            not, a 2px smolder rule that slides to the active one, riding a
+            single ash hairline. No fill, no border, no icon — the pill-with-
+            icon version read as two CTAs, the exact treatment of the "Get
+            early access" button directly below. `w-fit mx-auto` so the
+            hairline spans only the two tabs, not the whole section. */}
+        <div
+          role="tablist"
+          aria-label="Team struggles"
+          className="relative mx-auto mt-8 flex w-fit justify-center gap-x-7 border-b border-ash sm:mt-10 sm:gap-x-9"
+        >
           {TABS.map((t) => {
             const selected = t.id === tabId;
-            const Icon = t.id === "technical" ? LaptopIcon : MessageCircleIcon;
             return (
               <button
                 key={t.id}
@@ -261,14 +270,25 @@ export function StrugglesSection() {
                 aria-controls={`struggle-panel-${t.id}`}
                 onClick={() => setTabId(t.id)}
                 className={
-                  "inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2.5 text-center text-[13px] font-medium leading-[1.25] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coal-ink sm:gap-2 sm:px-5 sm:text-[14px] sm:leading-none " +
+                  "relative cursor-pointer pb-2.5 text-[13px] font-medium leading-none tracking-[-0.13px] transition-colors focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-coal-ink sm:text-[14px] " +
                   (selected
-                    ? "bg-coal-ink text-white"
-                    : "border border-black/10 text-coal-ink/70 hover:text-coal-ink")
+                    ? "text-coal-ink"
+                    : "text-stone hover:text-coal-ink")
                 }
               >
-                <Icon className="h-4 w-4 shrink-0" />
                 {t.label}
+                {selected ? (
+                  <motion.span
+                    aria-hidden
+                    layoutId="struggle-tab-rule"
+                    className="absolute -bottom-px left-0 right-0 block h-[2px] rounded-full bg-smolder"
+                    transition={
+                      reduce
+                        ? { duration: 0 }
+                        : { type: "spring", stiffness: 400, damping: 32 }
+                    }
+                  />
+                ) : null}
               </button>
             );
           })}
