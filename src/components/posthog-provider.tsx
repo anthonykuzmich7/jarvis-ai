@@ -90,14 +90,20 @@ function takeInternalFlag(): boolean | null {
  * "Internal / Test users" cohort — which matches on the person property —
  * starts working. It creates a person profile where none existed, which is the
  * one place we deliberately step outside `identified_only`.
+ *
+ * Clearing *removes* the person property rather than writing `false`. The
+ * project's test-account rule is a keep-condition — "everyone whose flag is
+ * not set" is what survives it — so a leftover `false` still counts as set,
+ * and `?internal=0` would leave the browser looking internal forever.
  */
 function setInternal(internal: boolean): void {
   if (internal) {
     posthog.register({ $internal_or_test_user: true });
+    posthog.setPersonProperties({ $internal_or_test_user: true });
   } else {
     posthog.unregister("$internal_or_test_user");
+    posthog.unsetPersonProperties("$internal_or_test_user");
   }
-  posthog.setPersonProperties({ $internal_or_test_user: internal });
 }
 
 export function PostHogAnalytics({

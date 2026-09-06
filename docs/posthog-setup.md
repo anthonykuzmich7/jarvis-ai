@@ -147,8 +147,9 @@ https://www.jarviscontext.com/?internal=1
 That registers `$internal_or_test_user: true` as a **super property**, persisted
 in localStorage, so every later event from that browser carries it — anonymous
 pageviews included. It also sets the matching person property, which is what
-PostHog's stock **Internal / Test users** cohort matches on. `?internal=0`
-clears both.
+the project's filter rule reads. `?internal=0` clears both — and it *removes*
+the person property rather than writing `false`, because the rule below keeps
+everyone whose flag is "not set" and a leftover `false` still counts as set.
 
 The parameter is stripped from the URL immediately, so it cannot ride along in
 a link you copy out of the address bar. A shared link that silently marks the
@@ -159,19 +160,30 @@ site's localStorage is cleared.
 
 ### The PostHog side
 
-In **Settings → Product analytics → Filter out internal and test users**, the
-stock chip `User not in Internal / Test users` is all you need — the cohort
-matches the person property the flag sets.
+In **Settings → Product analytics → Filter out internal and test users**, add
+one person-property rule:
 
-Two traps in that screen:
+```
+$internal_or_test_user  is not set
+```
 
-- The filters are **inclusive**. `Email address = someone@example.com` shows you
-  *only* that person, which is the opposite of filtering them out. Exclusive
-  operators (`does not equal`, `does not contain`) or the cohort's `not in` are
-  what you want.
+Prefer that over the stock `User not in Internal / Test users` chip. A cohort
+is a batch job: membership is recalculated on a schedule, so a person flagged
+five minutes ago is not in it yet and sails straight through the filter. A
+property rule is evaluated at query time and is right immediately. PostHog's
+own guidance says the same, and adds that inline property filters keep working
+in real-time destinations where cohorts can error.
+
+Three traps in that screen:
+
+- The rules are **keep-conditions**, not exclusions. `Email address =
+  someone@example.com` shows you *only* that person, the exact opposite of
+  filtering them out. Write what should survive.
 - Turning on **Enable this filter on all new insights**, and clicking **Turn on
   for existing insights**, is what actually applies any of it. The toggle alone
   does nothing if no rule matches.
+- If you do keep a cohort chip, check its member list before believing the
+  filter is broken — a cohort stuck calculating silently filters nobody.
 
 Filtering is analysis-only: the events are still ingested, and the **Activity
 tab keeps showing them**. Judge whether it works on an insight or the Web
