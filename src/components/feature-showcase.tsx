@@ -290,7 +290,10 @@ export function FeatureShowcase() {
           {/* Right: static mockup — sits directly on the section background,
               no outer gradient frame. Only the switch between the two
               mockups crossfades; each mockup itself is a single static frame. */}
-          <div className="relative h-[330px] sm:h-[360px] lg:h-[420px]">
+          {/* Much taller on a phone: the briefing card's three task titles
+              each wrap to two lines at that width, so the natural card is
+              ~450px — 330px cut off the footer stat and the bottom row. */}
+          <div className="relative h-[452px] sm:h-[360px] lg:h-[420px]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
