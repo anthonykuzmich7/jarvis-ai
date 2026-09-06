@@ -117,14 +117,26 @@ const MARK_D = 68;
    Fragments, not logos. A logo says "we integrate with Slack"; a line
    of somebody's actual Wednesday says what Jarvis is picking up. Every
    one of these is cited by one of the four answers below. */
-type Fragment = { mark: BrandName; source: string; line: string };
+/* `sourceMobile` / `lineMobile`: a phone shows one fragment per lane and the
+   full desktop wording on the four longest ran past the edge mask and hard-
+   clipped mid-word. Below `sm` those four use the shorter form; the story each
+   one carries into an answer below is unchanged. */
+type Fragment = {
+  mark: BrandName;
+  source: string;
+  line: string;
+  sourceMobile?: string;
+  lineMobile?: string;
+};
 
 const FRAGMENTS: Fragment[] = [
   { mark: "slack", source: "#eng", line: "the fix is in review, not shipped" },
   {
     mark: "meetings",
     source: "Eng sync · Aug 19",
+    sourceMobile: "Eng sync",
     line: "decided: rotating keys for token refresh",
+    lineMobile: "decided: rotating keys",
   },
   { mark: "github", source: "PR #142", line: "Tom Reilly opened · auth" },
   { mark: "gmail", source: "Acme renewal", line: "legal redlines still open" },
@@ -133,11 +145,22 @@ const FRAGMENTS: Fragment[] = [
     mark: "slack",
     source: "#sales-acme",
     line: "Dana flagged pushback on price",
+    lineMobile: "pushback on price",
   },
   { mark: "meetings", source: "1:1 David Park", line: "launch moved to Sep 4" },
-  { mark: "github", source: "PR #212", line: "schema conflict, needs review" },
+  {
+    mark: "github",
+    source: "PR #212",
+    line: "schema conflict, needs review",
+    lineMobile: "schema conflict",
+  },
   { mark: "linear", source: "ENG-2502", line: "SSO rollout, Okta first" },
-  { mark: "gmail", source: "Vendor security review", line: "SOC 2 attached" },
+  {
+    mark: "gmail",
+    source: "Vendor security review",
+    sourceMobile: "Security review",
+    line: "SOC 2 attached",
+  },
 ];
 
 /* Rendered twice so the loop still has cards to show on a wide display.
@@ -352,6 +375,14 @@ export function ConnectAnywhere() {
     return () => ro.disconnect();
   }, [measure]);
 
+  /* ── Chip carousel (mobile) ───────────────────────────────────
+     Below `sm` the surface row is a horizontal scroller, not a 2×2
+     wrap. Each beat (and each tap) brings the active surface to
+     centre — under the mark — so the pulse drops straight down and
+     the answer card sits on a fixed vertical spine instead of sliding
+     between beats. Above `sm` the row wraps and this early-returns. */
+  const didCentreChip = React.useRef(false);
+
   /* ── Beat ─────────────────────────────────────────────────────
      Which surface is currently being served. */
   const [beat, setBeat] = React.useState(0);
@@ -363,6 +394,26 @@ export function ConnectAnywhere() {
     const id = setInterval(() => setBeat((b) => b + 1), BEAT_MS);
     return () => clearInterval(id);
   }, [live]);
+
+  /* Scroll the active surface into view on every beat (and on tap). The
+     target is centred but clamped to the track, so at rest — surface 0,
+     Slack — the row sits at scrollLeft 0 with the first three chips
+     showing and the third half-cut, which is the affordance that it
+     scrolls. No-op above `sm`, where the row wraps. First run jumps,
+     later ones glide. */
+  React.useEffect(() => {
+    const row = chipsRowRef.current;
+    const chip = chipRefs.current[surfaceIndex];
+    if (!row || !chip) return;
+    const max = row.scrollWidth - row.clientWidth;
+    if (max <= 1) return;
+    const raw = chip.offsetLeft + chip.clientWidth / 2 - row.clientWidth / 2;
+    row.scrollTo({
+      left: Math.max(0, Math.min(raw, max)),
+      behavior: reduce || !didCentreChip.current ? "auto" : "smooth",
+    });
+    didCentreChip.current = true;
+  }, [surfaceIndex, reduce]);
 
   /* ── Frame loop ───────────────────────────────────────────────
      The rail, the falling context, the splashes, the charge ring and
@@ -534,8 +585,19 @@ export function ConnectAnywhere() {
   });
 
   /* ── Derived positions ────────────────────────────────────────── */
+  const isPhone = stageWidth < 640;
+  /* The rail dissolves into the stream at both edges. 7% is enough on a
+     wide stage where several fragments share the row; on a phone one
+     fragment fills most of the width, so the fade has to start further
+     in or the card chops against the viewport instead of fading out. */
+  const railEdge = isPhone ? 13 : 7;
+  const railMask = `linear-gradient(90deg, transparent 0%, #000 ${railEdge}%, #000 ${100 - railEdge}%, transparent 100%)`;
   const markX = stageWidth / 2;
-  const chipX = chipCenters[surfaceIndex] ?? markX;
+  /* On a phone the surface row scrolls independently, so the pulse, stem
+     and card ride a fixed centre spine below the mark rather than chasing
+     a chip that may be scrolled off toward the edge. On desktop they
+     point at the measured chip. */
+  const chipX = isPhone ? markX : (chipCenters[surfaceIndex] ?? markX);
   const cardW = Math.min(CARD_W, stageWidth - 32);
   const cardX = Math.max(
     16,
@@ -597,10 +659,8 @@ export function ConnectAnywhere() {
             className="absolute inset-x-0 top-0 overflow-hidden"
             style={{
               height: RAIL_H,
-              maskImage:
-                "linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%)",
-              WebkitMaskImage:
-                "linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%)",
+              maskImage: railMask,
+              WebkitMaskImage: railMask,
             }}
           >
             {RAIL_ITEMS.map((f, i) => (
@@ -624,10 +684,10 @@ export function ConnectAnywhere() {
               >
                 <BrandMark name={f.mark} size={12} className="text-stone" />
                 <span className="font-mono text-[9.5px] leading-none tracking-[-0.1px] text-stone sm:text-[10.5px]">
-                  {f.source}
+                  {isPhone ? (f.sourceMobile ?? f.source) : f.source}
                 </span>
                 <span className="text-[11.5px] leading-none tracking-[-0.12px] text-graphite sm:text-[12.5px]">
-                  {f.line}
+                  {isPhone ? (f.lineMobile ?? f.line) : f.line}
                 </span>
               </div>
             ))}
@@ -826,13 +886,15 @@ export function ConnectAnywhere() {
               places sit side by side. */}
           <div
             ref={chipsRowRef}
-            /* Capped so the four wrap 2+2 rather than 3+1. Three of them
-               do fit on a 390px line, which leaves "Any MCP client" alone
-               on a second row reading as an overflow accident rather than
-               as the tail of the list. The cap breaks after the second
-               chip instead, and the pair that lands on the first row is
-               the two surfaces that carry a colour mark. */
-            className="absolute inset-x-0 mx-auto flex max-w-[304px] flex-wrap items-center justify-center gap-2.5 px-5 sm:max-w-none sm:gap-3 sm:px-6"
+            /* Below `sm` this is a horizontal scroller, not a 2×2 wrap.
+               The four surfaces don't fit one phone line and wrapping
+               left "Any MCP client" stranded on a second row reading as
+               an overflow accident. As a scroller it stays one row,
+               left-aligned: at rest the first three chips show with the
+               third half-cut at the edge — the affordance that it scrolls
+               — and each beat brings the active surface into view. Above
+               `sm` it wraps and centres as before. */
+            className="absolute inset-x-0 flex items-center justify-start gap-2.5 overflow-x-auto px-5 py-1.5 [scrollbar-width:none] sm:mx-auto sm:flex-wrap sm:justify-center sm:gap-3 sm:overflow-visible sm:px-6 sm:py-0 [&::-webkit-scrollbar]:hidden"
             style={{ top: CHIPS_Y }}
           >
             {SURFACES.map((s, i) => {
@@ -847,7 +909,7 @@ export function ConnectAnywhere() {
                   aria-pressed={on}
                   onClick={() => setBeat(i)}
                   className={
-                    "flex cursor-pointer items-center gap-2 rounded-full border px-3.5 text-[12.5px] font-medium leading-none tracking-[-0.13px] transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coal-ink sm:px-5 sm:text-[13.5px] " +
+                    "flex shrink-0 cursor-pointer items-center gap-2 rounded-full border px-3.5 text-[12.5px] font-medium leading-none tracking-[-0.13px] transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coal-ink sm:px-5 sm:text-[13.5px] " +
                     (on
                       ? "border-transparent bg-coal-ink text-white"
                       : "border-ash bg-card text-stone hover:text-graphite")
@@ -855,9 +917,14 @@ export function ConnectAnywhere() {
                   style={{
                     height: CHIP_H,
                     transitionDelay: "300ms",
-                    boxShadow: on
-                      ? "0 6px 20px rgba(10,10,11,0.16)"
-                      : "rgba(95,99,106,0.07) 0px 0px 0px 1px",
+                    /* Flat on a phone — the scroller reads cleaner without a
+                       drop shadow lifting the active chip off it. Desktop
+                       keeps the lift. */
+                    boxShadow: isPhone
+                      ? undefined
+                      : on
+                        ? "0 6px 20px rgba(10,10,11,0.16)"
+                        : "rgba(95,99,106,0.07) 0px 0px 0px 1px",
                   }}
                 >
                   <SurfaceGlyph

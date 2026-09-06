@@ -236,9 +236,12 @@ export function StrugglesSection() {
 
   return (
     <section id="problem" className="scroll-mt-16 bg-ledger-white">
-      <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-6 sm:py-24 lg:py-32">
-        {/* Heading */}
-        <div className="mx-auto max-w-2xl text-center">
+      <div className="mx-auto w-full max-w-6xl px-5 pb-16 pt-12 sm:px-6 sm:py-24 lg:py-32">
+        {/* Heading. Hidden below `sm`: on a phone the overlay section directly
+            above already carries a full heading block, and stacking a second
+            one here pushed the tabs — the section's actual control — most of a
+            screen down. Mobile opens straight on the tab row. */}
+        <div className="hidden max-w-2xl text-center sm:mx-auto sm:block">
           <h2 className="text-balance font-display text-3xl font-semibold leading-[1.15] tracking-[-0.64px] text-foreground sm:text-4xl">
             Same struggle. Every role.
           </h2>
@@ -258,7 +261,7 @@ export function StrugglesSection() {
         <div
           role="tablist"
           aria-label="Team struggles"
-          className="relative mx-auto mt-8 flex w-fit justify-center gap-x-7 border-b border-ash sm:mt-10 sm:gap-x-9"
+          className="relative mx-auto mt-0 flex w-fit justify-center gap-x-7 border-b border-ash sm:mt-10 sm:gap-x-9"
         >
           {TABS.map((t) => {
             const selected = t.id === tabId;
