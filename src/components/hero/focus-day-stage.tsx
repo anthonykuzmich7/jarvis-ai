@@ -245,19 +245,43 @@ const ROWS: Row[] = [
   },
 ];
 
-/* The sentence, in segments. A segment with a `task` is work Jarvis is
-   proposing: it gets the headline's underline, and it is the thing that
-   flies down into the day. */
-type Segment = { text: string; task?: string };
+/* The sentence, as steps: an optional lead-in, one bold task phrase, and
+   the connective that follows it. Each phrase gets the headline's underline
+   and lights its hour in the agenda.
 
-const SENTENCE: Segment[] = [
-  { text: "Start with " },
-  { text: "review Tom’s payments PR", task: "pr" },
-  { text: ". Tom, David and Sarah are all waiting on it. Then " },
-  { text: "prepare Friday’s demo", task: "demo" },
-  { text: ", then " },
-  { text: "sign off Sarah’s redesign", task: "sign" },
-  { text: "." },
+   `trailMobile` is a shorter connective used below `sm`. On the phone the
+   sentence collapses to a plain sequence — "Start with X, then Y and Z" —
+   so the word "then" lands once, not twice, and the "who's waiting" clause
+   (desktop-only) is dropped: at 360–390px nothing short of dropping it
+   keeps the sentence under four lines. Each phrase is also glued to its
+   own trailing connective (`whitespace-nowrap`) below `sm`, so a wrapped
+   line begins with a bold phrase and never with a stray ", then". */
+type Step = {
+  lead?: string;
+  task: string;
+  phrase: string;
+  trail: string;
+  trailMobile?: string;
+};
+
+/* Trails carry NO trailing space — the break-here space is rendered
+   separately, outside the `whitespace-nowrap` wrapper, or it would be
+   trapped as non-breaking and the whole sentence would refuse to wrap. */
+const STEPS: Step[] = [
+  {
+    lead: "Start with ",
+    task: "pr",
+    phrase: "review Tom’s payments PR",
+    trail: ". Tom, David and Sarah are all waiting on it. Then",
+    trailMobile: ", then",
+  },
+  {
+    task: "demo",
+    phrase: "prepare Friday’s demo",
+    trail: ", then",
+    trailMobile: " and",
+  },
+  { task: "sign", phrase: "sign off Sarah’s redesign", trail: "." },
 ];
 
 /* ── Clock ───────────────────────────────────────────────────────
@@ -284,6 +308,23 @@ function getLiveDate() {
 
 function useToday() {
   return React.useSyncExternalStore(noopSubscribe, getLiveDate, getSeedDate);
+}
+
+/** True where the primary pointer cannot hover — a phone. The sentence↔
+    agenda link is wired to hover on a mouse and to tap here, because a
+    phone's synthetic mouseenter/leave around a tap would light the row and
+    clear it again in the same gesture. Starts false so server and first
+    client paint agree; corrects after mount, before any interaction. */
+function useCoarsePointer() {
+  const [coarse, setCoarse] = React.useState(false);
+  React.useEffect(() => {
+    const mq = window.matchMedia("(hover: none)");
+    const sync = () => setCoarse(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  return coarse;
 }
 
 const hhmm = (hour: number) => `${String(hour).padStart(2, "0")}:00`;
@@ -486,9 +527,9 @@ function LookingMark({
   }, [areaRef, reduce]);
 
   return (
-    <span ref={markRef} className="relative flex h-7 w-7">
+    <span ref={markRef} className="relative flex h-6 w-6 sm:h-7 sm:w-7">
       <JarvisMark
-        className="h-7 w-7"
+        className="h-6 w-6 sm:h-7 sm:w-7"
         look={reduce ? undefined : look}
         blink={blink}
       />
@@ -508,16 +549,33 @@ export function FocusDayStage({
 }) {
   const reduce = useReducedMotion();
   const date = useToday();
+  const coarse = useCoarsePointer();
   /** The box the mark watches for a pointer. */
   const cardRef = React.useRef<HTMLDivElement>(null);
 
   /* Three flags, one per beat after the first. Derived under reduced
      motion so the very first paint is already the finished card. */
   /* Which piece of named work the reader is pointing at, by row id. Set
-     from either end: the phrase in the sentence, or the hour in the day.
-     Null on a touch device, which has no hover and therefore just gets the
-     card at rest. */
+     from either end: the phrase in the sentence, or the hour in the day —
+     by hover on a mouse, by tap on a phone. */
   const [lit, setLit] = React.useState<string | null>(null);
+
+  /* One id's worth of link, wired to the pointer the device actually has.
+     On a mouse: light while hovering, dark on leave. On a phone: tap to
+     pin, tap the same target again (or another) to move or clear it. */
+  const linkProps = React.useCallback(
+    (id: string | null) =>
+      coarse
+        ? {
+            onClick: () => setLit((cur) => (cur === id ? null : id)),
+            style: { cursor: "pointer" as const },
+          }
+        : {
+            onMouseEnter: () => setLit(id),
+            onMouseLeave: () => setLit(null),
+          },
+    [coarse],
+  );
 
   const [opened, setOpened] = React.useState(false);
   const [calIn, setCalIn] = React.useState(false);
@@ -548,7 +606,7 @@ export function FocusDayStage({
           of dead paper under the last hour for the rest. */}
       <div
         ref={cardRef}
-        className="relative overflow-hidden rounded-[20px] border border-ash bg-white px-6 py-6 sm:px-7"
+        className="relative overflow-hidden rounded-[20px] border border-ash bg-white px-5 py-5 sm:px-7 sm:py-6"
         style={{ boxShadow: CARD_SHADOW }}
       >
         {/* Jarvis, centred, and awake.
@@ -560,9 +618,9 @@ export function FocusDayStage({
             breathing, which is enough to say the thing is running without
             ever asking to be watched. It is deliberately the only loop on
             the card. */}
-        <div className="relative flex h-7 items-center justify-center">
+        <div className="relative flex h-6 items-center justify-center sm:h-7">
           <motion.div
-            className="relative flex h-7 w-7 items-center justify-center"
+            className="relative flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7"
             initial={reduce ? false : { opacity: 0, scale: 0.6 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={
@@ -574,7 +632,7 @@ export function FocusDayStage({
             {reduce ? null : (
               <motion.span
                 aria-hidden
-                className="absolute h-7 w-7 rounded-full"
+                className="absolute h-6 w-6 rounded-full sm:h-7 sm:w-7"
                 style={{ background: "rgba(28,26,23,0.14)", filter: "blur(7px)" }}
                 animate={{ scale: [1, 1.24, 1], opacity: [0.4, 0.1, 0.4] }}
                 transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
@@ -595,7 +653,7 @@ export function FocusDayStage({
             is the demo's own, resolved after hydration so a prerendered page
             is never stale. */}
         <motion.div
-          className="mt-4 flex flex-wrap items-baseline gap-x-1.5"
+          className="mt-3 flex flex-wrap items-baseline gap-x-1.5 sm:mt-4"
           initial={reduce ? false : { opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.06, ease: EASE }}
@@ -615,37 +673,55 @@ export function FocusDayStage({
             down.
 
             The named work is bold and nothing else. Its underline is drawn
-            on hover, in the accent the hero headline underlines its own
-            word in, and hovering it lights the hour that work sits in. */}
+            when the reader points at it — hover on a mouse, tap on a phone —
+            in the accent the hero headline underlines its own word in, and
+            the same gesture lights the hour that work sits in. */}
         <motion.p
-          className="mt-2 text-[15.5px] leading-[1.55] tracking-[-0.12px] sm:text-[16px]"
+          className="mt-2 text-[13.5px] leading-[1.5] tracking-[-0.12px] sm:text-[16px] sm:leading-[1.55]"
           initial={reduce ? false : { opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: 0.14, ease: EASE }}
         >
-          {SENTENCE.map((seg, i) =>
-            seg.task ? (
-              <span
-                key={i}
-                className="relative inline-block font-semibold text-coal-ink"
-                onMouseEnter={() => setLit(seg.task ?? null)}
-                onMouseLeave={() => setLit(null)}
-              >
-                {seg.text}
-                <motion.span
-                  aria-hidden
-                  className="absolute bottom-[-1px] left-0 block h-[2px] w-full origin-left rounded-full bg-smolder"
-                  initial={false}
-                  animate={{ scaleX: lit === seg.task ? 1 : 0 }}
-                  transition={reduce ? { duration: 0 } : { duration: 0.34, ease: EASE }}
-                />
+          {STEPS.map((step, i) => (
+            <React.Fragment key={i}>
+              {step.lead ? (
+                <span className="text-slate-mid">{step.lead}</span>
+              ) : null}
+              {/* Phrase + its connective, unbreakable on a phone so a
+                  wrapped line opens with the bold phrase, never a comma. */}
+              <span className="whitespace-nowrap sm:whitespace-normal">
+                <span
+                  className="relative inline-block font-semibold text-coal-ink"
+                  {...linkProps(step.task)}
+                >
+                  {step.phrase}
+                  <motion.span
+                    aria-hidden
+                    className="absolute bottom-[-1px] left-0 block h-[2px] w-full origin-left rounded-full bg-smolder"
+                    initial={false}
+                    animate={{ scaleX: lit === step.task ? 1 : 0 }}
+                    transition={
+                      reduce ? { duration: 0 } : { duration: 0.34, ease: EASE }
+                    }
+                  />
+                </span>
+                {step.trailMobile ? (
+                  <>
+                    <span className="text-slate-mid sm:hidden">
+                      {step.trailMobile}
+                    </span>
+                    <span className="hidden text-slate-mid sm:inline">
+                      {step.trail}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-slate-mid">{step.trail}</span>
+                )}
               </span>
-            ) : (
-              <span key={i} className="text-slate-mid">
-                {seg.text}
-              </span>
-            ),
-          )}
+              {/* The break-here space, kept out of the nowrap wrapper. */}
+              {i < STEPS.length - 1 ? " " : null}
+            </React.Fragment>
+          ))}
         </motion.p>
 
         {/* Beat three, then four. The agenda fades in under the sentence,
@@ -659,7 +735,7 @@ export function FocusDayStage({
             entry as tall as its hours, which made a two-hour task and a
             one-hour meeting read as a big card and a small one. */}
         <motion.div
-          className="mt-4 divide-y divide-ash"
+          className="mt-3 divide-y divide-ash sm:mt-4"
           initial={reduce ? false : { opacity: 0, y: 6 }}
           animate={{ opacity: open ? 1 : 0, y: open ? 0 : 6 }}
           transition={{ duration: reduce ? 0.2 : 0.5, ease: EASE }}
@@ -680,9 +756,8 @@ export function FocusDayStage({
             return (
               <motion.div
                 key={row.id}
-                className="relative flex items-start gap-3 py-2.5"
-                onMouseEnter={() => setLit(row.id)}
-                onMouseLeave={() => setLit(null)}
+                className="relative flex items-start gap-2.5 py-2 sm:gap-3 sm:py-2.5"
+                {...linkProps(row.id)}
                 initial={reduce ? false : { opacity: 0, y: 6 }}
                 animate={{ opacity: shown ? 1 : 0, y: shown ? 0 : 6 }}
                 transition={{ duration: reduce ? 0.2 : 0.42, ease: EASE }}
@@ -703,7 +778,7 @@ export function FocusDayStage({
                 />
 
                 {/* Start time — fixed column, mono, aligned to the label. */}
-                <span className="relative w-9 shrink-0 pt-[1px] text-right font-mono text-[10px] leading-none text-stone">
+                <span className="relative w-8 shrink-0 pt-[1px] text-right font-mono text-[9.5px] leading-none text-stone sm:w-9 sm:text-[10px]">
                   {hhmm(row.at)}
                 </span>
 
@@ -717,10 +792,12 @@ export function FocusDayStage({
                   }}
                 />
 
-                {/* Content. Holds a constant right inset so the hover pill
-                    can park at the row's edge without ever landing on top of
-                    a note — reserved always, so nothing reflows on hover. */}
-                <div className="relative flex min-w-0 flex-1 flex-col pr-24">
+                {/* Content. From `sm` up it holds a constant right inset so
+                    the hover pill can park at the row's edge without ever
+                    landing on top of a note — reserved always, so nothing
+                    reflows on hover. On a phone the pill is hidden and the
+                    inset would just crush the title, so it is dropped. */}
+                <div className="relative flex min-w-0 flex-1 flex-col pr-0 sm:pr-24">
                   <span className="flex items-center gap-1.5 leading-none">
                     <span
                       className="text-[9px] font-bold uppercase tracking-[0.08em]"
@@ -739,7 +816,7 @@ export function FocusDayStage({
                     ) : null}
                   </span>
 
-                  <span className="mt-[4px] flex items-center gap-2">
+                  <span className="mt-[4px] flex items-center gap-1.5 sm:gap-2">
                     {/* No hover underline on the title here — that rule
                         belongs to the sentence above the agenda, where a
                         hovered phrase strikes smolder the way the hero
@@ -748,7 +825,7 @@ export function FocusDayStage({
                         under every title was one too many. */}
                     <span
                       className={
-                        "inline-block max-w-full truncate text-[14px] leading-[1.25] " +
+                        "inline-block max-w-full truncate text-[13px] leading-[1.3] sm:text-[14px] sm:leading-[1.25] " +
                         (isTask ? "font-medium" : "font-semibold")
                       }
                       style={{ color: "var(--color-coal-ink)" }}
@@ -756,7 +833,7 @@ export function FocusDayStage({
                       {row.title}
                     </span>
 
-                    <span className="h-[14px] w-[14px] shrink-0 translate-y-[0.5px] opacity-90">
+                    <span className="h-3 w-3 shrink-0 translate-y-[0.5px] opacity-90 sm:h-[14px] sm:w-[14px]">
                       {isTask ? (
                         row.source ? <SourceMark name={row.source} /> : null
                       ) : (
@@ -767,7 +844,7 @@ export function FocusDayStage({
 
                   {row.note ? (
                     <span
-                      className="mt-[3px] truncate text-[12px] leading-[1.3]"
+                      className="mt-[3px] truncate text-[11.5px] leading-[1.3] sm:text-[12px]"
                       style={{
                         color: isTask
                           ? "var(--color-slate-mid)"
