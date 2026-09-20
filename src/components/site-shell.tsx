@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { JarvisMark } from "@/components/jarvis-mark";
 import { ShieldIcon } from "@/components/icons";
-import { contentPages } from "@/lib/content/pages";
+import { contentPages, legalPages } from "@/lib/content/pages";
 import { CONTACT_EMAIL } from "@/lib/site";
 
 /*
@@ -76,12 +76,27 @@ export function SiteFooter() {
             <ShieldIcon className="h-4 w-4" />
             Early access — we&apos;re onboarding design partners.
           </span>
-          <a
-            href={`mailto:${CONTACT_EMAIL}`}
-            className="text-graphite transition-colors hover:text-coal-ink"
-          >
-            {CONTACT_EMAIL}
-          </a>
+          {/* Privacy and terms live here rather than in the Explore grid
+              above. A reader looks for them at the bottom of a page, and a
+              Google OAuth reviewer has to be able to reach them from any
+              page on the site. */}
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            {legalPages.map((page) => (
+              <Link
+                key={page.path}
+                href={page.path}
+                className="text-graphite transition-colors hover:text-coal-ink"
+              >
+                {page.nav}
+              </Link>
+            ))}
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="text-graphite transition-colors hover:text-coal-ink"
+            >
+              {CONTACT_EMAIL}
+            </a>
+          </div>
         </div>
       </div>
     </footer>

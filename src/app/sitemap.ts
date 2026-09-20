@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { url } from "@/lib/site";
-import { contentPages } from "@/lib/content/pages";
+import { contentPages, legalPages } from "@/lib/content/pages";
 import { posts } from "@/lib/content/posts";
 
 /*
@@ -27,6 +27,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: url(page.path),
       lastModified: now,
       changeFrequency: "monthly" as const,
+      priority: page.priority,
+    })),
+    /* Crawlable on purpose: Google's OAuth reviewers fetch the policy and the
+       terms straight from the consent-screen configuration, and a page behind
+       a noindex invites the question of what it is hiding. Low priority,
+       yearly, because they are not pages we compete on. */
+    ...legalPages.map((page) => ({
+      url: url(page.path),
+      lastModified: now,
+      changeFrequency: "yearly" as const,
       priority: page.priority,
     })),
     ...posts.map((post) => ({

@@ -101,3 +101,38 @@ export const findPage = (path: string) => {
   if (!page) throw new Error(`No content page registered for "${path}"`);
   return page;
 };
+
+/*
+  The legal documents.
+
+  Kept out of `contentPages` on purpose. That array is the footer's "Explore"
+  grid, and a privacy policy sitting between "MCP server" and "Writing" reads as
+  something we are marketing. These live in the footer's bottom bar instead,
+  where a reader already looks for them, and they carry their own low sitemap
+  priority: they must be crawlable, because Google's OAuth reviewers fetch them,
+  but they are not pages we compete on.
+*/
+export const legalPages: ContentPage[] = [
+  {
+    path: "/privacy",
+    nav: "Privacy",
+    title: "Privacy Policy",
+    description:
+      "What Jarvis reads, where it is stored, and who else sees it. Your Gmail and calendar data stays on your own Mac. Written for the people who use Jarvis, not for lawyers.",
+    priority: 0.3,
+  },
+  {
+    path: "/terms",
+    nav: "Terms",
+    title: "Terms of Service",
+    description:
+      "The terms you agree to when you use Jarvis: what we provide, what we do not promise, what you are responsible for, and how either side ends it.",
+    priority: 0.3,
+  },
+];
+
+export const findLegalPage = (path: string) => {
+  const page = legalPages.find((p) => p.path === path);
+  if (!page) throw new Error(`No legal page registered for "${path}"`);
+  return page;
+};
