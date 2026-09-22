@@ -36,14 +36,15 @@ export const metadata: Metadata = {
   },
 };
 
-const EFFECTIVE = "20 September 2026";
+const EFFECTIVE = "22 September 2026";
 
 /* One entry per LegalSection below, in the same order. The rail numbers the
    sections from this array, so adding a section means adding it here. */
 const CONTENTS: LegalEntry[] = [
   { id: "who-we-are", title: "Who we are" },
-  { id: "google-data", title: "Google account data" },
+  { id: "google-data", title: "Google user data we access" },
   { id: "storage", title: "Where it is stored" },
+  { id: "protection", title: "How we protect your data" },
   { id: "leaves", title: "When data leaves your Mac" },
   { id: "other-sources", title: "Slack, Teams and meetings" },
   { id: "never", title: "What we never do" },
@@ -68,7 +69,7 @@ const SUMMARY = [
   {
     claim: "One thing does leave",
     detail:
-      "Text is sent to Anthropic when Jarvis writes your day or finds tasks. Section 4 says exactly what, and how to turn it off.",
+      "Text is sent to Anthropic when Jarvis writes your day or finds tasks. Section 5 says exactly what, and how to turn it off.",
   },
   {
     claim: "Deleting is deleting",
@@ -81,9 +82,9 @@ const SCOPES = [
   {
     scope: "gmail.readonly",
     reads:
-      "Subject, sender, recipients, date, and body text of messages in your inbox, for the history window you pick when you connect.",
+      "Messages in your inbox, for the history window you pick: the sender, subject, date, and body text of each one, plus the connected mailbox's own address, used to label the account. Attachments are never downloaded.",
     purpose:
-      "Building the local search index, and finding the tasks and commitments buried in your mail.",
+      "Finding the requests, tasks, and commitments buried in your mail, and showing you which email a task came from.",
     lands: (
       <>
         A database file on your Mac. Read only: Jarvis cannot send, delete, or
@@ -94,12 +95,27 @@ const SCOPES = [
   {
     scope: "calendar.events.readonly",
     reads:
-      "Today's events on your primary calendar: title, time, attendees, and the joining link.",
-    purpose: "Drawing today's meetings on the Focus screen.",
+      "Today's events on your primary calendar: title, start and end time, how many people are invited, your own reply (so declined meetings are hidden), and the joining link, which Jarvis looks for in the event's conference details, location, or description.",
+    purpose:
+      "Drawing today's meetings on the Focus screen, with a Join button that opens the call.",
     lands: (
       <>
         Nowhere. Calendar events are held in memory while the screen is open and
         are never written to disk.
+      </>
+    ),
+  },
+  {
+    scope: "openid · email · profile",
+    reads:
+      "Your name, email address, profile picture, and Google account ID, from the signed token Google returns when you sign in with Google. Requested only if you use shared access.",
+    purpose:
+      "Signing in to shared access (section 5). Our relay checks the verified email address against the list of people we have given access.",
+    lands: (
+      <>
+        Nowhere on our side. The relay reads the email address, issues a
+        time-limited session token, and keeps nothing. The app stores that
+        session token on your Mac.
       </>
     ),
   },
@@ -110,8 +126,9 @@ const DELETION = [
     action: "Disconnect the account",
     detail: (
       <>
-        Settings, then Gmail, then Disconnect. This deletes the stored
-        credential for that account from your Mac.
+        Settings, then Gmail, then Disconnect. This asks Google to revoke
+        Jarvis&apos;s access to that account and deletes the stored credential
+        from your Mac.
       </>
     ),
   },
@@ -164,7 +181,7 @@ export default function PrivacyPage() {
             Jarvis is built and operated by Palina Shymanovich, an individual
             trading as Jarvis, based in Poland. For the purposes of the EU
             General Data Protection Regulation, she is the data controller for
-            the limited personal data described in sections 8 and 9.
+            the limited personal data described in sections 9 and 10.
           </LegalP>
           <LegalP>
             Reach us at <Mailto address={CONTACT_EMAIL} />. This policy covers
@@ -173,11 +190,18 @@ export default function PrivacyPage() {
           </LegalP>
         </LegalSection>
 
-        <LegalSection id="google-data" index={2} title="Google account data">
+        <LegalSection
+          id="google-data"
+          index={2}
+          title="Google user data we access"
+        >
           <LegalP>
-            When you connect a Google account, Jarvis asks for two read-only
-            scopes and no others. Each one is here because a specific feature
-            needs it.
+            Jarvis accesses Google user data only through the OAuth scopes
+            below. When you connect a Google account in Settings, it asks for
+            the two read-only data scopes. The three sign-in scopes are asked
+            for only if you sign in with Google to use shared access. Each scope
+            is here because a specific feature needs it, and Jarvis accesses no
+            other Google user data.
           </LegalP>
 
           <ScopeGrid scopes={SCOPES} />
@@ -205,6 +229,12 @@ export default function PrivacyPage() {
               generative model, and is never read by a human at Jarvis. We have
               no ability to read it, because we never receive a copy.
             </p>
+            <p>
+              Jarvis does not use Google Workspace API data to develop, improve,
+              or train generalized or non-personalized AI or ML models. The
+              model provider named in section 5 does not train on data sent
+              through its API.
+            </p>
           </LimitedUseCallout>
         </LegalSection>
 
@@ -215,8 +245,8 @@ export default function PrivacyPage() {
           </LegalP>
           <LegalList>
             <LegalItem>
-              <Mono>messages.db</Mono> holds the message text, the full-text
-              search index, and the numeric embeddings used for semantic search.
+              <Mono>messages.db</Mono> holds the text of synced emails and
+              meeting transcripts, and the tasks Jarvis found in them.
             </LegalItem>
             <LegalItem>
               <Mono>meetings/</Mono> holds meeting audio and transcripts, if you
@@ -228,13 +258,74 @@ export default function PrivacyPage() {
             </LegalItem>
           </LegalList>
           <LegalP>
-            The search that makes Jarvis useful runs entirely on that machine.
-            The embedding model ships inside the app and needs no network, so
-            indexing your mail and searching it happen offline.
+            Nothing in that folder is copied to a server we run. It stays there
+            until you delete it, as described in section 8.
           </LegalP>
         </LegalSection>
 
-        <LegalSection id="leaves" index={4} title="When data leaves your Mac">
+        <LegalSection id="protection" index={4} title="How we protect your data">
+          <LegalP>
+            Google user data, and everything else Jarvis reads, is protected in
+            the following ways.
+          </LegalP>
+          <LegalList>
+            <LegalItem>
+              <span className="text-coal-ink">Encrypted in transit.</span>{" "}
+              Every request to Google, to Anthropic, and to our relay uses HTTPS
+              (TLS). The only unencrypted connections are the ones that never
+              leave your Mac, such as the sign-in redirect back to the app on
+              127.0.0.1.
+            </LegalItem>
+            <LegalItem>
+              <span className="text-coal-ink">No passwords.</span> Google
+              sign-in uses OAuth 2.0 with PKCE in your own browser. Jarvis never
+              sees your Google password.
+            </LegalItem>
+            <LegalItem>
+              <span className="text-coal-ink">
+                Credentials locked to your account.
+              </span>{" "}
+              OAuth tokens are stored on your Mac as files only your macOS user
+              can read (permission 0600, in a folder only you can open), and
+              never on a server.
+            </LegalItem>
+            <LegalItem>
+              <span className="text-coal-ink">Stored on your device.</span>{" "}
+              Email text and tasks sit only in your own user library, behind
+              your macOS login. We recommend keeping FileVault on, which
+              encrypts the whole disk, this folder included.
+            </LegalItem>
+            <LegalItem>
+              <span className="text-coal-ink">Only what is needed.</span>{" "}
+              Scopes are read-only. Only your inbox, within the window you pick,
+              is synced. Attachments are never downloaded, and calendar events
+              are never written to disk.
+            </LegalItem>
+            <LegalItem>
+              <span className="text-coal-ink">No central copy.</span> We run no
+              database of your content, so there is no central store to breach.
+              Our relay forwards requests without storing or logging their
+              content.
+            </LegalItem>
+            <LegalItem>
+              <span className="text-coal-ink">Verified software.</span> The app
+              is signed with an Apple Developer ID, notarized by Apple, and runs
+              with the hardened runtime. Updates are cryptographically signed,
+              and the app checks the signature before installing one.
+            </LegalItem>
+            <LegalItem>
+              <span className="text-coal-ink">Access ends on disconnect.</span>{" "}
+              Disconnecting a Google account asks Google to revoke the token and
+              deletes it from your Mac.
+            </LegalItem>
+          </LegalList>
+          <LegalP>
+            If you find a security problem, write to{" "}
+            <Mailto address={CONTACT_EMAIL} />.
+          </LegalP>
+        </LegalSection>
+
+        <LegalSection id="leaves" index={5} title="When data leaves your Mac">
           <LegalP>
             Some Jarvis features are written by a large language model: the
             sentence that opens your day, the task finder, task extraction from
@@ -246,9 +337,10 @@ export default function PrivacyPage() {
           <LegalH3>What is sent</LegalH3>
           <LegalP>
             The relevant excerpts for that request, which can include the
-            subject and body text of emails, the transcript of a meeting you
-            recorded, and the titles of tasks Jarvis already knows about. Only
-            what the request needs is sent, not your database.
+            subject and body text of emails, Slack or Teams messages Jarvis read
+            for that request, the transcript of a meeting you recorded, and the
+            titles of tasks Jarvis already knows about. Only what the request
+            needs is sent, not your database.
           </LegalP>
 
           <LegalH3>How it is sent</LegalH3>
@@ -281,21 +373,22 @@ export default function PrivacyPage() {
           <LegalP>
             These features are the reason to use Jarvis, so they are on by
             default. If you remove your API key and do not use shared access,
-            the model features stop and the rest of the app, including search
-            and the local index, keeps working.
+            the model features stop. The rest of the app keeps working: mail
+            still syncs, your meetings still show, and meeting capture still
+            records, but Jarvis stops finding new tasks.
           </LegalP>
         </LegalSection>
 
         <LegalSection
           id="other-sources"
-          index={5}
+          index={6}
           title="Slack, Microsoft Teams and meetings"
         >
           <LegalH3>Slack and Microsoft Teams</LegalH3>
           <LegalP>
-            Both are read live and nothing is kept. When a search needs a Slack
-            or Teams message, Jarvis asks their API at that moment, uses the
-            reply to answer, and discards it. No Slack or Teams message text is
+            Both are read live and nothing is kept. When Jarvis looks for tasks,
+            or shows you where a task came from, it asks their API at that
+            moment, uses the reply, and discards it. No Slack or Teams message text is
             ever written to the database. Jarvis only ever looks in the
             conversations you select.
           </LegalP>
@@ -306,7 +399,7 @@ export default function PrivacyPage() {
             of the call on your Mac. Transcription runs on your machine with a
             speech model that ships with the app, so the audio itself is never
             uploaded anywhere. The resulting transcript is text like any other,
-            which means a summary of it follows section 4.
+            which means a summary of it follows section 5.
           </LegalP>
           <LegalP>
             Recording other people has legal requirements that vary by country.
@@ -314,7 +407,7 @@ export default function PrivacyPage() {
           </LegalP>
         </LegalSection>
 
-        <LegalSection id="never" index={6} title="What we never do">
+        <LegalSection id="never" index={7} title="What we never do">
           <LegalList>
             <LegalItem>
               We never sell your data, and we have nothing to sell: we hold no
@@ -333,14 +426,14 @@ export default function PrivacyPage() {
             </LegalItem>
             <LegalItem>
               We do not share your content with any third party beyond the model
-              provider named in section 4.
+              provider named in section 5.
             </LegalItem>
           </LegalList>
         </LegalSection>
 
         <LegalSection
           id="delete"
-          index={7}
+          index={8}
           title="Deleting data and revoking access"
         >
           <LegalP>
@@ -355,7 +448,7 @@ export default function PrivacyPage() {
           </LegalP>
         </LegalSection>
 
-        <LegalSection id="website" index={8} title="This website">
+        <LegalSection id="website" index={9} title="This website">
           <LegalP>
             The website is separate from the app and is the only place we
             collect anything ourselves.
@@ -380,7 +473,7 @@ export default function PrivacyPage() {
           </LegalP>
         </LegalSection>
 
-        <LegalSection id="rights" index={9} title="Your rights">
+        <LegalSection id="rights" index={10} title="Your rights">
           <LegalP>
             Under the GDPR you may ask for a copy of the personal data we hold
             about you, ask us to correct or erase it, object to our using it,
@@ -390,14 +483,14 @@ export default function PrivacyPage() {
           <LegalP>
             In practice the answer is usually short, because the only personal
             data we hold about you is an email address you gave us and the
-            website analytics in section 8. Everything the app reads stays with
+            website analytics in section 9. Everything the app reads stays with
             you. If you believe we have handled your data badly, you may
             complain to your national data protection authority. In Poland that
             is the President of the Personal Data Protection Office.
           </LegalP>
         </LegalSection>
 
-        <LegalSection id="changes" index={10} title="Changes to this policy">
+        <LegalSection id="changes" index={11} title="Changes to this policy">
           <LegalP>
             If this policy changes in a way that affects what Jarvis does with
             your data, we will change the effective date below and say what
@@ -405,9 +498,15 @@ export default function PrivacyPage() {
             new version. A change that would widen what we collect will be put
             to you in the app before it takes effect, not buried here.
           </LegalP>
+          <LegalP>
+            22 September 2026: added section 4 on how we protect your data,
+            listed the sign-in scopes in section 2, and removed references to a
+            local search index the app no longer builds. What Jarvis collects
+            did not change.
+          </LegalP>
         </LegalSection>
 
-        <LegalSection id="contact" index={11} title="Contact">
+        <LegalSection id="contact" index={12} title="Contact">
           <LegalP>
             Palina Shymanovich, operating as Jarvis, Poland.
             <br />
