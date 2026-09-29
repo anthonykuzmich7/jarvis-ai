@@ -337,7 +337,7 @@ export function ContextHero() {
             className="mt-9"
           >
             <a
-              href="#waitlist"
+              href="/download"
               className="cta-shine relative inline-flex cursor-pointer items-center overflow-hidden whitespace-nowrap rounded-full bg-coal-ink px-7 py-3.5 text-sm font-semibold leading-none tracking-[-0.14px] text-white transition-colors hover:bg-graphite active:scale-[0.98]"
             >
               Get early access

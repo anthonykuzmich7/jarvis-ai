@@ -242,7 +242,7 @@ export function ScrubHero() {
           Jarvis connects to every tool you work in. Syncs your context locally — private, on your device. And when your AI or your teammates need to know something, it gets exactly the right context. Just tag Jarvis.
         </p>
         <a
-          href="#waitlist"
+          href="/download"
           className="pointer-events-auto mt-8 rounded-full bg-coal-ink px-7 py-3.5 text-sm font-medium leading-none text-white transition-all hover:opacity-90 hover:shadow-md hover:-translate-y-px"
           style={{ cursor: "pointer" }}
         >

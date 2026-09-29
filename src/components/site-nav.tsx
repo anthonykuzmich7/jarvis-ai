@@ -32,7 +32,7 @@ export function SiteNav({
   return (
     <NavBar
       items={offSite ? offSiteItems : sectionItems}
-      cta={{ label: "Get early access", url: offSite ? "/#waitlist" : "#waitlist" }}
+      cta={{ label: "Get early access", url: "/download" }}
       brand={brand}
     />
   );

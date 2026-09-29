@@ -314,7 +314,7 @@ export function StrugglesSection() {
               {tab.struggleRest}
             </motion.p>
             <a
-              href="#waitlist"
+              href="/download"
               onClick={() =>
                 capture("early_access_clicked", {
                   label: "Get early access",

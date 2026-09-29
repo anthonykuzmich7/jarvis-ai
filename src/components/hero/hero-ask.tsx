@@ -206,7 +206,7 @@ export function HeroAsk() {
             className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 sm:mt-9 sm:gap-x-7"
           >
             <a
-              href="#waitlist"
+              href="/download"
               onClick={() =>
                 capture("early_access_clicked", {
                   label: "Get early access",

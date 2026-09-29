@@ -12,7 +12,7 @@ import { capture } from "@/lib/analytics";
 export function CtaBandLink() {
   return (
     <Link
-      href="/#waitlist"
+      href="/download"
       onClick={() =>
         capture("early_access_clicked", {
           label: "Get early access",

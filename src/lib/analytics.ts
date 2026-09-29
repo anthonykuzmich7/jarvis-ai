@@ -32,7 +32,11 @@ export type AnalyticsEvent =
    * almost always "how many people asked for access", and `placement` is
    * there for the rarer times you want to know which button earned it.
    */
-  | "early_access_clicked";
+  | "early_access_clicked"
+  /** The download button on /download — the conversion now that the app is public. */
+  | "download_clicked"
+  /** A visitor not on a Mac asked for the download link by email. */
+  | "download_link_requested";
 
 /**
  * Records an event, or does nothing at all when PostHog never initialised.
