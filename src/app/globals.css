@@ -175,3 +175,20 @@ body {
 .kinetic-echo::before {
   content: attr(data-echo);
 }
+
+/* /download — the button fill while the browser picks the file up, and the
+   page's paper glow drifting behind the mark. The global reduced-motion rule
+   above stills both. */
+@keyframes download-fill {
+  to { transform: scaleX(1); }
+}
+@keyframes download-drift {
+  to { transform: translate3d(-3%, 2%, 0) scale(1.05); }
+}
+.download-glow {
+  background:
+    radial-gradient(40% 50% at 50% 45%, rgba(189, 216, 255, 0.55), transparent 70%),
+    radial-gradient(30% 35% at 58% 55%, rgba(255, 234, 214, 0.7), transparent 70%);
+  filter: blur(10px);
+  animation: download-drift 14s ease-in-out infinite alternate;
+}

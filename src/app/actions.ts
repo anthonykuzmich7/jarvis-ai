@@ -29,6 +29,25 @@ export async function joinWaitlist(
   _prev: WaitlistState,
   formData: FormData,
 ): Promise<WaitlistState> {
+  return saveSignup(formData, "landing-waitlist");
+}
+
+/**
+ * A visitor on /download who is not on a Mac asks for the link by email.
+ * Same sheet, same checks as the waitlist; the source column tells the two
+ * apart, so whoever works the sheet knows this row wants a download link.
+ */
+export async function requestDownloadLink(
+  _prev: WaitlistState,
+  formData: FormData,
+): Promise<WaitlistState> {
+  return saveSignup(formData, "download-link");
+}
+
+async function saveSignup(
+  formData: FormData,
+  baseSource: string,
+): Promise<WaitlistState> {
   // Honeypot — bots fill hidden fields, humans don't.
   if (formData.get("company_website")) {
     return { status: "success", message: "You're on the list." };
@@ -53,8 +72,7 @@ export async function joinWaitlist(
   // Local and preview signups hit the same sheet as production. Label them so a
   // test row is never mistaken for a real lead.
   const env = process.env.VERCEL_ENV ?? "local";
-  const source =
-    env === "production" ? "landing-waitlist" : `landing-waitlist:${env}`;
+  const source = env === "production" ? baseSource : `${baseSource}:${env}`;
 
   try {
     await saveLead({

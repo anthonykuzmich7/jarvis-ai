@@ -23,6 +23,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 1,
     },
+    {
+      url: url("/download"),
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
     ...contentPages.map((page) => ({
       url: url(page.path),
       lastModified: now,
