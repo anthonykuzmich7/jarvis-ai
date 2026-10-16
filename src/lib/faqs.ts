@@ -9,27 +9,27 @@ export type Faq = { q: string; a: string };
 
 export const faqs: Faq[] = [
   {
-    q: "How does Jarvis grant access safely?",
-    a: "Access is the sensitive part, so it runs on rules you define, with approvals where you want them and a full audit trail. You decide what Jarvis can grant on its own and what still needs a human yes.",
+    q: "Which apps does Jarvis read?",
+    a: "Slack, Rocket.Chat, Telegram, Gmail, Apple Mail and Jira, plus Google Calendar for your meetings.",
   },
   {
-    q: "What about data privacy?",
-    a: "Jarvis separates your personal work context — your Slack, meetings, contacts — from shared company knowledge. You control what teammates and admins can see.",
+    q: "Does it store my messages?",
+    a: "Chat messages are read live and never saved. Gmail is kept in a database on your Mac. Nothing is stored on a Jarvis server.",
   },
   {
-    q: "What does it connect to?",
-    a: "Slack and your knowledge base to start, with identity providers, code hosting, meetings, and cloud on the roadmap. Jarvis also exposes context to AI tools over MCP.",
+    q: "Does a bot join my calls?",
+    a: "No. Jarvis records the call’s audio on your Mac when you press Take notes, so nobody sees an extra participant.",
   },
   {
-    q: "Is it available today?",
-    a: "We're in early access and validating with design partners. Join the waitlist and we'll reach out as we open spots.",
+    q: "Which Macs does it run on?",
+    a: "Apple Silicon and Intel Macs. Recording both sides of a call needs macOS 14.4 or later.",
   },
   {
-    q: "Does it work with our existing tools?",
-    a: "Yes — Jarvis sits on top of what you already use. It reads from Slack, Confluence, GitHub, and your identity provider. No migration, no new workflow.",
+    q: "Can I change what Jarvis thinks is urgent?",
+    a: "Yes. Pin any task’s priority, or tell Jarvis a rule like “anything from Alex is urgent”. A priority you pin always wins.",
   },
   {
-    q: "How long does setup take?",
-    a: "Most teams are running in under a day. Connect your integrations, define your access rules, and Jarvis is ready to onboard your next hire.",
+    q: "What happens after the trial?",
+    a: "Jarvis Pro is €15 a month, VAT included. Subscribe or cancel from Settings → Plan.",
   },
 ];
