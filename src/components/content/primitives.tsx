@@ -28,14 +28,12 @@ export function PageHero({
 }) {
   return (
     <section className="mx-auto w-full max-w-6xl px-5 pb-4 pt-8 sm:px-6 sm:pb-8 sm:pt-12">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-smolder">
-        {eyebrow}
-      </p>
-      <h1 className="mt-4 max-w-[19ch] font-display text-[34px] font-bold leading-[1.04] tracking-[-1.2px] text-coal-ink text-balance sm:text-[46px] sm:tracking-[-1.7px] lg:text-[56px] lg:tracking-[-2.1px]">
+      <p className="nt-eyebrow">{eyebrow}</p>
+      <h1 className="mt-4 max-w-[19ch] font-display text-[40px] font-semibold leading-[1.0] tracking-[-0.04em] text-coal-ink text-balance sm:text-[56px] lg:text-[72px]">
         {title}
       </h1>
       <div
-        className={`mt-6 text-[17px] leading-[1.6] tracking-[-0.16px] text-graphite ${MEASURE}`}
+        className={`mt-6 text-[19px] leading-[1.55] tracking-[-0.01em] text-slate-mid ${MEASURE}`}
       >
         {standfirst}
       </div>
@@ -59,7 +57,7 @@ export function Section({
       className="mx-auto w-full max-w-6xl scroll-mt-20 px-5 py-10 sm:px-6 sm:py-14"
     >
       {title ? (
-        <h2 className="mb-5 max-w-[24ch] font-display text-[26px] font-bold leading-[1.13] tracking-[-0.84px] text-coal-ink text-balance sm:text-[32px] sm:tracking-[-0.96px]">
+        <h2 className="mb-5 max-w-[24ch] font-display text-[28px] font-semibold leading-[1.08] tracking-[-0.035em] text-coal-ink text-balance sm:text-[38px]">
           {title}
         </h2>
       ) : null}
@@ -92,7 +90,7 @@ export function Lede({ children }: { children: ReactNode }) {
 
 export function H3({ children }: { children: ReactNode }) {
   return (
-    <h3 className="mb-2 font-display text-[17px] font-semibold leading-[1.3] tracking-[-0.3px] text-coal-ink">
+    <h3 className="mb-2 font-display text-[17px] font-semibold leading-[1.3] tracking-[-0.02em] text-coal-ink">
       {children}
     </h3>
   );
@@ -124,8 +122,7 @@ export function Card({
 }) {
   return (
     <div
-      className="rounded-[10px] border border-ash bg-white p-5"
-      style={{ boxShadow: "rgba(95,99,106,0.08) 0px 0px 0px 1px" }}
+      className="rounded-[16px] border border-ash bg-card p-6"
     >
       <H3>{title}</H3>
       <p className="text-[14px] leading-[1.6] tracking-[-0.1px] text-slate-mid">
@@ -145,7 +142,7 @@ export function Note({
   children: ReactNode;
 }) {
   return (
-    <div className="mt-2 max-w-[72ch] rounded-[10px] border border-ash bg-parchment p-5 sm:p-6">
+    <div className="mt-2 max-w-[72ch] rounded-[16px] border border-ash bg-parchment p-5 sm:p-6">
       <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-graphite">
         {label}
       </p>
@@ -175,7 +172,7 @@ export function ComparisonTable({
 }) {
   return (
     <div className="mt-2">
-      <div className="overflow-x-auto rounded-[10px] border border-ash bg-white">
+      <div className="overflow-x-auto rounded-[16px] border border-ash bg-card">
         <table className="w-full min-w-[640px] border-collapse text-left">
           <thead>
             <tr>
@@ -215,11 +212,10 @@ export function ComparisonTable({
   );
 }
 
-/** Closing CTA. Points at the homepage waitlist rather than duplicating the
-    form, so there is one place leads are captured and one funnel to measure. */
+/** Closing CTA: one button to /download, the same place every "Get started" goes. */
 export function CtaBand({
-  title = "Get Jarvis for your team",
-  body = "We're in early access, onboarding design partners a few at a time. Leave your email and we'll reach out as spots open.",
+  title = "Try Jarvis on your Mac",
+  body = "Connect your chats, email and calendar. Jarvis tells you what to do first.",
 }: {
   title?: string;
   body?: string;
@@ -227,13 +223,13 @@ export function CtaBand({
   return (
     <section className="mx-auto w-full max-w-6xl px-5 py-12 sm:px-6 sm:py-16">
       <div
-        className="rounded-[16px] border border-ash bg-parchment px-6 py-10 text-center sm:px-12 sm:py-14"
-        style={{ boxShadow: "rgba(95,99,106,0.08) 0px 0px 0px 1px" }}
+        className="relative overflow-hidden rounded-[24px] border border-ash bg-card px-6 py-12 text-center sm:px-12 sm:py-16"
       >
-        <h2 className="mx-auto max-w-[20ch] font-display text-[26px] font-bold leading-[1.1] tracking-[-0.9px] text-coal-ink text-balance sm:text-[34px] sm:tracking-[-1.2px]">
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 -bottom-40 mx-auto h-80 max-w-[720px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,96,32,0.28),transparent_70%)]" />
+        <h2 className="relative mx-auto max-w-[20ch] font-display text-[30px] font-semibold leading-[1.05] tracking-[-0.04em] text-coal-ink text-balance sm:text-[44px]">
           {title}
         </h2>
-        <p className="mx-auto mt-4 max-w-[52ch] text-[15px] leading-[1.6] tracking-[-0.12px] text-graphite">
+        <p className="relative mx-auto mt-4 max-w-[52ch] text-[17px] leading-[1.55] text-slate-mid">
           {body}
         </p>
         <CtaBandLink />
@@ -259,7 +255,7 @@ export function ReadNext({
           <Link
             key={link.href}
             href={link.href}
-            className="group rounded-[10px] border border-ash bg-white p-5 transition-colors hover:border-fossil"
+            className="group rounded-[16px] border border-ash bg-card p-5 transition-colors hover:border-fossil"
           >
             <p className="font-display text-[15px] font-semibold leading-[1.3] tracking-[-0.25px] text-coal-ink">
               {link.title}

@@ -6,7 +6,10 @@
   smolder orange CTAs, Geist display (Mona Sans substitute), Inter body.
   See docs/design/panxo.md for the full spec.
 */
-@theme inline {
+/* Colours are a plain @theme (not inline) so utilities read them through
+   var(): that is what lets `.nt-page` below re-tint every content page by
+   redefining the palette, without touching each page's class names. */
+@theme {
   /* ── Core semantic surfaces ─────────────────────────────────── */
   --color-background: #fafafa;       /* Ledger White — page canvas */
   --color-foreground: #1c1a17;       /* Coal Ink */
@@ -53,6 +56,9 @@
   --color-emerald-tag: #10b981;
   --color-sky-blush: #bdd8ff;
 
+}
+
+@theme inline {
   /* ── Typography ──────────────────────────────────────────────── */
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
@@ -191,4 +197,268 @@ body {
     radial-gradient(30% 35% at 58% 55%, rgba(255, 234, 214, 0.7), transparent 70%);
   filter: blur(10px);
   animation: download-drift 14s ease-in-out infinite alternate;
+}
+
+/*
+  ── Night — the homepage (2026-10) ─────────────────────────────────────
+  The homepage moved to a dark "Night" style, designed on the Jarvis website
+  canvas: coal ground, one smolder-orange accent, Geist throughout. Every
+  class is prefixed `nt-` and lives under `.nt`, so none of it can reach the
+  light content pages (/mcp, /blog, /privacy…), which keep the Panxo system
+  above.
+*/
+.nt {
+  --nt-bg: #09090a;
+  --nt-text: #f4f4f5;
+  --nt-dim: #a1a1aa;
+  --nt-mute: #8b8b94;
+  --nt-faint: #71717a;
+  --nt-card: #111113;
+  --nt-hair: rgba(255, 255, 255, 0.07);
+  --nt-accent: #ff6020;
+  position: relative;
+  min-height: 100vh;
+  background: var(--nt-bg);
+  color: var(--nt-text);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  overflow: hidden;
+}
+.nt a { color: var(--nt-text); text-decoration: none; }
+.nt a:hover { color: #ffffff; }
+.nt-wrap { position: relative; max-width: 1200px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
+.nt-tiles {
+  position: absolute; left: 0; right: 0; top: 0; height: 900px; pointer-events: none;
+  background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 55% at 50% 25%, #000 15%, transparent 72%);
+  mask-image: radial-gradient(ellipse 75% 55% at 50% 25%, #000 15%, transparent 72%);
+}
+.nt-eyebrow { margin: 0; font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 12px; letter-spacing: 0.12em; color: #ff7a3d; }
+.nt-h2 { margin: 14px 0 0; font-size: clamp(36px, 5vw, 60px); line-height: 1.02; font-weight: 600; letter-spacing: -0.04em; color: var(--nt-text); }
+.nt-lede { margin: 20px 0 0; font-size: 19px; line-height: 1.55; letter-spacing: -0.01em; color: var(--nt-dim); }
+.nt-mark { position: relative; display: inline-block; }
+.nt-mark::after { content: ""; position: absolute; left: 0; right: 0; bottom: -0.1em; height: 0.05em; background: var(--nt-accent); border-radius: 2px; }
+
+/* Buttons */
+.nt-btn { display: inline-flex; align-items: center; justify-content: center; height: 52px; padding: 0 28px; border-radius: 12px; font-size: 16px; font-weight: 500; cursor: pointer; border: 0; font-family: inherit; transition: background 0.15s ease, transform 0.15s ease; }
+.nt .nt-btn-primary { background: #ffffff; color: #09090a; }
+.nt .nt-btn-primary:hover { background: #e4e4e7; color: #09090a; }
+.nt .nt-btn-ghost { background: #141416; color: var(--nt-text); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); }
+.nt .nt-btn-ghost:hover { background: #1c1c20; }
+.nt-btn:focus-visible, .nt a:focus-visible, .nt button:focus-visible, .nt summary:focus-visible { outline: 2px solid var(--nt-accent); outline-offset: 2px; }
+
+/* Nav */
+.nt-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--nt-hair); }
+.nt-nav-links { display: flex; gap: 32px; font-size: 15px; }
+.nt .nt-nav-links a, .nt .nt-foot-links a { color: var(--nt-dim); }
+.nt .nt-nav-links a:hover, .nt .nt-foot-links a:hover { color: #ffffff; }
+.nt-nav-small { font-size: 15px; padding: 9px 16px; border-radius: 10px; }
+@media (max-width: 760px) { .nt-nav-links { display: none; } }
+.nt-signin { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.14); }
+@media (max-width: 420px) { .nt-signin { display: none; } }
+
+/* Hero */
+.nt-hero { padding-top: 84px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.nt-hero h1 { margin: 0; font-size: clamp(52px, 8vw, 104px); line-height: 0.95; font-weight: 600; letter-spacing: -0.045em; }
+.nt-hero p { margin: 28px 0 0; max-width: 40ch; font-size: 20px; line-height: 1.5; letter-spacing: -0.01em; color: var(--nt-dim); }
+.nt-ctas { margin-top: 36px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.nt-stage { padding-top: 150px; padding-bottom: 40px; }
+.nt-glow { position: absolute; left: 50%; transform: translateX(-50%); pointer-events: none; }
+@media (max-width: 640px) { .nt-hero { padding-top: 56px; } .nt-hero p { font-size: 18px; } .nt-stage { padding-top: 96px; } }
+
+/* App window (the hero's product shot) */
+.nt-win { width: 100%; max-width: 1120px; margin: 0 auto; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-geist-sans), system-ui, sans-serif; color: #f4f4f5; background: #0a0a0b; border-radius: 14px; overflow: hidden; text-align: left; box-shadow: 0 0 0 1px rgba(255,255,255,0.10), inset 0 1px 0 rgba(255,255,255,0.10), 0 50px 110px -30px rgba(0,0,0,0.7); }
+.nt-win-pane { flex: 1 1 380px; min-width: 0; background: #111113; border-radius: 14px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+.nt-win-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 9px 10px; border: 0; border-radius: 9px; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background 0.12s ease; }
+.nt-win-row:hover { background: rgba(255,255,255,0.05); }
+.nt-win-band { transition: background 0.12s ease; }
+.nt-win-band:hover { background: rgba(255,255,255,0.12) !important; }
+.nt-win-link { font-weight: 700; color: #ffffff; text-decoration: underline; text-decoration-color: var(--nt-accent); text-decoration-thickness: 2px; text-underline-offset: 5px; }
+.nt-ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 640px) { .nt-win-sentence { font-size: 18px !important; } }
+
+/* Sources row */
+.nt-sources { list-style: none; margin: 26px 0 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px 48px; font-size: 20px; font-weight: 600; letter-spacing: -0.02em; color: var(--nt-dim); }
+.nt-sources li { display: flex; align-items: center; gap: 10px; }
+.nt-sources svg { width: 24px; height: 24px; }
+
+/* Feature cards */
+.nt-feats { margin-top: 64px; display: flex; flex-wrap: wrap; gap: 40px 20px; }
+.nt-feat { flex: 1 1 340px; min-width: 0; }
+.nt-feat-stage { height: 320px; border-radius: 20px; background: var(--nt-card); box-shadow: inset 0 0 0 1px var(--nt-hair); display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; position: relative; overflow: hidden; }
+.nt-feat h3 { margin: 22px 0 0; font-size: 22px; font-weight: 600; letter-spacing: -0.02em; color: var(--nt-text); }
+.nt-feat p { margin: 8px 0 0; font-size: 15px; line-height: 1.55; color: var(--nt-dim); }
+.nt-marquee { width: 100%; display: flex; flex-direction: column; gap: 14px; overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent); mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent); }
+.nt-track { display: flex; gap: 12px; width: max-content; animation: nt-marq 24s linear infinite; }
+.nt-track-rev { animation-direction: reverse; }
+@keyframes nt-marq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.nt-tile { width: 68px; height: 68px; border-radius: 18px; background: #18181b; box-shadow: inset 0 0 0 1px var(--nt-hair); display: flex; align-items: center; justify-content: center; flex: none; }
+.nt-tile svg { width: 34px; height: 34px; }
+.nt-rec-glow { position: absolute; left: 50%; top: 50%; width: 420px; height: 300px; transform: translate(-50%, -50%); background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,96,32,0.38), transparent 70%); filter: blur(10px); animation: nt-breathe 3.2s ease-in-out infinite; }
+@keyframes nt-breathe { 0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(0.92); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); } }
+.nt-bar { width: 3px; border-radius: 2px; background: #f4f4f5; display: block; transition: height 230ms cubic-bezier(0.4, 0, 0.2, 1); }
+.nt-hr { position: absolute; left: 0; top: -7px; font-family: var(--font-geist-mono), monospace; font-size: 10px; color: var(--nt-faint); background: var(--nt-card); padding-right: 4px; }
+.nt-join { font-size: 12px; font-weight: 600; color: #fff; background: #ee5a1e; padding: 5px 12px; border-radius: 7px; animation: nt-joinp 2.4s ease-in-out infinite; }
+@keyframes nt-joinp { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,96,32,0.55); } 60% { box-shadow: 0 0 0 8px rgba(255,96,32,0); } }
+.nt-now { position: absolute; left: 0; right: 0; top: 20px; display: flex; align-items: center; animation: nt-now 8s linear infinite; }
+@keyframes nt-now { from { transform: translateY(0); } to { transform: translateY(160px); } }
+
+/* Privacy */
+.nt-zero { font-size: clamp(180px, 24vw, 300px); line-height: 0.9; font-weight: 600; letter-spacing: -0.06em; background: linear-gradient(180deg, #ffb27a 0%, #ff6020 60%, #7a2a0c 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 40px rgba(255,96,32,0.35)); }
+.nt-facts { display: flex; justify-content: center; margin: 56px auto 0; max-width: 760px; flex-wrap: wrap; row-gap: 40px; }
+.nt-fact { flex: 1 1 280px; padding: 0 32px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.nt-fact + .nt-fact { border-left: 1px solid rgba(255,255,255,0.10); }
+@media (max-width: 660px) { .nt-fact + .nt-fact { border-left: 0; } }
+.nt-fact b { margin-top: 16px; font-size: 18px; font-weight: 600; }
+.nt-fact span { margin-top: 6px; font-size: 15px; line-height: 1.5; color: var(--nt-mute); max-width: 30ch; }
+
+/* FAQ */
+.nt-faq { display: flex; flex-wrap: wrap; gap: 48px; }
+.nt-faq details { border-bottom: 1px solid rgba(255,255,255,0.08); padding: 22px 0; }
+.nt-faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 16px; font-size: 18px; font-weight: 500; }
+.nt-faq summary::-webkit-details-marker { display: none; }
+.nt-chev { color: var(--nt-accent); font-size: 22px; line-height: 1; transition: transform 0.18s; }
+.nt-faq details[open] .nt-chev { transform: rotate(45deg); }
+.nt-faq details p { margin: 12px 0 0; font-size: 15px; line-height: 1.6; color: var(--nt-dim); }
+
+/* Footer */
+.nt-foot { position: relative; border-top: 1px solid var(--nt-hair); }
+.nt-foot-grid { padding-top: 64px; padding-bottom: 56px; display: grid; grid-template-columns: minmax(240px, 1.6fr) repeat(4, minmax(0, 1fr)); gap: 40px 32px; }
+.nt-foot-col h2 { margin: 6px 0 0; font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--nt-faint); }
+.nt-foot-col ul { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; font-size: 14px; }
+.nt .nt-foot-col a { color: var(--nt-dim); transition: color 0.12s ease; }
+.nt .nt-foot-col a:hover { color: #ffffff; }
+.nt-foot-base { padding-top: 22px; padding-bottom: 28px; border-top: 1px solid var(--nt-hair); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--nt-faint); }
+.nt .nt-foot-base a { color: var(--nt-faint); }
+.nt .nt-foot-base a:hover { color: #ffffff; }
+@media (max-width: 900px) { .nt-foot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .nt-foot-brand { grid-column: 1 / -1; } }
+
+/* Download page */
+/* Fills the first screen (minus the 77px nav) so the footer starts below the fold. */
+.nt-dl-hero { box-sizing: border-box; min-height: calc(100vh - 77px); min-height: calc(100svh - 77px); padding-top: 72px; padding-bottom: 120px; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+.nt-dl-hero h1 { margin: 40px 0 0; font-size: clamp(48px, 7.4vw, 96px); line-height: 0.98; font-weight: 600; letter-spacing: -0.045em; }
+.nt-dl-lede { margin: 26px 0 0; max-width: 42ch; font-size: 20px; line-height: 1.5; letter-spacing: -0.01em; color: var(--nt-dim); }
+.nt-dl-icon { width: 128px; height: 128px; border-radius: 30px; display: flex; align-items: center; justify-content: center; background: linear-gradient(180deg, #1c1c20 0%, #0e0e10 100%); box-shadow: 0 0 0 1px rgba(255,255,255,0.10), inset 0 1px 0 rgba(255,255,255,0.14), 0 30px 70px -20px rgba(255,96,32,0.55), 0 20px 40px -10px rgba(0,0,0,0.6); }
+.nt-dl-btn { position: relative; overflow: hidden; height: 58px; min-width: 260px; font-size: 17px; font-weight: 600; box-shadow: 0 0 0 1px rgba(255,255,255,0.2), 0 18px 50px -12px rgba(255,96,32,0.6); }
+.nt-dl-btn:active { transform: scale(0.98); }
+.nt-dl-fill { position: absolute; inset: 0; transform-origin: left; transform: scaleX(0); background: rgba(255,96,32,0.18); }
+.nt-dl-btn[data-phase="starting"] .nt-dl-fill { animation: nt-dl-fill 1.6s cubic-bezier(0.23,1,0.32,1) forwards; }
+.nt .nt-dl-btn[data-phase="started"] { background: #34d399; color: #052e1f; }
+@keyframes nt-dl-fill { to { transform: scaleX(1); } }
+.nt-dl-facts { margin: 22px 0 0; font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 13px; line-height: 1.9; color: var(--nt-faint); }
+.nt-dl-note { font-size: 15px; color: var(--nt-dim); }
+.nt-dl-form { margin-top: 8px; width: 100%; display: flex; gap: 6px; padding: 6px; border-radius: 16px; background: #111113; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); box-sizing: border-box; }
+.nt-dl-form input[type="email"] { flex: 1; min-width: 0; background: transparent; border: 0; outline: none; padding: 0 12px; font: inherit; font-size: 15px; color: var(--nt-text); }
+.nt-dl-form input::placeholder { color: var(--nt-faint); }
+.nt-dl-form:focus-within { box-shadow: inset 0 0 0 1px var(--nt-accent); }
+.nt-dl-send { height: 44px; padding: 0 18px; font-size: 14px; font-weight: 600; border-radius: 11px; flex: none; }
+.nt-dl-send:disabled { opacity: 0.6; cursor: default; }
+@media (max-width: 640px) { .nt-dl-hero { padding-top: 64px; } .nt-dl-lede { font-size: 18px; } .nt-dl-icon { width: 104px; height: 104px; border-radius: 24px; } }
+
+/* How it works: messages → Jarvis → today's plan. One 10s loop, CSS only. Every
+   element's resting style is its finished state, so reduced motion shows the
+   plan already built. */
+.nt-how { padding-top: 160px; scroll-margin-top: 24px; }
+.nt-how-stage { position: relative; margin-top: 64px; }
+.nt-how-wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.nt-how-wire { fill: none; stroke: rgba(255,255,255,0.09); stroke-width: 1.5; }
+.nt-how-dash { fill: none; stroke: #FF7A3D; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 5 200; stroke-dashoffset: 5; opacity: 0; filter: drop-shadow(0 0 5px rgba(255,96,32,0.9)); }
+.nt-how-wire-out { stroke: rgba(255,255,255,0.14); stroke-dasharray: 100 100; }
+.nt-how-dash-out { stroke: #ffffff; filter: drop-shadow(0 0 5px rgba(255,200,150,0.9)); }
+.nt-how-label { margin: 0; font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--nt-faint); }
+.nt-how-in { position: absolute; inset: 0; pointer-events: none; }
+.nt-how-in ul, .nt-how-plan ul { list-style: none; margin: 0; padding: 0; }
+.nt-how-msg { position: absolute; left: 0; top: var(--top); width: 29.5%; height: 68px; box-sizing: border-box; display: flex; align-items: center; gap: 12px; padding: 0 14px; border-radius: 14px; background: #111113; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07); pointer-events: auto; }
+.nt-how-tile { flex: none; width: 40px; height: 40px; border-radius: 11px; background: #18181B; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); }
+.nt-how-tile svg { width: 22px; height: 22px; }
+.nt-how-who { display: block; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.nt-how-who span { color: #71717A; font-weight: 500; }
+.nt-how-snip { display: block; margin-top: 3px; font-size: 12.5px; color: var(--nt-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nt-how-orb { position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; }
+.nt-how-halo { position: absolute; left: 50%; top: 50%; width: 300px; height: 300px; margin: -150px 0 0 -150px; border-radius: 50%; background: radial-gradient(circle, rgba(255,110,40,0.55), rgba(255,96,32,0.12) 45%, transparent 70%); filter: blur(6px); pointer-events: none; }
+.nt-how-spin { position: absolute; left: 50%; top: 50%; width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0 60%, rgba(255,138,76,0.95) 85%, transparent 100%); -webkit-mask: radial-gradient(circle, transparent 51px, #000 52px); mask: radial-gradient(circle, transparent 51px, #000 52px); animation: nt-how-spin 1.6s linear infinite; }
+@keyframes nt-how-spin { to { transform: rotate(360deg); } }
+.nt-how-eyes { transform-box: fill-box; transform-origin: center; animation: nt-how-blink 5.6s infinite; }
+@keyframes nt-how-blink { 0%, 46%, 50%, 100% { transform: scaleY(1); } 48% { transform: scaleY(0.12); } }
+.nt-how-plan { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 33.85%; box-sizing: border-box; padding: 18px; border-radius: 16px; background: #0D0D0F; box-shadow: 0 0 0 1px rgba(255,255,255,0.10), inset 0 1px 0 rgba(255,255,255,0.08), 0 40px 90px -30px rgba(0,0,0,0.8), 0 0 80px -30px rgba(255,96,32,0.35); }
+.nt-how-sentence { margin: 10px 0 6px; font-size: 16px; line-height: 1.5; font-weight: 500; letter-spacing: -0.01em; }
+.nt-how-link { font-weight: 700; color: #fff; text-decoration: underline; text-decoration-color: var(--nt-accent); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.nt-how-row { display: flex; align-items: center; gap: 12px; margin-top: 8px; padding: 11px 12px; border-radius: 10px; background: rgba(255,255,255,0.03); }
+.nt-how-ring { flex: none; width: 16px; height: 16px; border-radius: 50%; border: 2px solid; box-sizing: border-box; }
+.nt-how-task { display: block; font-size: 14.5px; font-weight: 500; line-height: 1.25; }
+.nt-how-from { display: block; margin-top: 3px; font-size: 12px; color: #8B8B94; }
+.nt-how-due { flex: none; font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 6px; }
+.nt-how-vwire { display: none; }
+
+/* Narrow screens: one column — messages, Jarvis, plan. */
+@media (max-width: 979px) {
+  .nt-how-stage { aspect-ratio: auto !important; display: flex; flex-direction: column; align-items: center; max-width: 480px; margin-left: auto; margin-right: auto; }
+  .nt-how-wires { display: none; }
+  .nt-how-in { position: static; width: 100%; pointer-events: auto; }
+  .nt-how-in ul { display: flex; flex-direction: column; gap: 10px; }
+  .nt-how-msg { position: relative; top: auto; width: 100%; }
+  .nt-how-orb { position: relative; left: auto; top: auto; transform: none; }
+  .nt-how-plan { position: relative; top: auto; right: auto; transform: none; width: 100%; }
+  .nt-how-vwire { display: block; position: relative; width: 1.5px; height: 64px; background: rgba(255,255,255,0.09); overflow: hidden; }
+  .nt-how-vwire::after { content: ""; position: absolute; left: -1px; width: 3.5px; height: 14px; top: -14px; border-radius: 2px; background: #FF7A3D; box-shadow: 0 0 8px rgba(255,96,32,0.9); animation: nt-how-vdash 1.4s infinite cubic-bezier(0.45,0,0.25,1); }
+  .nt-how-vwire-out { transform-origin: top; }
+  .nt-how-vwire-out::after { background: #fff; animation-delay: 0.7s; }
+}
+@keyframes nt-how-vdash { to { top: 100%; } }
+
+/* The sequence clock. Message i lands at --s = 5.5i (+13); Jarvis reads (36–46);
+   the out line draws, bare (41–48.5); the plan window appears the moment
+   it is drawn (48.5–51); only then do the white dots carry the plan along the
+   line (51–57+) and the sentence and tasks land as they arrive and goes (89–91.5) while the line snaps back into Jarvis (89.5–91.5), so
+   the line is never left standing without its plan. Reduced motion stops
+   the clock at its initial value, 70: the finished plan. */
+@property --p { syntax: "<number>"; inherits: true; initial-value: 70; }
+.nt-how-stage { animation: nt-how-clock 10s linear infinite; }
+@keyframes nt-how-clock { from { --p: 0; } to { --p: 100; } }
+.nt-how-msg { --g: calc(clamp(0, (var(--p) - (var(--s))) / 3, 1) - clamp(0, (var(--p) - (var(--s) + 3)) / 10, 1)); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07), inset 0 0 0 1px rgba(255,96,32,calc(0.7 * var(--g))), 0 0 30px -6px rgba(255,96,32,calc(0.6 * var(--g))); }
+.nt-how-dash { stroke-dashoffset: calc(5 - 105 * clamp(0, (var(--p) - (var(--s))) / 13, 1)); opacity: calc(clamp(0, (var(--p) - (var(--s))) / 1.5, 1) - clamp(0, (var(--p) - (var(--s) + 12)) / 1, 1)); }
+/* Once the line and the plan window are up, the white dots carry the plan into it. */
+.nt-how-dash-out { stroke-dashoffset: calc(5 - 105 * clamp(0, (var(--p) - (var(--s))) / 6, 1)); opacity: calc(clamp(0, (var(--p) - (var(--s))) / 1, 1) - clamp(0, (var(--p) - (var(--s) + 5)) / 1, 1)); }
+.nt-how-wire-out { stroke-dashoffset: calc(100 - 100 * clamp(0, (var(--p) - (41)) / 7.5, 1) + 100 * clamp(0, (var(--p) - (89.5)) / 2, 1)); }
+.nt-how-halo { --h: calc(clamp(0, (var(--p) - (8)) / 28, 1) - 0.55 * clamp(0, (var(--p) - (46)) / 14, 1)); opacity: calc(0.35 + 0.65 * var(--h)); transform: scale(calc(0.85 + 0.23 * var(--h))); }
+.nt-how-plan { --v: calc(clamp(0, (var(--p) - (48.5)) / 2.5, 1) - clamp(0, (var(--p) - (89)) / 2.5, 1)); opacity: var(--v); transform: translateY(-50%) scale(calc(0.96 + 0.04 * var(--v))); }
+.nt-how-sentence { opacity: calc(clamp(0, (var(--p) - (57)) / 2.5, 1) - clamp(0, (var(--p) - (89)) / 2.5, 1)); }
+.nt-how-row { --r: calc(clamp(0, (var(--p) - (var(--s))) / 4, 1) - clamp(0, (var(--p) - (89)) / 2.5, 1)); opacity: var(--r); transform: translateY(calc((1 - var(--r)) * 10px)); }
+@media (max-width: 979px) {
+  .nt-how-plan { transform: scale(calc(0.96 + 0.04 * var(--v))); }
+  .nt-how-vwire-out { transform: scaleY(calc(clamp(0, (var(--p) - (41)) / 7.5, 1) - clamp(0, (var(--p) - (89.5)) / 2, 1))); }
+}
+
+/* ── Night content pages ───────────────────────────────────────────
+   Every page outside the homepage and /download is built from the old light
+   palette (coal-ink on ledger-white). Inside `.nt-page` the same tokens are
+   redefined as the Night palette, so their markup is unchanged. */
+.nt-page {
+  --color-background: #09090a;
+  --color-foreground: #f4f4f5;
+  --color-card: #111113;
+  --color-card-foreground: #f4f4f5;
+  --color-muted: #141416;
+  --color-muted-foreground: #a1a1aa;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-coal-ink: #f4f4f5;
+  --color-ledger-white: #09090a;
+  --color-parchment: #141416;
+  --color-ash: rgba(255, 255, 255, 0.08);
+  --color-graphite: #c4c4cc;
+  --color-slate-mid: #a1a1aa;
+  --color-stone: #8b8b94;
+  --color-fossil: rgba(255, 255, 255, 0.22);
+  --color-smolder: #ff7a3d;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+/* A flex column would shrink the centred nav to its content; keep it full width. */
+.nt-page > .nt-wrap { width: 100%; }
+.nt-page-glow { position: absolute; left: 50%; top: -80px; transform: translateX(-50%); width: 1300px; max-width: 160vw; height: 620px; pointer-events: none; background: radial-gradient(ellipse 40% 45% at 50% 40%, rgba(255,110,40,0.20), rgba(255,96,32,0.06) 55%, transparent 100%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nt-track, .nt-rec-glow, .nt-join, .nt-now, .nt-dl-fill { animation: none !important; }
+  .nt-how *, .nt-how *::after { animation: none !important; }
 }

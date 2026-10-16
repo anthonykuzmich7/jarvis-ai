@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { SiteNav } from "@/components/site-nav";
-import { SiteFooter, Wordmark } from "@/components/site-shell";
-import { DownloadHero } from "@/components/download/download-hero";
+import { NightFooter, NightNav } from "@/components/night/night-shell";
+import { NightDownload } from "@/components/night/night-download";
 import { latestRelease } from "@/lib/release";
 
 /* Re-read the appcast on this cadence, so a release shows up here within
@@ -26,12 +25,13 @@ export default async function DownloadPage() {
   const release = await latestRelease();
 
   return (
-    <>
-      <SiteNav brand={<Wordmark />} offSite />
-      <main className="flex flex-1 flex-col bg-ledger-white pt-[72px] sm:pt-[84px]">
-        <DownloadHero release={release} />
+    <div className="nt">
+      <div className="nt-tiles" aria-hidden />
+      <NightNav home={false} action="film" />
+      <main>
+        <NightDownload release={release} />
       </main>
-      <SiteFooter />
-    </>
+      <NightFooter home={false} />
+    </div>
   );
 }

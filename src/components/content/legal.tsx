@@ -227,7 +227,7 @@ export function ScopeGrid({
       {scopes.map((s) => (
         <div
           key={s.scope}
-          className="rounded-[10px] border border-ash bg-white p-5"
+          className="rounded-[10px] border border-ash bg-card p-5"
         >
           <p className="font-mono text-[12px] leading-[1.4] text-coal-ink">
             {s.scope}
@@ -281,7 +281,7 @@ export function ActionList({
     treatment because it is a quotation from Google's policy, not our prose. */
 export function LimitedUseCallout({ children }: { children: ReactNode }) {
   return (
-    <div className="mb-4 max-w-[70ch] rounded-[10px] border border-coal-ink/12 bg-white p-5 sm:p-6">
+    <div className="mb-4 max-w-[70ch] rounded-[10px] border border-coal-ink/12 bg-card p-5 sm:p-6">
       <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-graphite">
         Limited Use
       </p>
