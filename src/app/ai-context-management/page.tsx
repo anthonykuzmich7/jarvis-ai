@@ -151,7 +151,7 @@ export default function ContextManagementPage() {
           {LAYERS.map((layer) => (
             <div
               key={layer.name}
-              className="flex flex-col gap-1.5 rounded-[10px] border border-ash bg-white p-5 sm:flex-row sm:gap-6"
+              className="flex flex-col gap-1.5 rounded-[10px] border border-ash bg-card p-5 sm:flex-row sm:gap-6"
             >
               <p className="w-24 shrink-0 font-display text-[15px] font-semibold tracking-[-0.25px] text-coal-ink">
                 {layer.name}

@@ -53,7 +53,9 @@ function DownloadButton({ release }: { release: Release }) {
 
   return (
     <a
-      href={release.url}
+      // Our own redirect to the newest .dmg, so the link people see and copy
+      // is jarviscontext.com, not the GitHub release URL.
+      href="/download/mac"
       data-phase={phase}
       aria-live="polite"
       className="nt-btn nt-btn-primary nt-dl-btn"

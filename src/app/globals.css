@@ -6,7 +6,10 @@
   smolder orange CTAs, Geist display (Mona Sans substitute), Inter body.
   See docs/design/panxo.md for the full spec.
 */
-@theme inline {
+/* Colours are a plain @theme (not inline) so utilities read them through
+   var(): that is what lets `.nt-page` below re-tint every content page by
+   redefining the palette, without touching each page's class names. */
+@theme {
   /* ── Core semantic surfaces ─────────────────────────────────── */
   --color-background: #fafafa;       /* Ledger White — page canvas */
   --color-foreground: #1c1a17;       /* Coal Ink */
@@ -53,6 +56,9 @@
   --color-emerald-tag: #10b981;
   --color-sky-blush: #bdd8ff;
 
+}
+
+@theme inline {
   /* ── Typography ──────────────────────────────────────────────── */
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
@@ -422,6 +428,35 @@ body {
   .nt-how-plan { transform: scale(calc(0.96 + 0.04 * var(--v))); }
   .nt-how-vwire-out { transform: scaleY(calc(clamp(0, (var(--p) - (41)) / 7.5, 1) - clamp(0, (var(--p) - (89.5)) / 2, 1))); }
 }
+
+/* ── Night content pages ───────────────────────────────────────────
+   Every page outside the homepage and /download is built from the old light
+   palette (coal-ink on ledger-white). Inside `.nt-page` the same tokens are
+   redefined as the Night palette, so their markup is unchanged. */
+.nt-page {
+  --color-background: #09090a;
+  --color-foreground: #f4f4f5;
+  --color-card: #111113;
+  --color-card-foreground: #f4f4f5;
+  --color-muted: #141416;
+  --color-muted-foreground: #a1a1aa;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-coal-ink: #f4f4f5;
+  --color-ledger-white: #09090a;
+  --color-parchment: #141416;
+  --color-ash: rgba(255, 255, 255, 0.08);
+  --color-graphite: #c4c4cc;
+  --color-slate-mid: #a1a1aa;
+  --color-stone: #8b8b94;
+  --color-fossil: rgba(255, 255, 255, 0.22);
+  --color-smolder: #ff7a3d;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+/* A flex column would shrink the centred nav to its content; keep it full width. */
+.nt-page > .nt-wrap { width: 100%; }
+.nt-page-glow { position: absolute; left: 50%; top: -80px; transform: translateX(-50%); width: 1300px; max-width: 160vw; height: 620px; pointer-events: none; background: radial-gradient(ellipse 40% 45% at 50% 40%, rgba(255,110,40,0.20), rgba(255,96,32,0.06) 55%, transparent 100%); }
 
 @media (prefers-reduced-motion: reduce) {
   .nt-track, .nt-rec-glow, .nt-join, .nt-now, .nt-dl-fill { animation: none !important; }

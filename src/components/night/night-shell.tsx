@@ -21,7 +21,12 @@ export function Brand({ size, text }: { size: number; text: number }) {
 
 const section = (home: boolean, id: string) => (home ? `#${id}` : `/#${id}`);
 
-export function NightNav({ home }: { home: boolean }) {
+/**
+ * `action` is the button on the right of pages other than the homepage:
+ * "start" (Get started, for the content pages) or "film" (on /download,
+ * where Get started would only reload the page).
+ */
+export function NightNav({ home, action = "start" }: { home: boolean; action?: "start" | "film" }) {
   return (
     <nav aria-label="Main" className="nt-wrap nt-nav">
       <Link href="/" aria-label="Jarvis — home">
@@ -32,13 +37,11 @@ export function NightNav({ home }: { home: boolean }) {
         <a href={section(home, "faq")}>FAQ</a>
       </div>
       {home ? (
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <GetStartedLink label="Sign in" placement="nav_sign_in" className="nt-nav-small nt-signin" />
-          <GetStartedLink placement="nav" className="nt-nav-small nt-btn-primary" />
-        </div>
-      ) : (
-        // Already on the download page: "Get started" would only reload it.
+        <GetStartedLink placement="nav" className="nt-nav-small nt-btn-primary" />
+      ) : action === "film" ? (
         <FilmButton placement="download_nav" className="nt-nav-small nt-signin" />
+      ) : (
+        <GetStartedLink placement="content_nav" className="nt-nav-small nt-btn-primary" />
       )}
     </nav>
   );

@@ -123,7 +123,7 @@ export default async function ComparisonPage({ params }: Props) {
 
       <Section title="Which one you want">
         <div className="grid max-w-[76ch] gap-3 sm:grid-cols-2">
-          <div className="rounded-[10px] border border-ash bg-white p-5">
+          <div className="rounded-[10px] border border-ash bg-card p-5">
             <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-graphite">
               Choose {competitor.name}
             </p>
@@ -189,7 +189,7 @@ export default async function ComparisonPage({ params }: Props) {
 
       <CtaBand
         title="If the context problem is the one you have"
-        body="We're onboarding design partners a few at a time. Tell us where your context goes missing and we'll reach out."
+        body="Jarvis is a Mac app. Connect your chats, email and calendar, and it tells you what to do first."
       />
 
       <ReadNext

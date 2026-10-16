@@ -549,7 +549,7 @@ ${css}
                   libSQL &mdash; native vector KNN in the same file.
                 </div>
                 <div id="d-chip" className="jd-chip jd-rm-show">
-                  &#8627; from @anton in #eng-decisions
+                  &#8627; from @tom in #eng-decisions
                 </div>
               </div>
             </div>

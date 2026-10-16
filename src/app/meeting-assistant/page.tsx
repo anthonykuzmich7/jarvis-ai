@@ -138,7 +138,7 @@ export default function MeetingAssistantPage() {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-full border border-ash bg-white px-4 py-2 text-[13.5px] font-medium text-graphite transition-colors hover:border-fossil hover:text-coal-ink"
+              className="rounded-full border border-ash bg-card px-4 py-2 text-[13.5px] font-medium text-graphite transition-colors hover:border-fossil hover:text-coal-ink"
             >
               {link.label}
             </Link>
@@ -163,7 +163,7 @@ export default function MeetingAssistantPage() {
 
       <CtaBand
         title="Stop reconstructing last week"
-        body="Early access is open to design partners. Tell us where your context goes missing and we'll be in touch."
+        body="Jarvis is a Mac app. It records your calls on your Mac and turns them into notes and tasks."
       />
 
       <ReadNext

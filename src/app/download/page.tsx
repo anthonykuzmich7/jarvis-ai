@@ -27,7 +27,7 @@ export default async function DownloadPage() {
   return (
     <div className="nt">
       <div className="nt-tiles" aria-hidden />
-      <NightNav home={false} />
+      <NightNav home={false} action="film" />
       <main>
         <NightDownload release={release} />
       </main>

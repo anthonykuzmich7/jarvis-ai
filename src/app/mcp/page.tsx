@@ -133,7 +133,7 @@ export default function McpPage() {
           in the repository, because the answer lives in the last three days of
           your team&apos;s conversation:
         </P>
-        <div className="mt-5 max-w-[68ch] overflow-hidden rounded-[12px] border border-ash bg-coal-ink">
+        <div className="mt-5 max-w-[68ch] overflow-hidden rounded-[16px] border border-ash bg-[#0D0D0F]">
           <div className="flex items-center gap-2 border-b border-white/10 px-4 py-2.5">
             <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
             <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
@@ -287,7 +287,7 @@ export default function McpPage() {
 
       <CtaBand
         title="Give your AI tools your context"
-        body="Early access is open to design partners. Tell us what you'd want Jarvis to answer and we'll be in touch."
+        body="Jarvis is a Mac app. Connect your chats, email and calendar, and it tells you what to do first."
       />
 
       <ReadNext

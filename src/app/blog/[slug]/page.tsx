@@ -79,7 +79,7 @@ function BlockView({ block }: { block: Block }) {
       );
     case "code":
       return (
-        <div className="mb-6 mt-5 overflow-x-auto rounded-[12px] border border-ash bg-coal-ink px-5 py-4">
+        <div className="mb-6 mt-5 overflow-x-auto rounded-[16px] border border-ash bg-[#0D0D0F] px-5 py-4">
           <pre className="font-mono text-[12.5px] leading-[1.75] text-white/80">
             {block.lines.join("\n")}
           </pre>
