@@ -462,3 +462,8 @@ body {
   .nt-track, .nt-rec-glow, .nt-join, .nt-now, .nt-dl-fill { animation: none !important; }
   .nt-how *, .nt-how *::after { animation: none !important; }
 }
+
+/* The demo film on the homepage, under the sources row. */
+.nt-film { padding-top: 140px; scroll-margin-top: 24px; }
+.nt-film-video { display: block; width: 100%; max-width: 1080px; margin: 48px auto 0; aspect-ratio: 16 / 9; border-radius: 16px; background: #0a0a0b; box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 40px 120px -40px rgba(255,96,32,0.35); }
+@media (max-width: 640px) { .nt-film { padding-top: 96px; } .nt-film-video { margin-top: 32px; border-radius: 12px; } }
