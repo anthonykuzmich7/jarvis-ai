@@ -24,16 +24,9 @@ import { X } from "lucide-react";
   never clicks never touches the network, and closing the modal unmounts it
   and stops the audio.
 
-  White card on a blurred ground, not a black full-bleed stage. The page is
-  ledger white and stays that way. A bounded card also solves what the film
-  looked like embedded in the page: its sparse acts read as a hole when the
-  white runs to the edge of the viewport, and as frame padding when it has a
-  visible edge.
-
-  Since v2 the file is the INK cut, not the paper one. The card stays white —
-  a dark 16:9 rectangle inside a white card is a screen, which is what the
-  film is a recording of, and it needs no hairline to separate it from its
-  own padding the way the near-white paper cut did.
+  A dark card on a blurred ground, in the Night style the site uses: near-black
+  with a hairline edge and the orange glow, so the film sits on the page's own
+  colours instead of a white sheet.
 */
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -91,7 +84,7 @@ export function FilmModal({
           transition={{ duration: 0.28, ease: EASE }}
           onClick={onClose}
           className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-[14px]"
-          style={{ backgroundColor: "rgba(28, 26, 23, 0.32)" }}
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.62)" }}
         >
           <motion.div
             role="dialog"
@@ -102,24 +95,25 @@ export function FilmModal({
             exit={reduce ? undefined : { opacity: 0, y: 8, scale: 0.99 }}
             transition={{ duration: 0.42, ease: EASE }}
             onClick={(e) => e.stopPropagation()}
-            className="overflow-hidden rounded-[20px] bg-white p-3"
+            className="overflow-hidden rounded-[20px] p-3"
             style={{
               /* Height-first, so the 16:9 frame is whole at any window shape.
                  The 96px covers the header row plus the card's own padding. */
               width: "min(90vw - 32px, calc((86vh - 96px) * 16 / 9), 1240px)",
+              background: "linear-gradient(180deg, #161618, #0F0F11)",
               boxShadow:
-                "rgba(95,99,106,0.14) 0px 0px 0px 1px, rgba(43,43,48,0.28) 0px 24px 72px 0px",
+                "inset 0 0 0 1px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.05), 0 40px 120px -30px rgba(255,96,32,0.45), 0 24px 72px rgba(0,0,0,0.6)",
             }}
           >
             <div className="flex items-center justify-between px-2 pb-3 pt-1">
-              <span className="text-[15px] font-semibold tracking-[-0.15px] text-coal-ink">
+              <span className="text-[15px] font-semibold tracking-[-0.15px] text-[#F4F4F5]">
                 How Jarvis works
               </span>
               <button
                 type="button"
                 onClick={onClose}
                 aria-label="Close"
-                className="-mr-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-graphite transition-colors hover:bg-black/5 hover:text-coal-ink"
+                className="-mr-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[#A1A1AA] transition-colors hover:bg-white/10 hover:text-[#F4F4F5]"
               >
                 <X className="h-[18px] w-[18px]" strokeWidth={1.75} />
               </button>
