@@ -52,6 +52,20 @@ function Hero() {
   );
 }
 
+function Film() {
+  return (
+    <section id="film" aria-labelledby="film-title" className="nt-wrap nt-film">
+      <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
+        <h2 id="film-title" className="nt-h2">
+          See it in <span className="nt-mark">a minute.</span>
+        </h2>
+      </div>
+      {/* Nothing downloads until play is pressed: preload="none" plus a poster. */}
+      <video className="nt-film-video" src="/jarvis-film.mp4" poster="/jarvis-film.jpg" controls playsInline preload="none" />
+    </section>
+  );
+}
+
 const SOURCES = ["Slack", "Gmail", "Jira", "Telegram", "Rocket.Chat", "Mail", "Google Calendar"];
 
 function Sources() {
@@ -250,6 +264,7 @@ export function NightLanding() {
       <main>
         <Hero />
         <Sources />
+        <Film />
         <Features />
         <HowItWorks />
         <Privacy />

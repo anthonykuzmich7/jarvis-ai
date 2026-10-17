@@ -7,7 +7,7 @@ import { X } from "lucide-react";
 /*
   The film, in a modal.
 
-  It plays `public/how-jarvis-works.mp4`, not the live-DOM component, and that
+  It plays `public/jarvis-film.mp4`, not the live-DOM component, and that
   is a deliberate reversal of the call `demo-section.tsx` documents.
 
   That call ("prefer the component, it is vector text and costs no download")
@@ -131,8 +131,8 @@ export function FilmModal({
                 watch a film should be able to scrub it and mute it. */}
             <video
               ref={videoRef}
-              src="/how-jarvis-works.mp4"
-              poster="/how-jarvis-works.jpg"
+              src="/jarvis-film.mp4"
+              poster="/jarvis-film.jpg"
               controls
               playsInline
               preload="auto"
