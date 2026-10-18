@@ -136,7 +136,7 @@ export function JarvisWindow() {
 
       {/* The day, in one sentence */}
       <div style={{ padding: "18px 32px 24px" }}>
-        <p className="nt-win-sentence" style={{ margin: 0, fontSize: 23, lineHeight: 1.42, fontWeight: 500, letterSpacing: "-0.015em", maxWidth: "34em" }}>
+        <p className="nt-win-sentence" style={{ margin: 0, fontSize: 23, lineHeight: 1.42, fontWeight: 500, letterSpacing: "-0.015em" }}>
           Start with <span className="nt-win-link">the refunds Tom flagged</span>, three customers were charged twice.{" "}
           <span className="nt-win-link">Send Emily the hiring plan</span> after your 1:1 with Alex.
         </p>
