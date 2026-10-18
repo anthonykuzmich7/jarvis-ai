@@ -38,7 +38,7 @@ export function GetStartedLink({
   );
 }
 
-/** "Watch the film": opens the same film modal the old hero used. */
+/** "See how it works": opens the same film modal the old hero used. */
 export function FilmButton({ placement, className }: { placement: string; className?: string }) {
   const [open, setOpen] = React.useState(false);
   return (
@@ -51,7 +51,7 @@ export function FilmButton({ placement, className }: { placement: string; classN
           capture("film_opened", { placement });
         }}
       >
-        Watch the film
+        See how it works
       </button>
       <FilmModal open={open} onClose={() => setOpen(false)} />
     </>
